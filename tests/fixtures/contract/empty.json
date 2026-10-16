@@ -1,0 +1,1 @@
+{"name":"empty","device":"phone","window":[0.0,10.0],"items":[],"expected":{"samples":0,"duplicates":0,"missing_from_index":0,"backwards_timestamps":0,"delivered_hz":0.0,"expected_at_delivered_rate":0,"coverage":0.0,"gaps_over_threshold":0,"longest_gap_ms":0.0,"verdict":"FAIL"}}

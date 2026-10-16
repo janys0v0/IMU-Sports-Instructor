@@ -389,6 +389,7 @@ Watch data is checked from the live preview first, then again once its chunk arr
                                   merged stream.jsonl → motion_io.py
 ```
 
+- `--phone-only` marks a session recorded without a Watch, so the missing Watch isn't a failure.
 - `watch_hf: PENDING` (not FAIL) while high-rate chunks are still on the Watch; the session can't
   be verified or cleared until they arrive.
 - **Never delete before ② says PASS and ③ is done.**

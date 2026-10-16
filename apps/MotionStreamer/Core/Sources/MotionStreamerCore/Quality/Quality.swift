@@ -124,3 +124,26 @@ public struct StreamStats: Equatable {
         return (value * p).rounded(.toNearestOrEven) / p
     }
 }
+
+/// PASS / WARN / FAIL for one stream in the session check (design §6). Mirrors
+/// pipeline/ingest/quality.py; the contract fixtures keep them identical (test S4).
+public enum SessionCheck {
+    public static func verdict(_ stats: StreamStats, device: String, _ t: QualityThresholds = .shared) -> String {
+        let airpods = device == "airpods"
+        let passCoverage = t.value(
+            airpods ? "session_check.airpods_pass_min_coverage" : "session_check.pass_min_coverage")
+        let warnCoverage = t.value(
+            airpods ? "session_check.airpods_warn_min_coverage" : "session_check.warn_min_coverage")
+        let longest = stats.longestGapMs / 1000
+        if stats.samples == 0 { return "FAIL" }
+        if stats.coverage >= passCoverage, longest <= t.value("session_check.max_gap_s_pass") { return "PASS" }
+        if stats.coverage >= warnCoverage, longest <= t.value("session_check.max_gap_s_warn") { return "WARN" }
+        return "FAIL"
+    }
+
+    /// The worst of several verdicts (PENDING ranks between WARN and FAIL).
+    public static func worst(_ verdicts: [String]) -> String {
+        let order = ["PASS", "WARN", "PENDING", "FAIL"]
+        return verdicts.max { (order.firstIndex(of: $0) ?? 3) < (order.firstIndex(of: $1) ?? 3) } ?? "PASS"
+    }
+}

@@ -10,8 +10,8 @@ when its gate passes on two consecutive runs; then the next stage starts.
 
 | | |
 |---|---|
-| **Current stage** | 3 — Mac ingest script (stages 0-2 done 2026-10-16; one branch per stage) |
-| **Next action** | `pipeline/ingest/ingest_field.py`: checksums, gaps, clock fit, report (stage 3, tasks 1-5) |
+| **Current stage** | 4 — Phone preview (stages 0-3 done 2026-10-16; one branch per stage) |
+| **Next action** | Status dots on the live strip, then the review screen reading closed chunks (stage 4, tasks 1-2) |
 | **Blocked on** | — |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
 | **Last updated** | 2026-10-16 |
@@ -182,9 +182,9 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 6. `Shared/quality_thresholds.json` read by both Swift and Python.
 
 **Testable goals (G3)**
-- [ ] **I1-I8:** corrupt byte, missing/extra chunks, segments, clock fit (1 ms, 1 ppm), backward compatibility, all 35 recordings load, report agrees with contract fixtures, PENDING handling.
-- [ ] **S4:** Swift and Python give identical PASS/WARN/FAIL on every contract fixture.
-- [ ] **Demo:** run `ingest_field.py` on a simulated session with one corrupted chunk → FAIL naming that chunk; restore it → PASS, and E03 runs on the merged stream.
+- [x] **I1-I8:** corrupt byte, missing/extra chunks, segments, clock fit (1 ms, 1 ppm), backward compatibility, all 35 recordings load, report agrees with contract fixtures, PENDING handling.
+- [x] **S4:** Swift and Python give identical PASS/WARN/FAIL on every contract fixture.
+- [x] **Demo:** `ingest_field.py` on the session the app wrote in the simulator (stage 1 demo): one flipped byte → FAIL naming `phone/000001.jsonl`; restored → WARN (the replayed recording has real gaps), merged stream loads. E03's numbers come out identical on a re-chunked reference session (I5).
 
 ## Stage 4: Phone preview
 
