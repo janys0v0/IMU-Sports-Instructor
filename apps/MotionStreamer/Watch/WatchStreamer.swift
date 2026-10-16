@@ -78,13 +78,13 @@ final class WatchStreamer: NSObject, ObservableObject {
     }
 
     /// Starts recording. `sessionID` comes from the iPhone; without one the Watch makes its own.
-    func start(sessionID: String? = nil, loc: String? = nil) {
+    func start(sessionID: String? = nil, loc: String? = nil, mirror: Bool = false) {
         guard !isRunning else { return }
         guard motion.isDeviceMotionAvailable else {
             setStatus("Device motion unavailable")
             return
         }
-        startWorkout()
+        startWorkout(mirror: mirror)
 
         let ref = preferredReferenceFrame()
         let osVersion = WKInterfaceDevice.current().systemVersion
@@ -308,7 +308,7 @@ final class WatchStreamer: NSObject, ObservableObject {
 
     // MARK: - Workout
 
-    private func startWorkout() {
+    private func startWorkout(mirror: Bool) {
         guard workout == nil else { return }
         let config = HKWorkoutConfiguration()
         config.activityType = .other
@@ -316,10 +316,32 @@ final class WatchStreamer: NSObject, ObservableObject {
         do {
             let session = try HKWorkoutSession(healthStore: healthStore, configuration: config)
             session.delegate = self
+            // Prepare before mirroring: starting it earlier hangs on iOS/watchOS 26.0-26.1 (device-research §1).
+            session.prepare()
             session.startActivity(with: Date())
             workout = session
+            if mirror {
+                session.startMirroringToCompanionDevice { [weak self] success, error in
+                    if !success { self?.setStatus("Mirroring failed: \(error?.localizedDescription ?? "unknown")") }
+                }
+            }
         } catch {
             setStatus("Workout failed: \(error.localizedDescription)")
+        }
+    }
+
+    /// After a crash watchOS relaunches the app with the workout still running: take it back,
+    /// and resume the open session's recording as a new segment (design §4).
+    func recoverWorkout() {
+        healthStore.recoverActiveWorkoutSession { [weak self] session, _ in
+            guard let self, let session else { return }
+            DispatchQueue.main.async {
+                session.delegate = self
+                self.workout = session
+                if let id = SessionRecorder.unclosedSessions(store: self.store).last {
+                    self.start(sessionID: id)
+                }
+            }
         }
     }
 
@@ -393,7 +415,9 @@ extension WatchStreamer: WCSessionDelegate {
         let session = message["session"] as? String
         let loc = message["loc"] as? String
         switch message["cmd"] as? String {
-        case "start": DispatchQueue.main.async { self.start(sessionID: session, loc: loc) }
+        case "start":
+            let mirror = message["mirror"] as? Bool ?? false
+            DispatchQueue.main.async { self.start(sessionID: session, loc: loc, mirror: mirror) }
         case "stop": DispatchQueue.main.async { self.stop() }
         case "resend": resendSession()
         default: break

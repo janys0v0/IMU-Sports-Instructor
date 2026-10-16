@@ -19,6 +19,11 @@ final class WatchAppDelegate: NSObject, WKApplicationDelegate {
         WatchStreamer.shared.activate()
     }
 
+    /// watchOS relaunched the app after a crash while its workout kept running.
+    func handleActiveWorkoutRecovery() {
+        WatchStreamer.shared.recoverWorkout()
+    }
+
     /// Called when the iPhone app launches this app with `HKHealthStore.startWatchApp`.
     func handle(_ workoutConfiguration: HKWorkoutConfiguration) {
         WatchStreamer.shared.start()

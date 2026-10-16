@@ -36,6 +36,13 @@ final class StreamController: NSObject, ObservableObject {
             reminder.interval = reminderMinutes * 60
         }
     }
+    /// What keeps the app recording in a pocket (design §5; decided after the stage 0b check).
+    @Published var keepAliveMethod: KeepAlivePolicy.Method {
+        didSet {
+            defaults.set(keepAliveMethod.rawValue, forKey: "keepAliveMethod")
+            keepAlivePolicy.method = keepAliveMethod
+        }
+    }
     @Published var pocketScreen: PocketScreen {
         didSet { defaults.set(pocketScreen.rawValue, forKey: "pocketScreen") }
     }
@@ -77,6 +84,10 @@ final class StreamController: NSObject, ObservableObject {
         self?.ioQueue.sync { self?.recentSamples(device, from, to) } ?? []
     }
     private lazy var reminder = CalibrationReminder(clock: clock)
+    private let locationKeepAlive = LocationKeepAlive()
+    private lazy var keepAlivePolicy = KeepAlivePolicy(clock: clock, method: keepAliveMethod)
+    /// The mirrored workout from the Watch, kept so it stays alive (method `.mirroring`).
+    private var mirroredWorkout: HKWorkoutSession?
     /// Last 30 s of samples per device, by arrival time, for the calibration checks (ioQueue).
     private var recent: [String: [(arrival: Double, sample: MotionSample)]] = [:]
 
@@ -126,10 +137,13 @@ final class StreamController: NSObject, ObservableObject {
         wrist = WatchWrist(rawValue: defaults.string(forKey: "wrist") ?? "") ?? .left
         pocketScreen = PocketScreen(rawValue: defaults.string(forKey: "pocketScreen") ?? "") ?? .leg
         landmark = defaults.string(forKey: "landmark") ?? "the net"
+        keepAliveMethod =
+            KeepAlivePolicy.Method(rawValue: defaults.string(forKey: "keepAliveMethod") ?? "") ?? .location
         let minutes = defaults.double(forKey: "reminderMinutes")
         reminderMinutes = minutes > 0 ? minutes : 10
         super.init()
         setUpSpeech()
+        setUpKeepAlive()
         if WCSession.isSupported() {
             WCSession.default.delegate = self
             WCSession.default.activate()
@@ -298,6 +312,7 @@ final class StreamController: NSObject, ObservableObject {
 
         sessionID = id
         if replayRecording == nil { launchWatch() }
+        if keepAliveMethod == .location { locationKeepAlive.start() }
         isRecording = true
         packetsSent = 0
         macReceived = nil
@@ -307,6 +322,7 @@ final class StreamController: NSObject, ObservableObject {
         statsTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.publishStats()
             self?.remindIfDue()
+            self?.checkKeepAlive()
             self?.ioQueue.async {
                 guard let self else { return }
                 self.recorder?.tick()
@@ -329,6 +345,7 @@ final class StreamController: NSObject, ObservableObject {
         calibrationTimer = nil
         flow.cancel()
         speaker.stopAll()
+        locationKeepAlive.stop()
         calibrationStatus = nil
         sendWatchCommand("stop")
         stopReplay()
@@ -409,6 +426,50 @@ final class StreamController: NSObject, ObservableObject {
         let script = VoiceScript.shared
         speaker.say(script.reminder("R1"), id: "R1")
         speaker.say(VoiceScript.fill(script.reminder("R2"), ["landmark": landmark]), id: "R2")
+    }
+
+    // MARK: - Keeping the app alive (design §5)
+
+    private func setUpKeepAlive() {
+        locationKeepAlive.onChange = { [weak self] running in
+            guard let self else { return }
+            self.keepAlivePolicy.keepAlive(running: running || self.mirroredWorkout != nil)
+        }
+        // Workout mirroring: the Watch hands its workout to the phone, launching it in the background.
+        healthStore.workoutSessionMirroringStartHandler = { [weak self] session in
+            DispatchQueue.main.async {
+                self?.mirroredWorkout = session
+                self?.keepAlivePolicy.keepAlive(running: true)
+                self?.ioQueue.async { self?.logEvent("workout_mirrored") }
+            }
+        }
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            guard let self, self.isRecording else { return }
+            self.apply(self.keepAlivePolicy.enteredBackground())
+        }
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main
+        ) { [weak self] _ in self?.keepAlivePolicy.enteredForeground() }
+    }
+
+    private func checkKeepAlive() {
+        guard isRecording else { return }
+        let last = ioQueue.sync { recent["airpods"]?.last?.arrival }
+        apply(keepAlivePolicy.check(airPodsConnected: airPodsConnected, lastAirPodsSample: last))
+    }
+
+    private var lastPocketAdvice: Double = 0
+
+    /// Pocket mode is needed: log it and say so (at most once a minute).
+    private func apply(_ advice: KeepAlivePolicy.Advice) {
+        guard case .usePocketMode(let reason) = advice, uptime() - lastPocketAdvice > 60 else { return }
+        lastPocketAdvice = uptime()
+        ioQueue.async { self.logEvent("pocket_mode_needed", detail: reason) }
+        if let alert = VoiceScript.shared.alert("keep_app_open") {
+            speaker.say(alert.text, id: "keep_app_open", priority: .warn)
+        }
     }
 
     /// Samples of one device that arrived between two uptimes (ioQueue).
@@ -588,7 +649,8 @@ final class StreamController: NSObject, ObservableObject {
         }
         // Also send a start command in case the Watch app is already open; the session ID makes the
         // Watch save its chunks under the same session (and resume it after a relaunch).
-        sendWatchCommand("start", extra: ["session": sessionID, "loc": watchLocation])
+        sendWatchCommand(
+            "start", extra: ["session": sessionID, "loc": watchLocation, "mirror": keepAliveMethod == .mirroring])
     }
 
     private func sendWatchCommand(_ command: String, extra: [String: Any] = [:]) {

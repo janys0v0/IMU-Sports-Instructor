@@ -100,6 +100,11 @@ struct ContentView: View {
                 "Recalibrate every \(Int(controller.reminderMinutes)) min", value: $controller.reminderMinutes,
                 in: 2...60,
                 step: 1)
+            Picker("Keep recording in pocket", selection: $controller.keepAliveMethod) {
+                Text("Location (recommended)").tag(KeepAlivePolicy.Method.location)
+                Text("Workout mirroring").tag(KeepAlivePolicy.Method.mirroring)
+                Text("Pocket mode only").tag(KeepAlivePolicy.Method.pocketMode)
+            }
             Picker("Phone screen faces", selection: $controller.pocketScreen) {
                 Text("Leg").tag(PocketScreen.leg)
                 Text("Outward").tag(PocketScreen.outward)

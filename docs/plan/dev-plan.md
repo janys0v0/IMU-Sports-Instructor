@@ -10,9 +10,9 @@ when its gate passes on two consecutive runs; then the next stage starts.
 
 | | |
 |---|---|
-| **Current stage** | 6 — Keeping the app alive (stages 0-5 done 2026-10-16, except V9 listen-through; one branch per stage) |
-| **Next action** | Background-location keep-alive with pocket-mode fallback (stage 6, tasks 1-3) |
-| **Blocked on** | People: V9 listen-through (stage 5); stage 0b device check before stage 6's gate |
+| **Current stage** | 7 — Watchdog + alerts (stages 0-5 done; stage 6 code done, its gate waits for device test T6) |
+| **Next action** | Go/No-Go screen and the per-second watchdog (stage 7, tasks 1-2) |
+| **Blocked on** | Devices: stage 0b check (= T6) closes stage 6's gate and the keep-alive decision · People: V9 listen-through |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
 | **Last updated** | 2026-10-16 |
 
@@ -236,7 +236,7 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 5. App lifecycle events logged and followed by `fsync`.
 
 **Testable goals (G6)**
-- [ ] Simulated parts of **E1-E2** pass.
+- [x] Simulated parts: the keep-alive policy (4 tests) and E2 (kill and Resume through the real UI, stage 1 demo); E1's full flow runs in stage 8.
 - [ ] **Device test T6** (Xcode detached): 20 min, phone locked in a pocket → phone and AirPods continuous (or the fallback is recorded as primary).
 - [ ] **Demo:** walk for 20 min with the phone locked; the review screen afterwards shows no gap.
 

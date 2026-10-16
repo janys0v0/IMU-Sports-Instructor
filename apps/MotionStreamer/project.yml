@@ -47,7 +47,8 @@ targets:
         NSLocalNetworkUsageDescription: Streams motion data to the receiver on your Mac.
         NSHealthShareUsageDescription: Starts a workout on Apple Watch so it can stream motion.
         NSHealthUpdateUsageDescription: Starts a workout on Apple Watch so it can stream motion.
-        UIBackgroundModes: [audio]
+        UIBackgroundModes: [audio, location]
+        NSLocationWhenInUseUsageDescription: Keeps recording while the phone is locked in your pocket. Your location is not saved.
     dependencies:
       - target: MotionStreamerWatch
       - package: MotionStreamerCore

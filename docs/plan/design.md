@@ -138,12 +138,14 @@ Core Motion doesn't keep an app awake; the app must stay awake through a backgro
 
 | Device | How | Status |
 |---|---|---|
-| Watch | `HKWorkoutSession` (+ `audio` background mode for speech and haptics) | ✅ workout exists; `audio` mode to add |
-| iPhone | **Pending decision** after the stage 0b device check. Recommended: background location at 3 km accuracy (Apple-confirmed to keep motion flowing) | ⏳ |
-| iPhone, optional | Workout mirroring, started after the Watch session is prepared (works around an iOS 26 bug) | Not relied on |
+| Watch | `HKWorkoutSession` (+ `audio` background mode for speech and haptics); workout recovered after a crash | ✅ |
+| iPhone | Background location at 3 km accuracy (Apple-confirmed to keep motion flowing); the default setting until the stage 0b check decides | ✅ built; 🧪 T6 |
+| iPhone, optional | Workout mirroring, started after the Watch session is prepared (works around an iOS 26 bug) | ✅ built (setting); not relied on |
 | iPhone, fallback | Pocket mode: app in the foreground, screen off by the proximity sensor | ✅ exists |
 | AirPods | Head motion through the phone app; the Watch can't read it | ❓ background behaviour checked in stage 0b |
 
+- If the app goes to the background with no keep-alive running, or AirPods motion stops there for
+  3 s, the phone says "Heads up: keep the app open in your pocket." and logs `pocket_mode_needed`.
 - **Background tests must run with Xcode detached** (launched from the Home screen): with the
   debugger attached, iOS never suspends the app.
 

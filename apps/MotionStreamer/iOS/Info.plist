@@ -28,6 +28,8 @@
 	<string>Starts a workout on Apple Watch so it can stream motion.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Streams motion data to the receiver on your Mac.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Keeps recording while the phone is locked in your pocket. Your location is not saved.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Records phone motion for full-body pose estimation.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
@@ -35,6 +37,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
+		<string>location</string>
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
