@@ -581,6 +581,8 @@ scenarios are rehearsed there first with fakes and replayed recordings.
 
 ## 16. Build order
 
+Step-by-step tasks and testable goals per stage: [`DEV_PLAN.md`](DEV_PLAN.md).
+
 ```
  ⓪ Test harness            core logic in a Swift package · fake motion / clock / files / link / voice
         │                  · replay of real recordings · Mac tests (see TEST_PLAN.md)
