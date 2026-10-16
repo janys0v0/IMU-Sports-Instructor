@@ -10,8 +10,8 @@ when its gate passes on two consecutive runs; then the next stage starts.
 
 | | |
 |---|---|
-| **Current stage** | 1 — Phone recorder (stage 0 done 2026-10-16, branch `feat/stage-0-test-harness`) |
-| **Next action** | Chunk writer + journal in `MotionStreamerCore` (stage 1, task 1) |
+| **Current stage** | 2 — Watch recording + transfer (stages 0-1 done 2026-10-16; branches `feat/stage-0-…`, `feat/stage-1-…`) |
+| **Next action** | Watch chunk writer + `transferFile` with acks (stage 2, tasks 1-2) |
 | **Blocked on** | — |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
 | **Last updated** | 2026-10-16 |
@@ -144,10 +144,10 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 6. Crash recovery on launch: trim the open chunk, Resume as a new segment (design §4).
 
 **Testable goals (G1)**
-- [ ] **R1-R8:** chunking, `fsync` cadence, checksums, disk-full and `fsync` failures, packet format unchanged.
-- [ ] **J1-J6:** journal lines, manifest rebuild, **1,000 random crash points with zero loss of `fsync`ed data**, resume, torn journal line, clock jump.
-- [ ] **S1-S3:** sample accounting; replays match E03's numbers; status-dot thresholds.
-- [ ] **Demo:** in the iOS simulator, start a replayed session with no Mac IP, kill the app at 2 min, relaunch, tap Resume. The session folder shows 2 segments and no lost chunk.
+- [x] **R1-R8:** chunking, `fsync` cadence, checksums, disk-full and `fsync` failures, packet format unchanged.
+- [x] **J1-J6:** journal lines, manifest rebuild, **1,000 random crash points with zero loss of `fsync`ed data**, resume, torn journal line, clock jump.
+- [x] **S1-S3:** sample accounting; replays match E03's numbers; status-dot thresholds.
+- [x] **Demo:** in the iOS simulator, start a replayed session with no Mac IP, kill the app at 2 min, relaunch, tap Resume. The session folder shows 2 segments and no lost chunk.
 
 ## Stage 2: Watch recording + transfer
 

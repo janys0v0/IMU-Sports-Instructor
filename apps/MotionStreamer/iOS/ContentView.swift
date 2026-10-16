@@ -35,6 +35,20 @@ struct ContentView: View {
         }
         .overlay { if pocketMode { pocketOverlay } }
         .alert(
+            "Recording was interrupted",
+            isPresented: Binding(
+                get: { controller.interrupted != nil && !controller.isRecording },
+                set: { _ in })
+        ) {
+            Button("Resume") { controller.resumeInterrupted() }
+            Button("Close it", role: .cancel) { controller.closeInterrupted() }
+        } message: {
+            Text(
+                "Session \(controller.interrupted?.id ?? "") stopped at \(controller.interrupted?.at.formatted(date: .omitted, time: .standard) ?? ""). Resume it as a new segment?"
+            )
+        }
+        .onAppear { if ReplaySettings.autoStart { controller.start() } }
+        .alert(
             "Cannot start",
             isPresented: Binding(
                 get: { controller.errorMessage != nil },
@@ -49,7 +63,7 @@ struct ContentView: View {
     private var setupSection: some View {
         Section("Setup") {
             LabeledContent("Mac IP") {
-                TextField("192.168.1.20", text: $controller.macHost)
+                TextField("none: record on phone", text: $controller.macHost)
                     .keyboardType(.numbersAndPunctuation)
                     .multilineTextAlignment(.trailing)
             }

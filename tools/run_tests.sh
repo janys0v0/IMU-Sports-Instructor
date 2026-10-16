@@ -6,6 +6,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 PY="${PYTHON:-.venv/bin/python}"
+# Swift tests export sample sessions here for the Python format checks (R8, S4).
+export MSC_EXPORT_DIR="${MSC_EXPORT_DIR:-${TMPDIR:-/tmp}/motionstreamer-export}"
 [ -x "$PY" ] || PY=python3
 
 if [ "${1:-}" != "--python-only" ]; then

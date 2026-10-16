@@ -1,0 +1,24 @@
+{
+  "_comment": "The one place for quality thresholds (design §6, §8). Read by the app (MotionStreamerCore) and by pipeline/ingest. Dot rules: green / yellow / red; values exactly at a boundary are yellow.",
+  "gap_s": 0.1,
+  "status_dots": {
+    "last_sample_age_s": {"green_below": 0.5, "red_above": 2.0},
+    "rate_vs_baseline": {"green_above": 0.9, "red_below": 0.7},
+    "coverage_60s": {"green_above": 0.99, "red_below": 0.95},
+    "watch_chunks_pending": {"green_max": 2, "red_above": 5}
+  },
+  "trial_check": {
+    "min_coverage": 0.98,
+    "max_gap_s": 0.3,
+    "min_rate_vs_baseline": 0.8,
+    "window_padding_s": 2.0
+  },
+  "session_check": {
+    "pass_min_coverage": 0.99,
+    "warn_min_coverage": 0.95,
+    "airpods_pass_min_coverage": 0.95,
+    "airpods_warn_min_coverage": 0.9,
+    "max_gap_s_pass": 0.5,
+    "max_gap_s_warn": 2.0
+  }
+}

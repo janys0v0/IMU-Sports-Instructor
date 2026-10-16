@@ -49,6 +49,8 @@ final class StreamController: NSObject, ObservableObject {
     @Published var errorMessage: String?
     /// Countdown / hold text while a calibration is in progress.
     @Published private(set) var calibrationStatus: String?
+    /// A session a crash left open, offered for Resume at launch (design §4).
+    @Published private(set) var interrupted: (id: String, at: Date)?
 
     private let defaults = UserDefaults.standard
     private let motion = CMMotionManager()
@@ -69,6 +71,14 @@ final class StreamController: NSObject, ObservableObject {
     }()
     private var udp: UDPSender?
     private var recorder: SessionRecorder?
+    private let store = LocalFileStore(
+        root: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0])
+    private let clock = SystemClock()
+    private var replay: ReplayMotionSource?
+    /// Copies of the link state for the recording queue (the @Published ones belong to the main thread).
+    private var ioWatchReachable = false
+    private var ioAirPodsConnected = false
+    private var replayTimer: DispatchSourceTimer?
     private var manifest: [String: Any] = [:]
     private var events: [[String: Any]] = []
     private var phoneBuffer: [MotionSample] = []
@@ -100,6 +110,9 @@ final class StreamController: NSObject, ObservableObject {
         }
         healthStore.requestAuthorization(toShare: [HKObjectType.workoutType()], read: []) { _, _ in }
         headphones.delegate = self
+        UIDevice.current.isBatteryMonitoringEnabled = true
+        observeLifecycle()
+        findInterruptedSession()
     }
 
     var phoneLocation: String { "\(wrist.rawValue)_pocket" }
@@ -107,44 +120,55 @@ final class StreamController: NSObject, ObservableObject {
 
     // MARK: - Controls
 
-    func start() {
+    func start() { begin(resuming: nil) }
+
+    /// Continues the interrupted session as a new segment.
+    func resumeInterrupted() {
+        guard let id = interrupted?.id else { return }
+        interrupted = nil
+        begin(resuming: id)
+    }
+
+    /// Ends the interrupted session without resuming it.
+    func closeInterrupted() {
+        guard let id = interrupted?.id else { return }
+        interrupted = nil
+        ioQueue.async { try? SessionRecorder.closeInterrupted(store: self.store, clock: self.clock, sessionID: id) }
+    }
+
+    private func begin(resuming resumeID: String?) {
         guard !isRecording else { return }
-        guard let port = UInt16(macPort),
-            let sender = UDPSender(host: macHost.trimmingCharacters(in: .whitespaces), port: port, queue: ioQueue)
-        else {
-            errorMessage = "Enter the Mac's IP address and port."
-            return
+        // Record-only mode: no Mac IP means no UDP; the phone still saves everything.
+        let host = macHost.trimmingCharacters(in: .whitespaces)
+        var sender: UDPSender?
+        if !host.isEmpty {
+            guard let port = UInt16(macPort), let s = UDPSender(host: host, port: port, queue: ioQueue) else {
+                errorMessage = "The Mac IP or port is invalid. Clear the Mac IP to record on the phone only."
+                return
+            }
+            sender = s
         }
-        guard motion.isDeviceMotionAvailable else {
+        let replayRecording = ReplaySettings.recording()
+        guard replayRecording != nil || motion.isDeviceMotionAvailable else {
             errorMessage = "Device motion is not available on this device."
             return
         }
 
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd-HHmmss"
-        let id = "\(formatter.string(from: Date()))-\(participant.isEmpty ? "P00" : participant)"
-        let recorder: SessionRecorder
-        do {
-            recorder = try SessionRecorder(sessionID: id)
-        } catch {
-            errorMessage = "Could not create session folder: \(error.localizedDescription)"
-            return
-        }
-
+        let id = resumeID ?? "\(formatter.string(from: Date()))-\(participant.isEmpty ? "P00" : participant)"
         let ref = preferredReferenceFrame()
-        let now = uptime()
-        let baseManifest: [String: Any] = [
+        let metadata: [String: Any] = [
             "format_version": MotionFormat.version,
-            "session": id,
             "participant": participant,
             "activity": activity,
             "sample_rate_hz": MotionFormat.sampleRateHz,
             "batch_size": MotionFormat.batchSize,
             "samples_per_packet": MotionFormat.samplesPerPacket,
-            "sample_fields": ["t", "qx", "qy", "qz", "qw", "ax", "ay", "az", "gx", "gy", "gz", "rx", "ry", "rz"],
+            "sample_fields": MotionFormat.sampleFields,
             "units": ["t": "s since device boot", "a": "g (gravity removed)", "g": "g", "r": "rad/s"],
-            "receiver": "\(macHost):\(macPort)",
-            "start_unix": Date().timeIntervalSince1970,
+            "receiver": host.isEmpty ? "none (record-only)" : "\(host):\(macPort)",
+            "app_version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?",
             "phone": [
                 "model": hardwareModel(), "os": UIDevice.current.systemVersion,
                 "location": phoneLocation, "ref_frame": ref.name,
@@ -155,22 +179,42 @@ final class StreamController: NSObject, ObservableObject {
                 "location": "head", "ref_frame": "headphoneArbitrary",
                 "available": headphones.isDeviceMotionAvailable,
             ],
+            "replay": replayRecording != nil,
         ]
+        let recorder: SessionRecorder
+        do {
+            if let resumeID {
+                recorder = try SessionRecorder.resume(store: store, clock: clock, sessionID: resumeID)
+            } else {
+                recorder = try SessionRecorder.start(store: store, clock: clock, sessionID: id, metadata: metadata)
+            }
+        } catch SessionRecorder.StartError.lowDisk(let free) {
+            errorMessage = String(format: "Needs 2 GB free to record; %.1f GB left.", Double(free) / 1e9)
+            return
+        } catch {
+            errorMessage = "Could not create the session: \(error.localizedDescription)"
+            return
+        }
+        recorder.phone.onWriteError = { [weak self] error in
+            self?.ioQueue.async { self?.logEvent("write_error", detail: String(describing: error)) }
+        }
+        recorder.healthProvider = { [weak self] in self?.healthFields() ?? [:] }
 
-        sender.onStateChange = { [weak self] state in
+        sender?.onStateChange = { [weak self] state in
             DispatchQueue.main.async { self?.macStatus = state }
         }
-        sender.onAck = { [weak self] received in
+        sender?.onAck = { [weak self] received in
             guard let self else { return }
             self.lastAckUptime = uptime()
             DispatchQueue.main.async { self.macReceived = received }
         }
 
         let screen = pocketScreen.rawValue
+        let now = uptime()
         ioQueue.async {
             self.udp = sender
             self.recorder = recorder
-            self.manifest = baseManifest
+            self.manifest = ["session": id]
             self.events = []
             self.phoneBuffer = []
             self.phoneSeq = 0
@@ -186,18 +230,23 @@ final class StreamController: NSObject, ObservableObject {
             self.startUptime = now
             self.phoneRefFrame = ref.name
             self.active = true
-            sender.start()
-            recorder.writeManifest(baseManifest)
-            self.logEvent("start", extra: ["loc": self.phoneLocation, "pocket_screen": screen])
+            sender?.start()
+            self.logEvent(
+                resumeID == nil ? "start" : "resume",
+                extra: ["loc": self.phoneLocation, "pocket_screen": screen, "segment": recorder.segment])
         }
 
-        motion.deviceMotionUpdateInterval = 1.0 / MotionFormat.sampleRateHz
-        motion.startDeviceMotionUpdates(using: ref.frame, to: motionQueue) { [weak self] data, error in
-            guard let self, let data, error == nil else { return }
-            self.handlePhone(data)
+        if let replayRecording {
+            startReplay(replayRecording)
+        } else {
+            motion.deviceMotionUpdateInterval = 1.0 / MotionFormat.sampleRateHz
+            motion.startDeviceMotionUpdates(using: ref.frame, to: motionQueue) { [weak self] data, error in
+                guard let self, let data, error == nil else { return }
+                self.handlePhone(data.sample)
+            }
+            launchWatch()
+            startHeadphones()
         }
-        launchWatch()
-        startHeadphones()
 
         sessionID = id
         isRecording = true
@@ -208,6 +257,10 @@ final class StreamController: NSObject, ObservableObject {
         UIApplication.shared.isIdleTimerDisabled = true
         statsTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.publishStats()
+            self?.ioQueue.async {
+                self?.recorder?.tick()
+                if self?.recorder?.checkClock() == true { self?.logEvent("clock_jump") }
+            }
         }
         syncTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
             self?.pingWatch()
@@ -225,22 +278,20 @@ final class StreamController: NSObject, ObservableObject {
         countdown.cancel()
         calibrationStatus = nil
         sendWatchCommand("stop")
+        stopReplay()
         ioQueue.async {
             if !self.phoneBuffer.isEmpty { self.emitPhoneBatch() }
-            self.logEvent("stop")
-            let now = uptime()
-            self.manifest["stop_unix"] = Date().timeIntervalSince1970
-            self.manifest["duration_s"] = now - self.startUptime
-            self.manifest["packets_sent"] = self.sent
-            self.manifest["udp_send_errors"] = self.udp?.sendErrors ?? 0
             if !self.headBuffer.isEmpty { self.emitHeadBatch() }
-            self.manifest["stats"] = [
-                "phone": self.phoneCounter.dictionary, "watch": self.watchCounter.dictionary,
-                "airpods": self.headCounter.dictionary,
-            ]
-            self.manifest["events"] = self.events
-            self.recorder?.writeManifest(self.manifest)
-            self.recorder?.close()
+            self.logEvent("stop")
+            self.recorder?.journalEvent(
+                "stats",
+                [
+                    "packets_sent": self.sent, "udp_send_errors": self.udp?.sendErrors ?? 0,
+                    "lost_records": self.recorder?.phone.lostRecords ?? 0,
+                    "phone": self.phoneCounter.dictionary, "watch": self.watchCounter.dictionary,
+                    "airpods": self.headCounter.dictionary,
+                ])
+            try? self.recorder?.stop()
             self.recorder = nil
             self.active = false
             // Give the last datagrams time to leave before closing the socket.
@@ -309,9 +360,9 @@ final class StreamController: NSObject, ObservableObject {
 
     // MARK: - Phone motion (ioQueue)
 
-    private func handlePhone(_ data: CMDeviceMotion) {
+    private func handlePhone(_ sample: MotionSample) {
         guard active else { return }
-        phoneBuffer.append(data.sample)
+        phoneBuffer.append(sample)
         if phoneBuffer.count >= MotionFormat.batchSize { emitPhoneBatch() }
     }
 
@@ -389,11 +440,12 @@ final class StreamController: NSObject, ObservableObject {
     private func handleHello(_ data: Data) {
         guard let hello = try? JSONDecoder().decode(WatchHello.self, from: data) else { return }
         ioQueue.async {
-            self.manifest["watch"] = [
-                "model": hello.model, "os": hello.os, "location": self.watchLocation,
-                "ref_frame": hello.refFrame, "rate_hz": hello.rateHz,
-            ]
-            self.recorder?.writeManifest(self.manifest)
+            self.recorder?.journalEvent(
+                "watch_info",
+                [
+                    "model": hello.model, "os": hello.os, "location": self.watchLocation,
+                    "ref_frame": hello.refFrame, "rate_hz": hello.rateHz,
+                ])
             self.logEvent("watch_hello", detail: "\(hello.model) watchOS \(hello.os) \(hello.refFrame)")
         }
         DispatchQueue.main.async { self.watchInfo = "\(hello.model), watchOS \(hello.os)" }
@@ -403,7 +455,14 @@ final class StreamController: NSObject, ObservableObject {
 
     /// Sends samples in packets of `samplesPerPacket`, each with its own `first_index`.
     private func emitIMU(_ header: [String: Any], samples: [MotionSample], firstIndex: Int) {
-        PacketEncoder.imuPackets(header: header, samples: samples, firstIndex: firstIndex).forEach(send)
+        let device = header["device"] as? String
+        let packets = PacketEncoder.imuPackets(header: header, samples: samples, firstIndex: firstIndex)
+        for (k, data) in packets.enumerated() {
+            let first = firstIndex + k * MotionFormat.samplesPerPacket
+            send(
+                data, device: device, firstIndex: first,
+                count: min(MotionFormat.samplesPerPacket, samples.count - k * MotionFormat.samplesPerPacket))
+        }
     }
 
     private func emit(_ packet: [String: Any]) {
@@ -411,9 +470,9 @@ final class StreamController: NSObject, ObservableObject {
         send(data)
     }
 
-    private func send(_ data: Data) {
+    private func send(_ data: Data, device: String? = nil, firstIndex: Int? = nil, count: Int = 0) {
         udp?.send(data)
-        recorder?.append(data)
+        recorder?.record(data, device: device, firstIndex: firstIndex, count: count)
         sent += 1
     }
 
@@ -427,6 +486,9 @@ final class StreamController: NSObject, ObservableObject {
         packet["type"] = "event"
         packet["session"] = manifest["session"] ?? ""
         emit(packet)
+        if Self.journalledEvents.contains(name) || name.hasPrefix("app_") {
+            recorder?.journalEvent(name, event)
+        }
         let text = detail.map { "\(name): \($0)" } ?? name
         DispatchQueue.main.async {
             self.recentEvents = Array((self.recentEvents + [text]).suffix(5))
@@ -481,6 +543,95 @@ final class StreamController: NSObject, ObservableObject {
             }, errorHandler: nil)
     }
 
+    /// Events also copied into the journal, so they survive even if a chunk is lost.
+    private static let journalledEvents: Set<String> = [
+        "start", "resume", "stop", "calibrate_requested", "calibrate", "calibrate_done", "marker",
+        "watch_reachable", "watch_unreachable", "watch_launch_failed", "airpods_connected",
+        "airpods_disconnected", "write_error", "clock_jump",
+    ]
+
+    // MARK: - Health, lifecycle, recovery
+
+    /// Device conditions for the journal's 60 s `health` entries (design §2).
+    private func healthFields() -> [String: Any] {
+        var fields: [String: Any] = [
+            "thermal": ProcessInfo.processInfo.thermalState.rawValue,
+            "low_power": ProcessInfo.processInfo.isLowPowerModeEnabled,
+            "free_disk_bytes": store.freeBytes,
+            "lost_records": recorder?.phone.lostRecords ?? 0,
+        ]
+        let level = UIDevice.current.batteryLevel
+        if level >= 0 { fields["battery_phone"] = Double(level) }
+        fields["airpods_connected"] = ioAirPodsConnected
+        fields["watch_reachable"] = ioWatchReachable
+        return fields
+    }
+
+    private func observeLifecycle() {
+        let names: [(Notification.Name, String)] = [
+            (UIApplication.willResignActiveNotification, "app_inactive"),
+            (UIApplication.didEnterBackgroundNotification, "app_background"),
+            (UIApplication.willEnterForegroundNotification, "app_foreground"),
+            (UIApplication.willTerminateNotification, "app_terminate"),
+            (UIApplication.didReceiveMemoryWarningNotification, "app_memory_warning"),
+        ]
+        for (name, event) in names {
+            NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { [weak self] _ in
+                self?.ioQueue.sync {
+                    guard self?.active == true else { return }
+                    self?.logEvent(event)
+                    self?.recorder?.tick()
+                }
+            }
+        }
+    }
+
+    /// At launch: close the open chunks of any session a crash left open, and offer the latest
+    /// one (if under 2 hours old) for Resume; older ones are closed as interrupted.
+    private func findInterruptedSession() {
+        ioQueue.async {
+            var newest: (id: String, at: Date)?
+            for id in SessionRecorder.unclosedSessions(store: self.store) {
+                guard let report = try? SessionRecorder.recover(store: self.store, clock: self.clock, sessionID: id)
+                else { continue }
+                let at = Date(timeIntervalSince1970: report.lastActivityUnix ?? 0)
+                if Date().timeIntervalSince(at) < 2 * 3600, newest.map({ at > $0.at }) ?? true {
+                    if let older = newest {
+                        try? SessionRecorder.closeInterrupted(store: self.store, clock: self.clock, sessionID: older.id)
+                    }
+                    newest = (id, at)
+                } else {
+                    try? SessionRecorder.closeInterrupted(store: self.store, clock: self.clock, sessionID: id)
+                }
+            }
+            DispatchQueue.main.async {
+                self.interrupted = newest
+                if newest != nil, ReplaySettings.autoResume { self.resumeInterrupted() }
+            }
+        }
+    }
+
+    // MARK: - Replay (simulator demos)
+
+    private func startReplay(_ recording: Recording) {
+        let source = ReplayMotionSource(recording: recording, device: "phone")
+        guard let first = source.firstTime else { return }
+        let shifted = ReplayMotionSource(recording: recording, device: "phone", timeShift: uptime() - first)
+        shifted.start { [weak self] sample in self?.handlePhone(sample) }
+        replay = shifted
+        let timer = DispatchSource.makeTimerSource(queue: ioQueue)
+        timer.schedule(deadline: .now(), repeating: .milliseconds(50))
+        timer.setEventHandler { [weak self] in self?.replay?.emit(until: uptime()) }
+        timer.resume()
+        replayTimer = timer
+    }
+
+    private func stopReplay() {
+        replayTimer?.cancel()
+        replayTimer = nil
+        replay = nil
+    }
+
     // MARK: - UI
 
     private func publishStats() {
@@ -511,6 +662,7 @@ extension StreamController: WCSessionDelegate {
     ) {
         let reachable = session.isReachable
         DispatchQueue.main.async { self.watchReachable = reachable }
+        ioQueue.async { self.ioWatchReachable = reachable }
     }
 
     func sessionDidBecomeInactive(_ session: WCSession) {}
@@ -522,6 +674,7 @@ extension StreamController: WCSessionDelegate {
     func sessionReachabilityDidChange(_ session: WCSession) {
         let reachable = session.isReachable
         DispatchQueue.main.async { self.watchReachable = reachable }
+        ioQueue.async { self.ioWatchReachable = reachable }
         ioQueue.async {
             guard self.active else { return }
             self.logEvent(reachable ? "watch_reachable" : "watch_unreachable")
@@ -540,11 +693,13 @@ extension StreamController: WCSessionDelegate {
 extension StreamController: CMHeadphoneMotionManagerDelegate {
     func headphoneMotionManagerDidConnect(_ manager: CMHeadphoneMotionManager) {
         DispatchQueue.main.async { self.airPodsConnected = true }
+        ioQueue.async { self.ioAirPodsConnected = true }
         ioQueue.async { if self.active { self.logEvent("airpods_connected") } }
     }
 
     func headphoneMotionManagerDidDisconnect(_ manager: CMHeadphoneMotionManager) {
         DispatchQueue.main.async { self.airPodsConnected = false }
+        ioQueue.async { self.ioAirPodsConnected = false }
         ioQueue.async { if self.active { self.logEvent("airpods_disconnected") } }
     }
 }
