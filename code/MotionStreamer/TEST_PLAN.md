@@ -185,6 +185,8 @@ New packet types; today's 14-value motion samples are unchanged.
 ### E: End-to-end in the simulators (L4)
 
 Simulators have **no motion sensors and no AirPods**, so they run on replayed motion.
+**Workout mirroring is not supported in simulators** (Apple DTS, see `DEVICE_RESEARCH.md`): E1-E2 run with mirroring off, and mirroring is checked on devices only.
+The Watch app's high-rate stream (`CMBatchedSensorManager`) also needs real hardware; simulators use the synthetic generator.
 
 | ID | Test | Pass |
 |---|---|---|

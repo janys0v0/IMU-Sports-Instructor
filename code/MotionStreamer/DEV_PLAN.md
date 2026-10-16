@@ -10,7 +10,7 @@
 | Stage | Build | Already built | Gate | Est. working days | Where it runs |
 |---|---|---|---|---|---|
 | 0 | Test harness + timer bug fix | Python replay + fake packets | G0 | 2-3 | Mac |
-| 0b | Risk spike: background recording (optional, recommended) | — | — | 1 | Devices |
+| 0b | Early device check: AirPods in the background (~1 hour) | — | — | 0.5 | Devices |
 | 1 | Phone recorder | ◐ single-file copy, sample indices, events | G1 | 2 | Mac |
 | 2 | Watch recording + transfer (incl. high-rate) | ◐ workout, auto-launch, 10 s retry buffer | G2 | 3-4 | Mac + simulators |
 | 3 | Mac ingest script | ◐ coverage PASS/FAIL, exact gaps, clock mapping | G3 | 1-2 | Mac |
@@ -51,6 +51,23 @@ The app already records all three devices and has been used for 35 sessions. The
 | Standing calibration + checks on the Mac | `live/calibration.py` | ◐ one calibration only, no arms-out pose | 5 |
 | Replay a recording over UDP; synthetic packets | `live/send_recording.py`, `receiver/fake_phone.py` | ✅ | 0 (basis for replay fakes) |
 
+## Human testing: what blocks and what waits
+
+Online research ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md)) answered most device questions.
+
+| When | Human tests | Blocking? |
+|---|---|---|
+| **Stage 0b (early)** | One ~1-hour device check: phone + AirPods motion with the phone locked (background location keep-alive), speech through the AirPods, Watch high-rate stream, battery | **Yes**, for stage 6: AirPods motion in the background is undocumented |
+| Within stages 1, 2, 4, 8 | Simulator demos (5-15 min each) | Only for that stage's gate |
+| Within stage 5 | V9 listen-through of the spoken script on the Mac (10 min) | Only for G5 |
+| **Stage 9 (end)** | All device tests T1-T19, T21, in one or two court sessions | No: everything before is simulated |
+| After the first field session | T20 (how long calibration holds); 10-min default until then | No |
+
+- **Run every background test launched from the Home screen with Xcode detached.** With the
+  debugger attached, iOS never suspends the app, so the test passes falsely.
+- **Workout mirroring can't be simulated** (Apple DTS); any mirroring checks are device-only.
+- Free Apple ID builds expire after 7 days: plan device rounds right after a rebuild.
+
 ## Rules for every stage
 
 1. Branch from `main`: `feat/stage-N-<name>` (e.g. `feat/stage-1-recorder`).
@@ -84,19 +101,24 @@ The app already records all three devices and has been used for 35 sessions. The
 - [ ] **No change in behaviour:** a replayed session through the moved code produces byte-identical `stream.jsonl` packets to the current app (except timestamps of writing).
 - [ ] **Demo:** run `tools/run_tests.sh` and see a summary line listing every test that passed.
 
-## Stage 0b: Risk spike: background recording (optional, recommended)
+## Stage 0b: Early device check (~1 hour, blocking for stage 6)
 
-**Goal:** find out early whether the phone and AirPods keep recording with the phone app in the
-background (design §7). The answer decides how stages 6 and 7 are built.
+**Goal:** answer the one question research couldn't: do the AirPods keep streaming while the phone
+app is locked in a pocket and kept awake in the background? Also confirm the research findings on
+our own devices ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md) "The one remaining early device check").
 
 **Tasks**
-1. Throwaway branch `spike/background-mirroring`; nothing is merged.
-2. Minimal Watch workout with `startMirroringToCompanionDevice()` and a phone app that logs phone + AirPods motion counts to a file.
-3. Lock the phone, pocket it, walk around for 20 min (design T6).
+1. Throwaway branch `spike/background-check`; nothing is merged.
+2. Phone app: background location at 3 km accuracy + phone motion + AirPods motion, counts logged to a file. Speak a short phrase through the AirPods every 30 s.
+3. Watch app: workout + `CMBatchedSensorManager` (800 / 200 Hz), counts logged.
+4. Launch from the Home screen (**Xcode detached**), lock the phone, pocket it, walk for 20 min.
 
 **Testable goals**
-- [ ] A written result in `EXPERIMENT_LOG.md`: phone rate, AirPods rate and gaps, foreground vs background.
-- [ ] A decision recorded in design §7: **mirroring** or **foreground pocket mode** as the primary method.
+- [ ] Phone and AirPods: ≥ 95 % of expected samples while locked.
+- [ ] AirPods rate unchanged in the seconds around each spoken phrase.
+- [ ] Watch: ≈ 800 accelerometer and 200 motion samples per second.
+- [ ] Battery % used per device in 20 min, written down.
+- [ ] Result in `EXPERIMENT_LOG.md`, and the keep-alive decision recorded in design §7. If AirPods stop in the background: pocket mode (app in the foreground, screen off) for sessions that need them.
 
 ## Stage 1: Phone recorder
 
@@ -196,14 +218,16 @@ background (design §7). The answer decides how stages 6 and 7 are built.
 
 **Already there:** pocket mode with the proximity sensor and auto-lock off; it becomes the fallback.
 
-**Tasks**
-1. Workout mirroring from the Watch; phone `workoutSessionMirroringStartHandler` (or the stage 0b decision).
-2. Switch to the existing pocket mode automatically if mirroring fails.
-3. App lifecycle events logged and followed by `fsync`.
+**Tasks** (keep-alive order from [`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md) §1, confirmed in stage 0b)
+1. Background location keep-alive (3 km accuracy, `location` background mode, When In Use permission).
+2. Optional: workout mirroring, started only after the Watch session is prepared (works around the iOS 26 mirroring bug).
+3. Switch to the existing pocket mode automatically if the app is about to be suspended or AirPods stop.
+4. Watch: add `audio` to `WKBackgroundModes`; use `handleActiveWorkoutRecovery()` after a Watch crash.
+5. App lifecycle events logged and followed by `fsync`.
 
 **Testable goals (G6)**
 - [ ] Simulated parts of **E1-E2** pass.
-- [ ] **Device test T6:** 20 min, phone locked in a pocket → phone and AirPods continuous (or the fallback is recorded as primary).
+- [ ] **Device test T6** (Xcode detached): 20 min, phone locked in a pocket → phone and AirPods continuous (or the fallback is recorded as primary).
 - [ ] **Demo:** walk for 20 min with the phone locked; the review screen afterwards shows no gap.
 
 ## Stage 7: Watchdog + alerts
