@@ -20,7 +20,8 @@ tools/setup_third_party.sh
 - `tools/setup_third_party.sh` clones MobilePoser and IMUCoCo into `third_party/` at their pinned
   commits and applies `third_party/patches/`. Then download their licensed files (SMPL, weights,
   datasets) as [`third_party/README.md`](third_party/README.md) says.
-- iOS app: `cd apps/MotionStreamer && xcodegen generate`. The `.xcodeproj` is generated, not committed.
+- iOS app: `cd apps/MotionStreamer && xcodegen generate` (XcodeGen: `brew install xcodegen`, or the
+  GitHub release's `bin/` and `share/` copied into `~/.local`). The `.xcodeproj` is generated, not committed.
 
 ## Development loop
 

@@ -10,8 +10,8 @@ when its gate passes on two consecutive runs; then the next stage starts.
 
 | | |
 |---|---|
-| **Current stage** | 0 — Test harness + timer bug fix (not started) |
-| **Next action** | Create the `MotionStreamerCore` Swift package (stage 0, task 1) |
+| **Current stage** | 1 — Phone recorder (stage 0 done 2026-10-16, branch `feat/stage-0-test-harness`) |
+| **Next action** | Chunk writer + journal in `MotionStreamerCore` (stage 1, task 1) |
 | **Blocked on** | — |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
 | **Last updated** | 2026-10-16 |
@@ -102,13 +102,13 @@ push. Merge when the stage's gate passes twice in a row.
 6. Fix the calibration-timer bug (`calibrationTimer = nil` in `StreamController.stop()`), with test C1.
 
 **Testable goals (G0)**
-- [ ] `swift build` succeeds for macOS, iOS simulator and watchOS simulator.
-- [ ] Replaying the 4 key recordings (test-plan §0) yields the same sample counts as the files.
-- [ ] A 60-min fake-clock replay finishes in under 10 s.
-- [ ] `tools/run_tests.sh` exits 0 and runs in GitHub Actions on every PR.
-- [ ] **C1** passes: Stop during the countdown, Start, Calibrate → calibration runs.
-- [ ] **No change in behaviour:** a replayed session through the moved code produces byte-identical `stream.jsonl` packets to the current app (except timestamps of writing).
-- [ ] **Demo:** run `tools/run_tests.sh` and see a summary line listing every test that passed.
+- [x] `swift build` succeeds for macOS, iOS simulator and watchOS simulator.
+- [x] Replaying the 4 key recordings (test-plan §0) yields the same sample counts as the files.
+- [x] A 60-min fake-clock replay finishes in under 10 s.
+- [x] `tools/run_tests.sh` exits 0 and runs in GitHub Actions on every PR.
+- [x] **C1** passes: Stop during the countdown, Start, Calibrate → calibration runs.
+- [x] **No change in behaviour:** every packet of the reference recording, rebuilt by the moved encoder, has identical keys and values (JSON key order was never fixed).
+- [x] **Demo:** run `tools/run_tests.sh` and see a summary line listing every test that passed.
 
 ## Stage 0b: Early device check (~1 hour, blocking for stage 6)
 

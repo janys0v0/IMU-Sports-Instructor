@@ -1,3 +1,4 @@
+import MotionStreamerCore
 import SwiftUI
 
 @main

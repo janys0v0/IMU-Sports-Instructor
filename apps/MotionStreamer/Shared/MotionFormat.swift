@@ -1,35 +1,8 @@
 import CoreMotion
 import Foundation
+import MotionStreamerCore
 
-/// Packet format shared by the Watch, the iPhone and the Mac receiver.
-///
-/// One motion sample is 14 numbers:
-///   [t, qx, qy, qz, qw, ax, ay, az, gx, gy, gz, rx, ry, rz]
-/// - t: `CMDeviceMotion.timestamp`, seconds since that device booted (monotonic, per device)
-/// - q: attitude quaternion in the reference frame named by `ref_frame`
-/// - a: user acceleration (gravity removed), in g
-/// - g: gravity, in g
-/// - r: rotation rate, rad/s
-enum MotionFormat {
-    static let version = 1
-    /// Requested rate. iOS may deliver less (an iPhone 16 delivers 33.4 Hz); the
-    /// delivered rate is measured from sample timestamps.
-    static let sampleRateHz = 60.0
-    /// Samples per Watch -> iPhone message.
-    static let batchSize = 10
-    /// Samples per UDP packet. Keeps datagrams near 1 KB; larger ones fail with "Message too long".
-    static let samplesPerPacket = 5
-}
-
-/// Compact JSON array for samples: 6 decimals per value (~150 bytes per sample).
-func samplesJSON(_ samples: [MotionSample]) -> String {
-    "["
-        + samples.map { sample in
-            "[" + sample.map { String(format: "%.6f", $0) }.joined(separator: ",") + "]"
-        }.joined(separator: ",") + "]"
-}
-
-typealias MotionSample = [Double]
+// Device-only helpers. The packet format itself lives in MotionStreamerCore (Model/MotionFormat.swift).
 
 extension CMDeviceMotion {
     var sample: MotionSample {
@@ -66,23 +39,4 @@ func hardwareModel() -> String {
     return withUnsafeBytes(of: &info.machine) { buffer in
         String(decoding: buffer.prefix(while: { $0 != 0 }), as: UTF8.self)
     }
-}
-
-/// Watch -> iPhone message body (JSON, default key names).
-struct WatchBatch: Codable {
-    var seq: Int
-    /// Index of the first sample in this batch; indices are contiguous across batches.
-    var firstIndex: Int
-    var bootToUnix: Double
-    var refFrame: String
-    var sentWatch: Double
-    var samples: [MotionSample]
-}
-
-/// Watch -> iPhone message sent once when streaming starts.
-struct WatchHello: Codable {
-    var model: String
-    var os: String
-    var refFrame: String
-    var rateHz: Double
 }

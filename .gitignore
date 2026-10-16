@@ -21,6 +21,8 @@ htmlcov/
 # ── Xcode / XcodeGen ────────────────────────────────────────────
 # The .xcodeproj is generated from project.yml: run `xcodegen generate`.
 apps/MotionStreamer/build/
+apps/MotionStreamer/Core/.build/
+.swiftpm/
 apps/MotionStreamer/*.xcodeproj/
 DerivedData/
 xcuserdata/

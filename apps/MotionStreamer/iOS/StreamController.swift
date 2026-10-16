@@ -2,82 +2,9 @@ import AudioToolbox
 import CoreMotion
 import Foundation
 import HealthKit
+import MotionStreamerCore
 import UIKit
 import WatchConnectivity
-
-/// Per-stream counters shown in the UI and saved in the manifest.
-struct StreamSnapshot {
-    var samples = 0
-    var missing = 0
-    var measuredHz = 0.0
-    /// Rate the device delivers (from sample timestamps); coverage is relative to this.
-    var nominalHz = 0.0
-    var coverage = 0.0
-    var lastPacketAge: Double?
-}
-
-private struct StreamCounter {
-    var startUptime = 0.0
-    var samples = 0
-    var missing = 0
-    var nextIndex: Int?
-    var lastPacketUptime: Double?
-    var windowStart = 0.0
-    var windowSamples = 0
-    var measuredHz = 0.0
-    /// First sample intervals (device clock), used to find the rate iOS actually delivers.
-    var intervals: [Double] = []
-    var lastSampleTime: Double?
-
-    init(start: Double) {
-        startUptime = start
-        windowStart = start
-    }
-
-    /// Delivered sample rate from the median sample interval.
-    var nominalHz: Double? {
-        guard intervals.count >= 10 else { return nil }
-        let median = intervals.sorted()[intervals.count / 2]
-        return median > 0 ? 1 / median : nil
-    }
-
-    mutating func add(samples batch: [MotionSample], firstIndex: Int, now: Double) {
-        let count = batch.count
-        if let expected = nextIndex, firstIndex < expected {
-            // A retried batch arrived after later ones: it was counted as missing.
-            missing = max(0, missing - count)
-        } else {
-            if let expected = nextIndex { missing += firstIndex - expected }
-            nextIndex = firstIndex + count
-            for sample in batch {
-                if let last = lastSampleTime, intervals.count < 200 { intervals.append(sample[0] - last) }
-                lastSampleTime = sample[0]
-            }
-        }
-        samples += count
-        lastPacketUptime = now
-        windowSamples += count
-        if now - windowStart >= 2 {
-            measuredHz = Double(windowSamples) / (now - windowStart)
-            windowStart = now
-            windowSamples = 0
-        }
-    }
-
-    func snapshot(now: Double) -> StreamSnapshot {
-        let elapsed = now - startUptime
-        var coverage = 0.0
-        if let hz = nominalHz, elapsed > 1 { coverage = Double(samples) / (hz * elapsed) }
-        return StreamSnapshot(
-            samples: samples, missing: missing, measuredHz: measuredHz,
-            nominalHz: nominalHz ?? 0, coverage: coverage,
-            lastPacketAge: lastPacketUptime.map { now - $0 })
-    }
-
-    var dictionary: [String: Any] {
-        ["samples": samples, "missing_samples": missing, "delivered_rate_hz": nominalHz ?? 0]
-    }
-}
 
 enum WatchWrist: String, CaseIterable, Identifiable {
     case left, right
@@ -130,6 +57,7 @@ final class StreamController: NSObject, ObservableObject {
     private var statsTimer: Timer?
     private var syncTimer: Timer?
     private var calibrationTimer: Timer?
+    private var countdown = CalibrationCountdown()
 
     // State below is touched only on `ioQueue`.
     private let ioQueue = DispatchQueue(label: "StreamController.io")
@@ -293,6 +221,8 @@ final class StreamController: NSObject, ObservableObject {
         statsTimer?.invalidate()
         syncTimer?.invalidate()
         calibrationTimer?.invalidate()
+        calibrationTimer = nil
+        countdown.cancel()
         calibrationStatus = nil
         sendWatchCommand("stop")
         ioQueue.async {
@@ -324,35 +254,32 @@ final class StreamController: NSObject, ObservableObject {
         UIDevice.current.isProximityMonitoringEnabled = false
     }
 
-    static let calibrationCountdown = 10
-    static let calibrationHold = 3
-
     /// Countdown so the phone can be pocketed first. One buzz: stand still.
     /// Two buzzes: done. Events mark the still window for the Mac.
     func startCalibration() {
-        guard isRecording, calibrationTimer == nil else { return }
+        guard isRecording, let first = countdown.start() else { return }
         let screen = pocketScreen.rawValue
         let location = phoneLocation
         ioQueue.async { self.logEvent("calibrate_requested") }
-        var remaining = Self.calibrationCountdown
-        calibrationStatus = "Pocket the phone, stand straight: \(remaining)"
+        show(first)
         calibrationTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
             guard let self else { return timer.invalidate() }
-            remaining -= 1
-            if remaining > 0 {
-                self.calibrationStatus = "Pocket the phone, stand straight: \(remaining)"
-            } else if remaining == 0 {
+            guard let step = self.countdown.tick() else { return }
+            self.show(step)
+            switch step {
+            case .countdown:
+                break
+            case .holdStarted:
                 AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-                self.calibrationStatus = "Hold still…"
                 self.ioQueue.async {
                     self.logEvent(
                         "calibrate",
                         extra: [
-                            "hold_s": Self.calibrationHold, "loc": location,
+                            "hold_s": CalibrationCountdown.holdSeconds, "loc": location,
                             "pocket_screen": screen,
                         ])
                 }
-            } else if remaining == -Self.calibrationHold {
+            case .finished:
                 timer.invalidate()
                 self.calibrationTimer = nil
                 AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
@@ -360,8 +287,15 @@ final class StreamController: NSObject, ObservableObject {
                     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
                 }
                 self.ioQueue.async { self.logEvent("calibrate_done") }
-                self.calibrationStatus = nil
             }
+        }
+    }
+
+    private func show(_ step: CalibrationCountdown.Step) {
+        switch step {
+        case .countdown(let remaining): calibrationStatus = "Pocket the phone, stand straight: \(remaining)"
+        case .holdStarted: calibrationStatus = "Hold still…"
+        case .finished: calibrationStatus = nil
         }
     }
 
@@ -469,21 +403,11 @@ final class StreamController: NSObject, ObservableObject {
 
     /// Sends samples in packets of `samplesPerPacket`, each with its own `first_index`.
     private func emitIMU(_ header: [String: Any], samples: [MotionSample], firstIndex: Int) {
-        for start in stride(from: 0, to: samples.count, by: MotionFormat.samplesPerPacket) {
-            let chunk = Array(samples[start..<min(start + MotionFormat.samplesPerPacket, samples.count)])
-            var fields = header
-            fields["first_index"] = firstIndex + start
-            guard let headerData = try? JSONSerialization.data(withJSONObject: fields),
-                var json = String(data: headerData, encoding: .utf8), json.hasSuffix("}")
-            else { continue }
-            json.removeLast()
-            json += ",\"s\":" + samplesJSON(chunk) + "}"
-            send(Data(json.utf8))
-        }
+        PacketEncoder.imuPackets(header: header, samples: samples, firstIndex: firstIndex).forEach(send)
     }
 
     private func emit(_ packet: [String: Any]) {
-        guard let data = try? JSONSerialization.data(withJSONObject: packet) else { return }
+        guard let data = PacketEncoder.packet(packet) else { return }
         send(data)
     }
 

@@ -35,3 +35,20 @@ jobs:
         run: |
           printf '%s' "$PR_BODY" > "$RUNNER_TEMP/pr_body.md"
           python3 tools/check_format.py --pr "$PR_BRANCH" "$PR_TITLE" "$RUNNER_TEMP/pr_body.md"
+
+  swift-tests:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: tools/run_tests.sh --swift-only
+
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      # Tests that need recordings or the models skip themselves; numpy/scipy cover the rest.
+      - run: pip install "numpy==1.23.0" "scipy==1.8.0" pytest
+      - run: PYTHON=python tools/run_tests.sh --python-only

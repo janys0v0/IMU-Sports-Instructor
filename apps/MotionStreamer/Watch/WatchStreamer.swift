@@ -1,6 +1,7 @@
 import CoreMotion
 import Foundation
 import HealthKit
+import MotionStreamerCore
 import WatchConnectivity
 import WatchKit
 

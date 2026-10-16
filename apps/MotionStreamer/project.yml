@@ -8,6 +8,10 @@ options:
     iOS: "17.0"
     watchOS: "10.0"
 
+packages:
+  MotionStreamerCore:
+    path: Core
+
 settings:
   base:
     BUNDLE_ID: edu.es224.jjl.motionstreamer
@@ -45,6 +49,7 @@ targets:
         NSHealthUpdateUsageDescription: Starts a workout on Apple Watch so it can stream motion.
     dependencies:
       - target: MotionStreamerWatch
+      - package: MotionStreamerCore
 
   MotionStreamerWatch:
     type: application
@@ -68,3 +73,5 @@ targets:
         NSMotionUsageDescription: Records wrist motion for full-body pose estimation.
         NSHealthShareUsageDescription: Runs a workout session so wrist motion keeps streaming.
         NSHealthUpdateUsageDescription: Runs a workout session so wrist motion keeps streaming.
+    dependencies:
+      - package: MotionStreamerCore
