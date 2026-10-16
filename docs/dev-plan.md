@@ -1,9 +1,20 @@
 # Development plan
 
-> Step-by-step build of [`FIELD_RECORDING_DESIGN.md`](FIELD_RECORDING_DESIGN.md) §16.
-> Each stage ends with **testable goals**: automated tests from [`TEST_PLAN.md`](TEST_PLAN.md)
-> plus one **demo** a person can see. A stage is done only when every goal passes on two
-> consecutive runs (gates G0-G10). Then the next stage starts.
+How [`design.md`](design.md) gets built: stages in order, each ending with **testable goals**
+(tests from [`test-plan.md`](test-plan.md) plus one demo a person can see). A stage is done only
+when its gate passes on two consecutive runs; then the next stage starts.
+
+## Status
+
+<!-- Update at the start and end of every work session (see CONTRIBUTING.md, "Development loop"). -->
+
+| | |
+|---|---|
+| **Current stage** | 0 — Test harness + timer bug fix (not started) |
+| **Next action** | Create the `MotionStreamerCore` Swift package (stage 0, task 1) |
+| **Blocked on** | — |
+| **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
+| **Last updated** | 2026-10-16 |
 
 ## Overview
 
@@ -53,7 +64,7 @@ The app already records all three devices and has been used for 35 sessions. The
 
 ## Human testing: what blocks and what waits
 
-Online research ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md)) answered most device questions.
+Online research ([`device-research.md`](device-research.md)) answered most device questions.
 
 | When | Human tests | Blocking? |
 |---|---|---|
@@ -68,13 +79,11 @@ Online research ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md)) answered most devic
 - **Workout mirroring can't be simulated** (Apple DTS); any mirroring checks are device-only.
 - Free Apple ID builds expire after 7 days: plan device rounds right after a rebuild.
 
-## Rules for every stage
+## How to work through a stage
 
-1. Branch from `main`: `feat/stage-N-<name>` (e.g. `feat/stage-1-recorder`).
-2. Write the stage's tests first, watch them fail, then build until they pass.
-3. One command runs all fast tests: `tools/run_tests.sh` (built in stage 0).
-4. Open a pull request. Paste the gate result (test IDs + pass) into the description.
-5. Squash-merge, then log the gate run in `EXPERIMENT_LOG.md` with the commit hash.
+Follow the development loop in [`CONTRIBUTING.md`](../CONTRIBUTING.md#development-loop): read
+**Status** → implement on `feat/stage-N-<name>` (tests first) → `tools/check.sh` → update Status →
+push. Merge when the stage's gate passes twice in a row.
 
 ---
 
@@ -86,7 +95,7 @@ Online research ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md)) answered most devic
 
 **Tasks**
 1. Create the Swift package `MotionStreamerCore` (macOS, iOS, watchOS) inside `code/MotionStreamer/`.
-2. Add the protocols and fakes: `MotionSource`, `Clock`, `FileStore`, `WatchLink`, `Voice`, plus settable `Battery`, `Thermal`, `AudioRoute`, `LowPower` (TEST_PLAN §0).
+2. Add the protocols and fakes: `MotionSource`, `Clock`, `FileStore`, `WatchLink`, `Voice`, plus settable `Battery`, `Thermal`, `AudioRoute`, `LowPower` (test-plan §0).
 3. Write the replay `MotionSource`: plays a `mac_stream.jsonl` recording through the fake clock.
 4. Add `code/tests/` (pytest) and `tools/run_tests.sh` (runs `swift test` + `pytest`).
 5. Move the existing logic (`StreamCounter`, packet encoding, calibration timer) into the package behind the protocols; link the package into both app targets in `project.yml`. The app still records exactly as before.
@@ -94,7 +103,7 @@ Online research ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md)) answered most devic
 
 **Testable goals (G0)**
 - [ ] `swift build` succeeds for macOS, iOS simulator and watchOS simulator.
-- [ ] Replaying the 4 key recordings (TEST_PLAN §0) yields the same sample counts as the files.
+- [ ] Replaying the 4 key recordings (test-plan §0) yields the same sample counts as the files.
 - [ ] A 60-min fake-clock replay finishes in under 10 s.
 - [ ] `tools/run_tests.sh` exits 0 and runs in GitHub Actions on every PR.
 - [ ] **C1** passes: Stop during the countdown, Start, Calibrate → calibration runs.
@@ -105,7 +114,7 @@ Online research ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md)) answered most devic
 
 **Goal:** answer the one question research couldn't: do the AirPods keep streaming while the phone
 app is locked in a pocket and kept awake in the background? Also confirm the research findings on
-our own devices ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md) "The one remaining early device check").
+our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 
 **Tasks**
 1. Throwaway branch `spike/background-check`; nothing is merged.
@@ -118,7 +127,7 @@ our own devices ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md) "The one remaining e
 - [ ] AirPods rate unchanged in the seconds around each spoken phrase.
 - [ ] Watch: ≈ 800 accelerometer and 200 motion samples per second.
 - [ ] Battery % used per device in 20 min, written down.
-- [ ] Result in `EXPERIMENT_LOG.md`, and the keep-alive decision recorded in design §7. If AirPods stop in the background: pocket mode (app in the foreground, screen off) for sessions that need them.
+- [ ] Result in `EXPERIMENT_LOG.md`, and the keep-alive decision recorded in [`decisions.md`](decisions.md) and design §5. If AirPods stop in the background: pocket mode (app in the foreground, screen off) for sessions that need them.
 
 ## Stage 1: Phone recorder
 
@@ -127,12 +136,12 @@ our own devices ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md) "The one remaining e
 **Already there:** the session copy (`SessionRecorder`), sample indices and events. Replace the single file with chunks + journal; keep the packet format.
 
 **Tasks**
-1. Chunk writer: write per packet, `fsync` every 1 s, rotate every 60 s, SHA-256, rename `.open` → `.jsonl` (design §4).
+1. Chunk writer: write per packet, `fsync` every 1 s, rotate every 60 s, SHA-256, rename `.open` → `.jsonl` (design §2).
 2. Append-only `journal.jsonl` and a `manifest.json` rebuilt from it.
 3. File protection `.completeUntilFirstUserAuthentication`; 2 GB free-space check at Start.
 4. Record-only mode: the Mac IP becomes optional; UDP only when set.
 5. Health events every 60 s (battery, thermal, Low Power, AirPods, Watch reachable).
-6. Crash recovery on launch: trim the open chunk, Resume as a new segment (design §6).
+6. Crash recovery on launch: trim the open chunk, Resume as a new segment (design §4).
 
 **Testable goals (G1)**
 - [ ] **R1-R8:** chunking, `fsync` cadence, checksums, disk-full and `fsync` failures, packet format unchanged.
@@ -148,8 +157,8 @@ our own devices ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md) "The one remaining e
 
 **Tasks**
 1. Watch chunk writer + journal (same code as stage 1, Watch target).
-2. Send each 60 Hz chunk with `transferFile` as it closes; the phone verifies SHA-256 and acks (design §5).
-3. High-rate stream: `CMBatchedSensorManager` into binary `watch_hf/` chunks (design §13), sent after the session.
+2. Send each 60 Hz chunk with `transferFile` as it closes; the phone verifies SHA-256 and acks (design §3).
+3. High-rate stream: `CMBatchedSensorManager` into binary `watch_hf/` chunks (design §2), sent after the session.
 4. Phone status: "Watch: N / M chunks" and "High-rate: N / M sent"; Watch "Resend session" button.
 5. Watch workout-ended handling: the phone relaunches the Watch app.
 
@@ -184,7 +193,7 @@ our own devices ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md) "The one remaining e
 **Already there:** live rate, coverage, missing and last-packet age per stream. Add the dots and thresholds; the review screen and session card are new.
 
 **Tasks**
-1. Live strip: add 🟢🟡🔴 per stream from `quality_thresholds.json` to the existing status numbers (design §8).
+1. Live strip: add 🟢🟡🔴 per stream from `quality_thresholds.json` to the existing status numbers (design §6).
 2. Review screen reading **closed chunks from disk**: whole-session timeline + last-60 s plots (Swift Charts, ≤ 500 points).
 3. Session check card after Stop: PASS / WARN / FAIL from the shared thresholds.
 
@@ -200,7 +209,7 @@ our own devices ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md) "The one remaining e
 **Already there:** the countdown-and-hold calibration with `calibrate` events (bug fixed in stage 0), and the standing calibration in `live/calibration.py`. Speech, the arms-out pose, Watch start and multi-calibration are new.
 
 **Tasks**
-1. `Shared/voice_prompts.json` with the script C1-C12 and alert phrases (design §9).
+1. `Shared/voice_prompts.json` with the script C1-C12 and alert phrases (design §7).
 2. Calibration flow driven by speech-finished callbacks; holds start 0.3 s after "now".
 3. On-phone checks: still, phone upright, arms level, all devices present, drift since last.
 4. Audio session: built-in mic, `.allowBluetoothA2DP`, never `.allowBluetooth`; `audio` background mode.
@@ -218,7 +227,7 @@ our own devices ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md) "The one remaining e
 
 **Already there:** pocket mode with the proximity sensor and auto-lock off; it becomes the fallback.
 
-**Tasks** (keep-alive order from [`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md) §1, confirmed in stage 0b)
+**Tasks** (keep-alive from design §5, decided after stage 0b)
 1. Background location keep-alive (3 km accuracy, `location` background mode, When In Use permission).
 2. Optional: workout mirroring, started only after the Watch session is prepared (works around the iOS 26 mirroring bug).
 3. Switch to the existing pocket mode automatically if the app is about to be suspended or AirPods stop.
@@ -238,7 +247,7 @@ our own devices ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md) "The one remaining e
 
 **Tasks**
 1. Go/No-Go screen: devices, rates, battery for planned minutes, disk, Low Power, signing days left, audibility check.
-2. Per-second watchdog with the scenario tables (design §10): detect → log → auto-fix → alert.
+2. Per-second watchdog with the scenario tables (design §8): detect → log → auto-fix → alert.
 3. Spoken alerts with debounce (2 s), escalation (30 s) and Watch acknowledge.
 4. Trial check after each trial; court-exit check (60 Hz chunks on phone, high-rate closed on Watch).
 
@@ -269,12 +278,12 @@ our own devices ([`DEVICE_RESEARCH.md`](DEVICE_RESEARCH.md) "The one remaining e
 
 **Tasks**
 1. Endurance runs in the simulators (L1-L3).
-2. Check every exit criterion in TEST_PLAN §3 (coverage ≥ 85 %, recorder/journal ≥ 95 %).
-3. Device tests T1-T19 and T21 (design §15), on a court where needed.
+2. Check every exit criterion in test-plan §3 (coverage ≥ 85 %, recorder/journal ≥ 95 %).
+3. Device tests T1-T19 and T21 (test-plan §4), on a court where needed.
 
 **Testable goals (G9)**
 - [ ] **L1-L3:** 60 and 120 min sessions with flat memory; 120 random faults with zero silent loss.
-- [ ] TEST_PLAN §3 exit criteria all met.
+- [ ] test-plan §3 exit criteria all met.
 - [ ] **T1-T19, T21** pass on devices; results logged in `EXPERIMENT_LOG.md`.
 - [ ] **Demo:** the full 60-min tennis rehearsal (T7) ingests as **PASS** on the Mac the same day.
 

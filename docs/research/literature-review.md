@@ -17,7 +17,7 @@ created: 2026-09-30
 # MobilePoser and sparse consumer IMU research
 
 > [!warning] Private research notes
-> Source index and study notes for the project described in [[ES 224_Project Proposal.pdf]]. This is not submission-ready course text. Verify every claim against the linked paper before citing it, and follow the course policy on generative-AI use.
+> Source index and study notes for the project described in [proposal.pdf](proposal.pdf). This is not submission-ready course text. Verify every claim against the linked paper before citing it, and follow the course policy on generative-AI use.
 
 ## Project question
 

@@ -1,6 +1,6 @@
 # Sparse-IMU reconstruction models for head + wrist + pocket (survey, 2026-10-13)
 
-Extends `MobilePoser and Sparse Consumer IMU Research.md` with work found on 2026-10-13 and
+Extends [`literature-review.md`](literature-review.md) with work found on 2026-10-13 and
 compares models for this project's data points: **AirPods (head), one Apple Watch (wrist), one
 iPhone (thigh pocket)**. Our own head-to-head runs are in `EXPERIMENT_LOG.md` (E01, E02).
 

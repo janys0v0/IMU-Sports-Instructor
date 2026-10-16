@@ -52,6 +52,16 @@ repos:
         language: system
         types: [swift]
 
+  # Docs: every local link and #heading must exist
+  - repo: local
+    hooks:
+      - id: doc-links
+        name: doc links resolve
+        entry: python3 tools/check_doc_links.py
+        language: system
+        types: [markdown]
+        pass_filenames: false
+
   # Data guard: recordings and model files must never be committed
   - repo: local
     hooks:

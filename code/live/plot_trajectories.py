@@ -1,7 +1,7 @@
 """Head and thigh trajectories over time for one recording (pocket phone + AirPods).
 
-Run in the `mobileposer` conda env, from project/code:
-    ~/miniconda3/envs/mobileposer/bin/python live/plot_trajectories.py recordings/<session> [--screen leg]
+Run with the project environment, from code/:
+    .venv/bin/python live/plot_trajectories.py recordings/<session> [--screen leg]
 
 Writes recordings/<session>/phase2/trajectories.png (angles and heights over time) and
 trajectories_side.png (side view of the head and knee paths).

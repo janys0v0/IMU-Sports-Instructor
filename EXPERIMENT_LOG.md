@@ -107,7 +107,7 @@ Checked which published models could run on head + one wrist + thigh data:
 
 ### Literature update: state of the art for head + wrist + pocket
 - Searched for 2025-2026 work and compared published numbers; write-up:
-  [`Sparse IMU model comparison (2026-10).md`](Sparse%20IMU%20model%20comparison%20(2026-10).md).
+  [`docs/research/model-comparison.md`](docs/research/model-comparison.md).
 - **No new model can run on our recordings.** ArmPoser (Watch-only arm, calibration-free, SUI
   2026) has a placeholder repo; "One Sensor, Whole Body" (AirPods-only, ACM MM workshop 2026) has
   code but no weights or data; BaroPoser, IMUPoser, 3SIP and Progressive Inertial Poser publish

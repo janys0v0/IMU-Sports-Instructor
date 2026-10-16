@@ -1,7 +1,7 @@
 """Real-time MobilePoser mesh viewer for macOS.
 
-Run in the `mobileposer` conda env, from project/code:
-    ~/miniconda3/envs/mobileposer/bin/python live/live_viewer.py [--port 5005] [--screen leg|outward] [--tran]
+Run with the project environment, from code/:
+    .venv/bin/python live/live_viewer.py [--port 5005] [--screen leg|outward] [--tran]
 
 Takes the place of receiver/phase1_receiver.py during a live session: same UDP port, same acks
 to the iPhone app, and every packet is still saved to recordings/<session>/mac_stream.jsonl.

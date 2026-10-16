@@ -1,6 +1,6 @@
 # Device research: what we know without testing
 
-> Online research (2026-10-16) to answer the device questions in [`DEV_PLAN.md`](DEV_PLAN.md)
+> Online research (2026-10-16) to answer the device questions in [`dev-plan.md`](dev-plan.md)
 > without human testing. Sources are Apple documentation, Apple's WWDC sessions, and Apple
 > Developer Forums threads with Apple engineer (DTS) answers. Each finding is marked:
 > ✅ confirmed by Apple · ⚠️ reported by developers, not documented · ❓ still unknown.
@@ -22,7 +22,7 @@
 | Does speech through the AirPods disturb head motion? | ❓ No source | Yes, but **not blocking** (see below) |
 | Does the high-rate Watch stream work on our Watch? | ✅ Series 8 supports 800 Hz accel + 200 Hz motion, during an active workout | No (battery only) |
 | Accelerometer saturation during strokes | ❓ Series 8 has a 256 g high-g sensor; the range of the batched stream is undocumented | Check in the first real recording |
-| Watch → phone transfer speed | ❓ Undocumented; Bluetooth-level speeds | Measure in stage 9 (T21) |
+| Watch → phone transfer speed | ❓ Undocumented; Bluetooth-level speeds | Measured in stage 9 (T21) |
 | Does workout mirroring work in the simulator? | ✅ **No** (Apple DTS) | — |
 
 ## 1. Phone recording in the background
@@ -38,7 +38,7 @@
 - ⚠️ **Testing trap:** "With the Xcode debugger attached the app is not suspended." Every
   background test must be run **launched from the Home screen, without Xcode attached**, or it
   passes falsely.
-- ⚠️ **Workout mirroring** (design §7) launches the phone app in the background and gives it
+- ⚠️ **Workout mirroring** (design §5) launches the phone app in the background and gives it
   "10 seconds" to take the session ([WWDC23 10023]). Apple does **not** say the phone app then stays
   awake for the whole workout.
 - ⚠️ **Mirroring is buggy on iOS/watchOS 26.0–26.1:** the mirrored session disconnects or
@@ -51,7 +51,7 @@
 - Apple's DTS also notes the App Store reviews background modes against what the app does. **This
   app isn't going to the App Store**, so a location keep-alive is acceptable here.
 
-**Implication (recommended change to design §7):**
+**Implication (design §5; open decision in [`decisions.md`](decisions.md#open)):**
 - **Primary keep-alive: background location** at the lowest accuracy (3 km, no updates in
   practice), which Apple confirms keeps motion flowing. It also adds the `location` background mode
   and a "When In Use" location permission.
@@ -66,7 +66,7 @@
 - ✅ **One bud at a time:** "motion data is delivered to you from one bud at a time"; if that bud is
   removed, the other one takes over. ([WWDC23 10179])
 - ✅ **Ear detection:** taking the buds out gives a disconnect event; putting them back gives a
-  connect event. Our watchdog's A1 test matches this. ([WWDC23 10179])
+  connect event. Matches test A1 in [`test-plan.md`](test-plan.md). ([WWDC23 10179])
 - ✅ `NSMotionUsageDescription` is required, or the app crashes when updates start (already in our
   `project.yml`).
 - ⚠️ **watchOS:** the docs list watchOS 7+, but developers report `isDeviceMotionAvailable` is
@@ -96,7 +96,7 @@
     add the Audio background mode" → **add `audio` to the Watch's `WKBackgroundModes`** for Watch
     speech and haptics;
   - after a crash, `handleActiveWorkoutRecovery()` + `recoverActiveWorkoutSession` restore the
-    workout → use in the Watch's crash recovery (design §6).
+    workout → used in the Watch's crash recovery (design §4).
 - ❓ Accelerometer range of the batched stream: undocumented. Series 8 has "a high-g accelerometer
   that handles up to 256 g" for crash detection ([Apple specs]). Whether the batched stream clips
   on ball impact shows up in the first real recording (ingest flags near-maximum values).
@@ -108,7 +108,7 @@
   longer"; Watch Connectivity works over Bluetooth or the same Wi-Fi. ([WWDC21 10003])
 - ✅ Move a received file out of the inbox before the delegate method returns; the system deletes it.
 - ⚠️ No published speed. One user reports **2-3 Mbps** through the phone's Bluetooth link. At that
-  rate ~100 MB of high-rate data takes roughly **5-7 min**. Our design already sends high-rate
+  rate ~100 MB of high-rate data takes roughly **5-7 min**. Our design sends high-rate
   chunks after the session, so this only affects waiting time.
 
 ## 5. Free Apple ID signing
@@ -116,28 +116,13 @@
 - ❓ Not confirmed by a source. Our app already runs with HealthKit workouts on our devices, so the
   capability works with our current signing. The 7-day expiry stays as designed (Go/No-Go shows days left).
 
-## What this changes
+## Where this is applied
 
-| Before research | After research |
-|---|---|
-| Stage 0b: half-day device spike, 3 open questions | **One ~1-hour device check**, mainly AirPods-in-background |
-| Keep-alive: workout mirroring first | **Background location first**, mirroring optional |
-| T19 (speech vs AirPods) blocking | **Not blocking:** the `Voice` protocol can route speech to the Watch if the AirPods are affected |
-| High-rate stream support unknown | ✅ Confirmed for our Series 8 |
-| E1, E2, E4 simulator tests include mirroring | **Mirroring can't be simulated**; those parts move to device tests |
-| — | All background device tests run **without the Xcode debugger attached** |
-| — | Watch needs the `audio` background mode for speech and haptics |
-
-### The one remaining early device check (~1 hour)
-
-One throwaway build, launched from the Home screen with Xcode detached:
-1. Phone: background location (3 km) + phone motion + AirPods motion, phone locked in a pocket, 20 min.
-2. During those 20 min, speak a short phrase through the AirPods every 30 s.
-3. Watch: workout + high-rate stream for the same 20 min.
-4. Afterwards: count samples per device (foreground vs background), note battery % used per device.
-
-Pass: phone and AirPods ≥ 95 % of samples while locked; AirPods rate unchanged around speech;
-Watch high-rate counts ≈ 800 / 200 per second.
+- Keep-alive options and the open decision: design §5, [`decisions.md`](decisions.md#open).
+- The one remaining device check: stage 0b in [`dev-plan.md`](dev-plan.md) = test T6 in [`test-plan.md`](test-plan.md) §4.
+- No mirroring or high-rate stream in simulators: [`test-plan.md`](test-plan.md) §2 E.
+- Watch `audio` background mode and workout crash recovery: design §4, §5; dev-plan stage 6.
+- Speech vs AirPods is not blocking: the `Voice` protocol can route speech to the Watch (design §7).
 
 ## Sources
 

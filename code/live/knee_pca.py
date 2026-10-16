@@ -1,7 +1,7 @@
 """PCA of the knee path during the knee raises: the 3D movement reduced to its 2 main directions.
 
-Run in the `mobileposer` conda env, from project/code:
-    ~/miniconda3/envs/mobileposer/bin/python live/knee_pca.py recordings/<session> [--screen leg] [--from 23 --to 29]
+Run with the project environment, from code/:
+    .venv/bin/python live/knee_pca.py recordings/<session> [--screen leg] [--from 23 --to 29]
 
 The knee position is taken relative to the hip of the pocket side, in the body frame
 (x = left, y = up, z = forward), two ways:

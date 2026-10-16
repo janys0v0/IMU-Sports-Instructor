@@ -1,11 +1,9 @@
-# Test plan: everything we can test before touching a device
+# Test plan
 
-> **Goal:** find every bug we can on the Mac and in the simulators, so device time is spent only
-> on what truly needs hardware (real sensors, background behaviour, sound on a court, battery).
-> **Covers:** [`FIELD_RECORDING_DESIGN.md`](FIELD_RECORDING_DESIGN.md) (recorder, Watch link,
-> preview, spoken calibration, watchdog, ingest) and the Mac pipeline. OpenCap is out of scope for now.
-> **Status (2026-10-14):** plan only. Today the app has no test targets and calls Core Motion,
-> WatchConnectivity, timers and files directly, so step 0 below comes first.
+**Goal:** find every bug possible on the Mac and in the simulators, so device time goes only to
+what needs hardware. Covers [`design.md`](design.md) and the Mac pipeline; OpenCap is out of scope.
+Which tests gate which build stage: [`dev-plan.md`](dev-plan.md). Today the app has no tests and
+calls Core Motion, WatchConnectivity, timers and files directly, so §0 comes first.
 
 ## 0. Make the app testable (prerequisite)
 
@@ -43,7 +41,7 @@ iOS + watchOS simulators, and the devices.
 | **L4 Simulator end-to-end** | Paired iPhone + Watch simulators, UI tests, replayed motion | daily / before merging | ~15 min |
 | **L5 Endurance** | Mac + simulators, time-compressed 60-120 min sessions | before each device round | ~20 min |
 | **L6 Mac pipeline** | `pytest`: ingest, compatibility, experiments | every change to Python | ~3 min |
-| **L7 Device** | Real devices: design §15 T1-T21 (T20 last) | only after L1-L6 pass | hours |
+| **L7 Device** | Real devices: T1-T21 (§4) | stage 0b and stage 9 | hours |
 
 One command runs L1-L3 and L6: `tools/run_tests.sh` (to add). Record results in `EXPERIMENT_LOG.md` before each device round.
 
@@ -51,7 +49,7 @@ One command runs L1-L3 and L6: `tools/run_tests.sh` (to add). Record results in 
 
 IDs are stable so failures can be referenced. "Pass" is what must be true.
 
-### R: Recorder (design §4)
+### R: Recorder (design §2)
 
 | ID | Test | Pass |
 |---|---|---|
@@ -64,7 +62,7 @@ IDs are stable so failures can be referenced. "Pass" is what must be true.
 | R7 | File protection attribute | `.completeUntilFirstUserAuthentication` on every file |
 | R8 | Packet format | Every line parses with today's `live/motion_io.py` unchanged |
 
-### J: Journal and recovery (design §4, §6)
+### J: Journal and recovery (design §2, §4)
 
 | ID | Test | Pass |
 |---|---|---|
@@ -75,7 +73,7 @@ IDs are stable so failures can be referenced. "Pass" is what must be true.
 | J5 | Torn last journal line | Ignored with a warning; everything before it is kept |
 | J6 | Clock jump / reboot (`boot_to_unix` changes) | New segment, logged |
 
-### W: Watch storage and transfer (design §5)
+### W: Watch storage and transfer (design §2, §3)
 
 | ID | Test | Pass |
 |---|---|---|
@@ -88,9 +86,9 @@ IDs are stable so failures can be referenced. "Pass" is what must be true.
 | W7 | Watch workout ends (fake HealthKit state) | Phone asks the Watch to relaunch; gap logged; 🔴 spoken |
 | W8 | High-rate stream (synthetic 800 Hz + 200 Hz) for 60 min, fake clock | `watch_hf/` chunks complete, indices continuous, ~100 MB/h; **not sent during play**, transferred only after the session |
 | W9 | High-rate stream fails to start / stops mid-session | 🔴 at Go/No-Go / spoken 🔴 mid-session; 60 Hz stream unaffected |
-| W10 | Binary high-rate chunk format (design §13) | Header line + fixed-size records; crash at random bytes → chunk trimmed to its last whole record; Swift writer → Python loader round-trips every value exactly; SHA-256 and journal as for JSON chunks |
+| W10 | Binary high-rate chunk format (design §2) | Header line + fixed-size records; crash at random bytes → chunk trimmed to its last whole record; Swift writer → Python loader round-trips every value exactly; SHA-256 and journal as for JSON chunks |
 
-### S: Sample accounting and quality (design §8, §10)
+### S: Sample accounting and quality (design §6, §8)
 
 | ID | Test | Pass |
 |---|---|---|
@@ -99,7 +97,7 @@ IDs are stable so failures can be referenced. "Pass" is what must be true.
 | S3 | Status dots | Each threshold in `quality_thresholds.json` flips the dot at exactly its value |
 | S4 | **Contract test:** same fixture through Swift and Python checks | Identical PASS/WARN/FAIL and numbers (thresholds file shared) |
 
-### C: Calibration (design §9)
+### C: Calibration (design §7)
 
 | ID | Test | Pass |
 |---|---|---|
@@ -114,7 +112,7 @@ IDs are stable so failures can be referenced. "Pass" is what must be true.
 | C9 | Piecewise mode across a segment break | Uses the last calibration before each frame |
 | C10 | Reminder interval is a setting | Changing it changes when the spoken reminder fires; T20's drift-check poses are logged as `drift_check` events, not as calibrations |
 
-### V: Voice (design §9, §10)
+### V: Voice (design §7)
 
 | ID | Test | Pass |
 |---|---|---|
@@ -128,7 +126,7 @@ IDs are stable so failures can be referenced. "Pass" is what must be true.
 | V8 | Audibility check at Go/No-Go | No tap in 10 s → "can't hear" path |
 | V9 | Listen-through | Generate an audio file of the whole script with the real synthesizer on the Mac; a team member listens for clarity and pacing |
 
-### A: Watchdog and alerts (design §10)
+### A: Watchdog and alerts (design §8)
 
 Each row of the design's scenario tables becomes a scripted fault on a replayed recording:
 
@@ -148,7 +146,7 @@ Each row of the design's scenario tables becomes a scripted fault on a replayed 
 | A12 | Court-exit check | Missing 60 Hz Watch chunks → "Redo" list; all present → "Safe to leave" |
 | A13 | Court-exit check with high-rate chunks still on the Watch | "Safe to leave" if the Watch journal shows every high-rate chunk closed and checksummed; not safe if one is still open |
 
-### P: Phone preview (design §8)
+### P: Phone preview (design §6)
 
 | ID | Test | Pass |
 |---|---|---|
@@ -158,11 +156,11 @@ Each row of the design's scenario tables becomes a scripted fault on a replayed 
 | P4 | Gaps and calibration marks on the timeline | Positions match the journal |
 | P5 | Snapshot tests of each screen | Images unchanged unless intended |
 
-### I: Mac ingest and pipeline (design §11; Python, `pytest`)
+### I: Mac ingest and pipeline (design §10; Python, `pytest`)
 
 | ID | Test | Pass |
 |---|---|---|
-| I1 | Flip 1 byte in a chunk (design T8) | Ingest FAILs that chunk by name |
+| I1 | Flip 1 byte in a chunk (as T8) | Ingest FAILs that chunk by name |
 | I2 | Missing chunk / extra chunk / renamed chunk | Reported; never silently merged |
 | I3 | Segments after a crash | Merged in order, keyed by (segment, index) |
 | I4 | Clock fit with injected offset 2.5 s and drift 50 ppm | Recovered within 1 ms and 1 ppm |
@@ -171,21 +169,21 @@ Each row of the design's scenario tables becomes a scripted fault on a replayed 
 | I7 | `ingest_report.json` | PASS/FAIL agrees with S4 contract fixtures |
 | I8 | High-rate data: (a) chunks still on the Watch, (b) all arrived | (a) `watch_hf: PENDING`, not FAIL, and the session can't be marked verified; (b) binary loader reads every chunk, indices continuous, PASS |
 
-### X: Extra sensors (addendum §2C)
+### X: Extra sensors (design §9)
 
 New packet types; today's 14-value motion samples are unchanged.
 
 | ID | Test | Pass |
 |---|---|---|
 | X1 | Barometer packets (synthetic `CMAltimeter`, ~1 Hz) | Pressure + relative altitude logged with sensor timestamps; gaps counted like motion |
-| X2 | Magnetometer field + accuracy | Logged per device; low accuracy feeds the "compass disturbed" check (design §10) |
+| X2 | Magnetometer field + accuracy | Logged per device; low accuracy feeds the "compass disturbed" check (design §8) |
 | X3 | Audio level and onset times | Only level and onset times stored, **no raw audio** in any file; input route is the built-in microphone |
 | X4 | Packet compatibility | Recordings with X1-X3 packets (and optional UWB distance) still load in `motion_io.py` and pass I5-I6; missing optional UWB is not an error |
 
 ### E: End-to-end in the simulators (L4)
 
 Simulators have **no motion sensors and no AirPods**, so they run on replayed motion.
-**Workout mirroring is not supported in simulators** (Apple DTS, see `DEVICE_RESEARCH.md`): E1-E2 run with mirroring off, and mirroring is checked on devices only.
+**Workout mirroring is not supported in simulators** (Apple DTS, see [`device-research.md`](device-research.md)): E1-E2 run with mirroring off, and mirroring is checked on devices only.
 The Watch app's high-rate stream (`CMBatchedSensorManager`) also needs real hardware; simulators use the synthetic generator.
 
 | ID | Test | Pass |
@@ -212,42 +210,32 @@ The Watch app's high-rate stream (`CMBatchedSensorManager`) also needs real hard
 - V1 lint clean, and V9 listen-through signed off by both team members.
 - S4 / I7 contract fixtures: Swift and Python agree on every fixture.
 
-## 4. What only devices can test (L7)
+## 4. Device tests (L7)
 
-| What | Why it needs hardware | Design test |
-|---|---|---|
-| Real sensor rates (iPhone 33 Hz, Watch 66 Hz, AirPods 50 Hz) | Sensors | T7 |
-| Lock screen + pocket mode | Real iOS power management | T5 |
-| **Workout mirroring with the phone app in the background, incl. AirPods motion** | Background execution | **T6 (do this early)** |
-| Real Watch → phone file transfers under load | Real radios | T2 |
-| Crown press ending the workout | Real watchOS | T13 |
-| Phone drop on grass | Physics | T15 |
-| AirPods out / switched to another device | Bluetooth | T3, T14 |
-| **Voice heard on a court**: loudness, wind, crowd | Real audio | new: **T18** |
-| Speech on the AirPods doesn't change head-motion data, and the built-in mic keeps them out of call mode | Real AirPods | new: **T19** (V7 on device) |
-| High-rate transfer time after a 60 min session | Real radios | new: **T21** |
-| Battery drain and heat over 60 min | Real batteries | T7 |
-| Magnetic disturbance near fences | Real compass | T7 |
-| **How long calibration holds** (sets the reminder interval) | Real drift during play | new: **T20** (last) |
-| Signing: build expires in 7 days (free Apple ID) | Real install | Go/No-Go shows days left |
+Run only after L1-L6 pass, on the current build (free Apple ID builds expire after 7 days).
+**Launch from the Home screen with Xcode detached** for anything involving the background.
+When: **0b** = early device check, **9** = stage 9 device round, **F** = after the first field session.
 
-## 5. Build gates (decided 2026-10-14: full design, all tests pass before the next step)
-
-A build step starts only when **every test of the previous gate passes on two consecutive runs**.
-
-| Gate | Build step (design §16) | Tests that must all pass |
-|---|---|---|
-| G0 | ⓪ Test harness | Seams compile on macOS/iOS/watchOS; replay of the 4 key recordings works; `tools/run_tests.sh` runs |
-| G1 | ① Phone recorder | R1-R8, J1-J6, S1-S3 |
-| G2 | ② Watch local + transfer (incl. high-rate stream) | W1-W10 (fake link), E3-E4 where the simulator supports them |
-| G3 | ③ `ingest_field.py` | I1-I8, S4 |
-| G4 | ④ Phone preview | P1-P5, E5 |
-| G5 | ⑤ Calibration + voice | C1-C10, V1-V9 |
-| G6 | ⑥ Keeping alive | Simulated parts of E1-E2; **device test T6** (the first device test) |
-| G7 | ⑦ Watchdog + alerts | A1-A13 |
-| G8 | ⑧ Trial button + sync + extra sensors | A11-A13 again with trials; X1-X4; E1 full flow |
-| G9 | ⑨ Before devices | L1-L3 + every exit criterion in §3, then device tests T1-T19 and T21 |
-| G10 | Calibration interval | Device test T20 (2 days); set the reminder default from it |
-
-A failing test blocks the next step; fix it, rerun the whole gate, and log the run in `EXPERIMENT_LOG.md`.
-Every 7 days: rebuild and reinstall before any device test (free Apple ID signing).
+| ID | Do this | Pass | When |
+|---|---|---|---|
+| T1 | Force-quit the phone app at 5 min, relaunch, Resume | 1 segment break; data intact; Watch complete | 9 |
+| T2 | Walk 3 min away from the phone wearing the Watch | Watch data complete; preview gap logged | 9 |
+| T3 | Take the AirPods out for 30 s | Gap bracketed by disconnect / connect events | 9 |
+| T4 | Hard power-off of the phone mid-session | ≤ 1 s lost; open chunk recovered | 9 |
+| T5 | Phone locked in pocket mode, 20 min | No gap | 9 |
+| T6 | Phone locked in a pocket with the chosen keep-alive (design §5), 20 min, plus speech every 30 s and the Watch high-rate stream | Phone and AirPods ≥ 95 % while locked; AirPods rate unchanged around speech; Watch ≈ 800 + 200 samples/s; battery % noted | **0b**, again in 9 |
+| T7 | Full 60 min tennis rehearsal | Ingest PASS; phone and Watch > 99 %, AirPods > 95 %; battery, heat and accelerometer saturation noted | 9 |
+| T8 | Flip 1 byte in a copied chunk | Ingest FAILs that chunk | 9 |
+| T9 | After T1 and T3, open the review screen | Gaps shown with their causes | 9 |
+| T10 | Calibrate while swaying | "Calibration didn't work: you moved" | 9 |
+| T11 | Stand still, calibrate twice 10 min apart | Drift on the phone matches the Mac report | 9 |
+| T12 | Low Power Mode on before Start, then mid-session | Start blocked; mid-session 🔴, rate drop logged | 9 |
+| T13 | Press the Watch crown to end the workout | Watch app relaunched, workout restarted, gap logged | 9 |
+| T14 | Switch the AirPods to a Mac mid-session | 🔴 within 3 s | 9 |
+| T15 | Drop the phone on grass while moving the Watch | 🔴 "phone fell out"; no false alarm during jumps | 9 |
+| T16 | Fill the phone's disk to < 500 MB free | Go/No-Go blocks; mid-session 🔴, no silent loss | 9 |
+| T17 | Run a trial with the AirPods out for 5 s | Trial check says Redo with the reason | 9 |
+| T18 | Full spoken calibration on a court with wind and play nearby | Every phrase understood first time; audibility check passes | 9 |
+| T19 | Speak through the AirPods for 5 min with the audio-level sensor on | AirPods stay out of call mode; motion rate and gaps unchanged | 9 (first look in 0b via T6) |
+| T21 | Transfer the high-rate chunks after a 60 min session, devices side by side | All arrive, SHA verified; time taken recorded | 9 |
+| T20 | **How long calibration holds:** calibrate once, play, and every 5 min stand in the calibration pose for 5 s without recalibrating; 2 days | Interval = time until any device exceeds 10°, rounded down to whole minutes; becomes the reminder default (10 min until then) | F |

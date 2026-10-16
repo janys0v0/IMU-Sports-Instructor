@@ -56,7 +56,7 @@ project/code/
 | Path | What it is |
 |---|---|
 | `MotionStreamer/` | iPhone + Watch app (Swift, XcodeGen). Streams 14-number motion samples over UDP. Setup: `MotionStreamer/README.md` |
-| `MobilePoser/` | MobilePoser repo at commit `513e76a` plus pretrained weights. Small changes are listed in `PHASE0_LOG.md` |
+| `MobilePoser/`, `IMUCoCo/` | Upstream model repos, not in git: cloned at pinned commits and patched by `tools/setup_upstream.sh` (`patches/`). Install notes: `PHASE0_LOG.md` |
 | `receiver/` | `phase1_receiver.py` logs packets and checks stream coverage. `fake_phone.py` sends synthetic packets |
 | `live/` | Mac pipeline: calibration, replay, live viewer, analysis (below) |
 | `recordings/<session>/` | `mac_stream.jsonl` (every packet), `summary.json` (coverage), `phase2/` (outputs) |
@@ -88,10 +88,10 @@ project/code/
 
 ## Common commands
 
-Run from `project/code/`. Use the conda env's Python directly:
+Run from `code/` with the project environment (`code/.venv`, Python 3.9):
 
 ```bash
-PY=~/miniconda3/envs/mobileposer/bin/python
+PY=.venv/bin/python
 ```
 
 **Live demo:** start the viewer, enter the printed IP in the app, then tap Start → Calibrate:

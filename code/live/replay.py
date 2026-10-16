@@ -1,6 +1,6 @@
 """Phase 2 replay: recording -> 30 Hz -> body frame -> MobilePoser, with checks.
 
-Run in the `mobileposer` conda env, from project/code:
+Run with the project environment, from code/:
     python live/replay.py recordings/<session> [--screen leg|outward] [--window auto|event]
                           [--render --from 60 --to 90] [--head]
 

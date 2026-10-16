@@ -1,15 +1,25 @@
 # IMU Sports Pose Instructor (ES 224)
 
-Full-body motion capture from an iPhone, Apple Watch and AirPods, aimed at sports such as tennis.
+Full-body motion capture for sports such as tennis, from an iPhone, Apple Watch and AirPods.
 
-| Where | What |
+**Where we are:** see **Status** at the top of [`docs/dev-plan.md`](docs/dev-plan.md#status).
+
+## Documents
+
+Each topic lives in exactly one file; other files link to it instead of repeating it.
+
+| Topic | File |
 |---|---|
-| [`code/README.md`](code/README.md) | Code overview: iOS/Watch app, Mac pipeline, common commands |
-| [`code/MotionStreamer/FIELD_RECORDING_DESIGN.md`](code/MotionStreamer/FIELD_RECORDING_DESIGN.md) | Field recording design |
-| [`code/MotionStreamer/DEV_PLAN.md`](code/MotionStreamer/DEV_PLAN.md) | **Development plan: stages with testable goals** |
-| [`code/MotionStreamer/TEST_PLAN.md`](code/MotionStreamer/TEST_PLAN.md) | Test plan and build gates |
-| [`EXPERIMENT_LOG.md`](EXPERIMENT_LOG.md) | Record of every experiment and device test |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Setup, workflow, commit and code standards |
+| What we're building (field recording design) | [`docs/design.md`](docs/design.md) |
+| Build stages, status, and what already exists | [`docs/dev-plan.md`](docs/dev-plan.md) |
+| Tests, including device tests T1-T21 | [`docs/test-plan.md`](docs/test-plan.md) |
+| Decisions and open questions | [`docs/decisions.md`](docs/decisions.md) |
+| Device facts from Apple docs and forums | [`docs/device-research.md`](docs/device-research.md) |
+| OpenCap ground truth (deferred) | [`docs/opencap.md`](docs/opencap.md) |
+| Literature, model survey, proposal | [`docs/research/`](docs/research/) |
+| Experiment and device-test log | [`EXPERIMENT_LOG.md`](EXPERIMENT_LOG.md) |
+| Code overview and commands | [`code/README.md`](code/README.md) |
+| iOS / Watch app setup and data format | [`code/MotionStreamer/README.md`](code/MotionStreamer/README.md) |
+| Setup, development loop, commit rules | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
-Getting started: follow **One-time setup** in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 Recordings and model files are not in git; they live on the shared drive.

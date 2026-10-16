@@ -49,7 +49,11 @@ python3 receiver/fake_phone.py --port 5099 --seconds 20
 ```
 
 ## Known limits
-- Built and type-checked against the iOS 26.2 and watchOS 26.2 SDKs; **not yet run on devices**.
+- Used for 35 recorded sessions (iPhone 16, Apple Watch Series 8 on watchOS 26.6).
+- **Bug:** pressing Stop during the calibration countdown blocks later calibrations until the app
+  is relaunched (fix planned in stage 0 of [`docs/dev-plan.md`](../../docs/dev-plan.md)).
+- The field-recording redesign (on-device chunks, crash recovery, spoken calibration) is in
+  [`docs/design.md`](../../docs/design.md); this README describes the app as it is today.
 - Pocket mode relies on the proximity sensor keeping the app in the foreground with the screen off.
   If iOS still suspends the app in a pocket, fall back to leaving the screen on (it already
   disables auto-lock while recording).
