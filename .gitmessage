@@ -1,0 +1,10 @@
+
+# <type>(<scope>): <desc>          ≤ 72 chars · lowercase · imperative · no period
+#
+# Optional body: why this change, wrapped at 72.
+#
+# types:  feat fix docs test refactor perf build ci chore exp data
+# scopes: app watch recorder ingest preprocessing pose live analysis
+#         experiments design plan tools deps third-party   (optional)
+# e.g.    feat(recorder): rotate chunk files every 60 s
+# Full rules: CONTRIBUTING.md, "Commit, branch and PR format". No AI co-author lines.

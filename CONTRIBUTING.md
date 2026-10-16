@@ -1,7 +1,8 @@
 # Contributing
 
-How we keep this repo clean and consistent. Short version: **branch → small commits with
-Conventional Commit messages → checks pass → pull request → squash-merge into `main`.**
+How we work. Short version: **read the plan → implement on a branch → check → push, and update
+the plan.** Branches, commits and pull requests share one [format](#commit-branch-and-pr-format);
+pull requests are squash-merged into `main`.
 
 ## One-time setup
 
@@ -9,56 +10,83 @@ Conventional Commit messages → checks pass → pull request → squash-merge i
 python3 -m venv .venv-tools
 .venv-tools/bin/pip install -r requirements-dev.txt
 .venv-tools/bin/pre-commit install
-tools/setup_upstream.sh
+git config commit.template .gitmessage   # prefilled commit message
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # ML environment
+tools/setup_third_party.sh
 ```
 
-- `.venv-tools` holds only the commit-check tools. The ML environment stays in `code/.venv`
-  (see `code/README.md`); don't install the tools there, it breaks `lightning`'s pins.
-- `tools/setup_upstream.sh` clones MobilePoser and IMUCoCo at their pinned commits and applies
-  `patches/`. Then download their licensed files (SMPL, weights, datasets) as their READMEs say.
-- iOS app: `cd code/MotionStreamer && xcodegen generate`. The `.xcodeproj` is generated, not committed.
+- `.venv-tools` holds only the commit-check tools; `.venv` is the ML environment (Python 3.9).
+  Don't install the tools into `.venv`: it breaks `lightning`'s pins.
+- `tools/setup_third_party.sh` clones MobilePoser and IMUCoCo into `third_party/` at their pinned
+  commits and applies `third_party/patches/`. Then download their licensed files (SMPL, weights,
+  datasets) as [`third_party/README.md`](third_party/README.md) says.
+- iOS app: `cd apps/MotionStreamer && xcodegen generate`. The `.xcodeproj` is generated, not committed.
 
-## Workflow
+## Development loop
 
-```
- main ──●────────────────●────────────────●──▶   always works; never commit to it directly
-         \              / squash-merge   /
-          ●──●──●──●───●  feat/watch-chunks
-```
-
-1. **Branch from `main`:** `feat/…`, `fix/…`, `docs/…`, `test/…`, `exp/…` (experiments), `chore/…`.
-2. **Commit small and often.** Each commit builds and passes the checks.
-3. **Open a pull request.** Fill in the template; link the design section or test IDs.
-4. **The other person reviews**, then **squash-merge**. Delete the branch.
-
-`main` is protected by a local hook (`no-commit-to-branch`). GitHub's server-side branch protection
-isn't available for private repos on the free plan, so this rule is on us.
-
-## Commit messages
-
-[Conventional Commits](https://www.conventionalcommits.org/), checked on every commit:
+Every work session, by a person or by Claude, follows the same three steps.
 
 ```
-<type>(<optional scope>): <what changed, imperative, ≤ 72 chars>
-
-<optional body: why, and anything a reviewer must know>
+ ① PLAN ─────────────────▶ ② IMPLEMENT ────────────────▶ ③ CHECK + PUSH
+ read Status in             branch feat/stage-N-…          tools/check.sh
+ docs/plan/dev-plan.md           tests first, then code         update the one doc that owns
+ pick the next task         small commits                  the topic; update Status
+       ▲                                                   commit + push the branch
+       └──────────────────── next session ◀──────────────────────────┘
 ```
 
-| Type | For |
+### ① Plan: stay on track
+1. `git switch main && git pull`, then open [`docs/plan/dev-plan.md`](docs/plan/dev-plan.md#status) **Status**.
+2. Take the **Next action**. If it isn't in the current stage's task list, stop and update the plan
+   first: new work goes into a stage (or [`docs/plan/decisions.md`](docs/plan/decisions.md) if it's a decision).
+3. Branch: `feat/stage-N-<desc>` for stage work, otherwise `<type>/<desc>` ([format](#commit-branch-and-pr-format)).
+
+### ② Implement
+1. Write the stage's tests first (IDs from [`docs/plan/test-plan.md`](docs/plan/test-plan.md)); watch them fail.
+2. Write the code until they pass. Commit small, each commit building and passing checks.
+3. Stay inside the current stage. Anything else you notice goes into the plan as a task, not into
+   this branch.
+
+### ③ Check, tidy, push
+1. Run **`tools/check.sh`** (all pre-commit checks + tests). Fix everything it reports.
+2. Docs stay short: change the **one file that owns the topic** (see the table in
+   [`README.md`](README.md)); delete text that's no longer true instead of adding notes about it.
+3. Update **Status** in `docs/plan/dev-plan.md` (stage, next action, blockers, date) and tick finished
+   goals. Log experiments and device tests in `EXPERIMENT_LOG.md` with the commit hash.
+4. Commit and **push the branch at the end of every session**, even mid-stage, so nothing lives
+   only on one laptop.
+5. When the stage's gate passes twice in a row: open a pull request (template), the other person
+   reviews, **squash-merge**, delete the branch.
+
+`main` is protected by a local hook (`no-commit-to-branch`); GitHub's server-side protection isn't
+available for private repos on the free plan.
+
+## Commit, branch and PR format
+
+One vocabulary for every name, so a branch, its commits and its pull request read the same way.
+`tools/check_format.py` is the only place the rules are encoded.
+
+| Word | Values |
 |---|---|
-| `feat` | New behaviour (app, pipeline) |
-| `fix` | Bug fix |
-| `docs` | Docs only |
-| `test` | Tests only |
-| `refactor` | Same behaviour, cleaner code |
-| `perf` | Faster or lighter |
-| `build` / `ci` | Build setup, XcodeGen, GitHub Actions |
-| `chore` | Tooling, dependencies |
-| `exp` | Experiment scripts and their logged results |
-| `data` | Annotations, data-format specs (never the data itself) |
+| **type** | `feat` new behaviour · `fix` bug fix · `refactor` same behaviour, cleaner · `perf` faster or lighter · `test` tests only · `docs` docs only · `exp` experiment · `data` annotations or formats · `build` build setup · `ci` GitHub Actions · `chore` tooling or dependencies |
+| **scope** (optional) | `app` `watch` `recorder` `ingest` `preprocessing` `pose` `live` `analysis` `experiments` `design` `plan` `tools` `deps` `third-party` |
+| **desc** | lowercase, imperative, no final period |
 
-Scopes we use: `app`, `watch`, `recorder`, `ingest`, `live`, `experiments`, `design`.
-Examples: `feat(recorder): rotate chunk files every 60 s` · `fix(app): reset calibration timer on Stop`.
+| Thing | Format | Example |
+|---|---|---|
+| Branch | `<type>/<kebab-desc>`, ≤ 40 chars; stage work starts with `stage-N-` | `feat/stage-1-phone-recorder` · `fix/calibration-timer` |
+| Throwaway branch | `spike/<kebab-desc>`; never merged, no pull request | `spike/background-check` |
+| Commit subject | `<type>(<scope>): <desc>`, ≤ 72 chars | `feat(recorder): rotate chunk files every 60 s` |
+| Commit body (optional) | Blank line, then *why* in plain sentences, wrapped at 72 | `Power-off lost buffered data; fsync limits loss to 1 s.` |
+| PR title | Same as a commit subject, **same type as its branch** | `feat(recorder): save sessions as 60 s chunks with a journal` |
+| PR description | Sections **Why · What changed · How it was checked · Plan** (the template) | — |
+| Commit on `main` | Squash merge: PR title → subject, PR description → body | one commit per PR |
+
+Never: AI co-author lines, "Generated with" footers, or commits directly on `main`.
+
+**Enforced by:** the `commit-msg` and branch-name hooks on every commit; GitHub Actions on every
+pull request (branch, title, description, and that the title's type matches the branch's).
+`git commit` opens `.gitmessage` as a prefilled template.
 
 ## Checks on every commit
 
@@ -73,9 +101,10 @@ Examples: `feat(recorder): rotate chunk files every 60 s` · `fix(app): reset ca
 | hygiene | Trailing spaces, final newline, LF line endings, valid YAML/JSON/TOML, merge markers |
 | large files | Blocks any file > 1 MB |
 | no data files | Blocks recordings, videos, `.npz`, weights, `.pkl`, `.jsonl`, `.bin` |
+| doc links | Every local link and `#heading` in Markdown must exist |
 | private keys | Blocks committed keys |
 | branch | Blocks commits directly on `main` |
-| message | Conventional Commit format |
+| branch / message | Branch name and commit message follow the format above |
 
 If a hook changes files, review the change, `git add` it and commit again.
 GitHub Actions runs the same checks on every pull request (Swift checks run locally only).
@@ -85,26 +114,33 @@ GitHub Actions runs the same checks on every pull request (Swift checks run loca
 - **Python:** ruff + ruff-format settings in `pyproject.toml`; target Python 3.9 (the ML env).
   Type hints on new functions. Scripts take paths as arguments; no hard-coded user paths.
 - **Swift:** `.swift-format` (4 spaces, 120 chars). New logic goes into testable code behind the
-  protocols in `TEST_PLAN.md` §0, not into views.
+  protocols in [`docs/plan/test-plan.md`](docs/plan/test-plan.md) §0, not into views.
 - **Comments** explain *why*, not *what*. Keep the existing doc-comment style.
-- **Tests:** follow `code/MotionStreamer/TEST_PLAN.md`. A build step's tests must pass before the
-  next step starts (gates G0-G10). Name tests after their IDs (e.g. `test_R3_chunk_close`).
+- **Tests:** IDs from [`docs/plan/test-plan.md`](docs/plan/test-plan.md); name tests after them
+  (e.g. `test_R3_chunk_close`). A stage's gate must pass before the next stage starts.
 
 ## What goes in git, and what doesn't
 
 | In git | Not in git (shared drive) |
 |---|---|
-| Code, configs, docs, design and test plans | `code/recordings/` (personal motion data) |
+| Code, configs, docs, design and test plans | `data/` (recordings: personal motion data) |
 | Small results: `results/**/*.md`, `*.json` | Videos, plots' raw arrays (`.npz`), model outputs |
 | Annotations (`experiments/annotations/`) | MobilePoser / IMUCoCo repos, SMPL, weights, datasets |
-| Patches to upstream repos (`patches/`) | Virtual environments, Xcode build output |
+| Patches to third-party repos (`third_party/patches/`) | Virtual environments, Xcode build output |
 
 - Recordings use participant codes (`P01`), never names.
 - Never commit secrets, Apple signing files or API keys.
 
-## Logs and docs
+## Where new code goes
 
-- **`EXPERIMENT_LOG.md`:** every experiment run and every device-test round, with the commit hash.
-- **Design or behaviour change:** update `FIELD_RECORDING_DESIGN.md` / `TEST_PLAN.md` in the same PR.
-- **Upstream change:** edit the code in `code/MobilePoser`, then refresh the patch:
-  `git -C code/MobilePoser -c core.fileMode=false diff > patches/mobileposer.patch`.
+| Kind of code | Folder |
+|---|---|
+| iPhone / Watch app | `apps/MotionStreamer/` |
+| Loading, resampling, calibrating recordings | `pipeline/preprocessing/` |
+| Running models, rendering | `pipeline/pose/` |
+| Checking and merging field sessions (`ingest_field.py`) | `pipeline/ingest/` |
+| Anything that talks UDP to the app | `pipeline/live/` |
+| Plots and metrics on one recording | `pipeline/analysis/` |
+| A study with a question and results | `experiments/ENN_name/` (see [`experiments/README.md`](experiments/README.md)) |
+| Developer scripts | `tools/` |
+| Changes to MobilePoser / IMUCoCo | edit in `third_party/`, then refresh the patch ([`third_party/README.md`](third_party/README.md)) |

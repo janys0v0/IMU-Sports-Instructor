@@ -2,25 +2,25 @@
 
 The running record of every experiment: what was asked, what was run, and what came out.
 Newest entries at the bottom. Code and per-experiment details live in
-[`code/experiments/`](code/experiments/README.md); each experiment's own `README.md` holds its
+[`experiments/`](experiments/README.md); each experiment's own `README.md` holds its
 method and full results.
 
 ## Index
 
 | ID | Question | Folder | Status |
 |---|---|---|---|
-| Phase 0 | Does published MobilePoser reproduce on the IMUPoser dataset? | [`code/PHASE0_LOG.md`](code/PHASE0_LOG.md) | Done 2026-09-30 |
-| E01 | How much does each device (phone, Watch, AirPods) contribute to MobilePoser? | [`code/experiments/E01_mobileposer_device_ablation/`](code/experiments/E01_mobileposer_device_ablation/README.md) | Done 2026-10-08 |
-| E02 | MobilePoser vs IMUCoCo on the same inputs | [`code/experiments/E02_imucoco_comparison/`](code/experiments/E02_imucoco_comparison/README.md) | Done 2026-10-08 |
-| E03 | Data consistency of each sensor stream (rate, missingness, delay) vs motion | [`code/experiments/E03_stream_quality/`](code/experiments/E03_stream_quality/README.md) | Done 2026-10-14 |
+| E00 | Does published MobilePoser reproduce on the IMUPoser dataset? | [`experiments/E00_mobileposer_reproduction/README.md`](experiments/E00_mobileposer_reproduction/README.md) | Done 2026-09-30 |
+| E01 | How much does each device (phone, Watch, AirPods) contribute to MobilePoser? | [`experiments/E01_mobileposer_device_ablation/`](experiments/E01_mobileposer_device_ablation/README.md) | Done 2026-10-08 |
+| E02 | MobilePoser vs IMUCoCo on the same inputs | [`experiments/E02_imucoco_comparison/`](experiments/E02_imucoco_comparison/README.md) | Done 2026-10-08 |
+| E03 | Data consistency of each sensor stream (rate, missingness, delay) vs motion | [`experiments/E03_stream_quality/`](experiments/E03_stream_quality/README.md) | Done 2026-10-14 |
 
 ## Reference recordings
 
 | Session | Devices | Content | Labels |
 |---|---|---|---|
-| `20261008-153213-P01` | phone right pocket (screen to leg), Watch right wrist, AirPods | Calibrate, 3 slow jumping jacks, 3 tennis swings, 3 squats, look left and right (63.7 s; 45 s after calibration) | [`annotations/20261008-153213-P01.json`](code/experiments/annotations/20261008-153213-P01.json) |
+| `20261008-153213-P01` | phone right pocket (screen to leg), Watch right wrist, AirPods | Calibrate, 3 slow jumping jacks, 3 tennis swings, 3 squats, look left and right (63.7 s; 45 s after calibration) | [`annotations/20261008-153213-P01.json`](experiments/annotations/20261008-153213-P01.json) |
 
-Recordings live in `code/recordings/<session>/` (`mac_stream.jsonl`, `summary.json`,
+Recordings live in `data/recordings/<session>/` (`mac_stream.jsonl`, `summary.json`,
 `reconstruction.mp4`).
 
 ---
@@ -32,7 +32,7 @@ Recordings live in `code/recordings/<session>/` (`mac_stream.jsonl`, `summary.js
   `edu.es224.jjl.motionstreamer` (the old one belonged to another team). Free-account signing:
   installs expire 2026-10-15.
 - Python environment `code/.venv` (Python 3.9, torch 2.1.2, Open3D 0.17 with a bundled libomp)
-  replaces the conda env described in `code/README.md`.
+  replaces the conda env described in `pipeline/README.md`.
 - Network: the iPhone must be on the same Wi-Fi as the Mac (campus Wi-Fi works when both are on
   it); the Mac could see the Watch in Xcode only on a non-isolated network.
 
@@ -107,7 +107,7 @@ Checked which published models could run on head + one wrist + thigh data:
 
 ### Literature update: state of the art for head + wrist + pocket
 - Searched for 2025-2026 work and compared published numbers; write-up:
-  [`Sparse IMU model comparison (2026-10).md`](Sparse%20IMU%20model%20comparison%20(2026-10).md).
+  [`docs/research/model-comparison.md`](docs/research/model-comparison.md).
 - **No new model can run on our recordings.** ArmPoser (Watch-only arm, calibration-free, SUI
   2026) has a placeholder repo; "One Sensor, Whole Body" (AirPods-only, ACM MM workshop 2026) has
   code but no weights or data; BaroPoser, IMUPoser, 3SIP and Progressive Inertial Poser publish
@@ -121,7 +121,7 @@ Checked which published models could run on head + one wrist + thigh data:
 ## 2026-10-14
 
 ### E02 videos for every device combination
-- Added `code/experiments/E02_imucoco_comparison/make_videos.py`: renders both models' saved E02
+- Added `experiments/E02_imucoco_comparison/make_videos.py`: renders both models' saved E02
   outputs (no model re-run) for all 7 combinations and composes side-by-side videos labelled with
   time and activity. Outputs in `E02_imucoco_comparison/results/20261008-153213-P01/videos/`:
   `compare_<combo>.mp4` (7 files) and `grid_all.mp4`; all 1,336 frames verified.
@@ -166,7 +166,7 @@ Checked which published models could run on head + one wrist + thigh data:
 - Added `E02_imucoco_comparison/plot_error_vs_signals.py` (and kept per-device rotation rate in
   `common/session.py`); wrote `error_vs_signals.png` / `.json`.
 - Thigh disagreement rises with rotation from standing for both models (ρ 0.52-0.74): squat depth is
-  under-estimated, matching the knee-raise compression noted in code/README.md.
+  under-estimated, matching the knee-raise compression noted in pipeline/README.md.
 - Forearm patterns (Watch given: MobilePoser better far from the calibration pose; Watch held out:
   worst when the arm is still) are consistent with the Watch calibration convention error.
 - No relation with sample age (gaps rare in this session), so stream quality did not drive errors here.

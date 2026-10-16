@@ -1,15 +1,23 @@
-## What and why
+<!-- Title = the squash-merge commit subject: type(scope): desc, same type as the branch (CONTRIBUTING.md). -->
 
-<!-- One or two sentences. Link the design section or test IDs (e.g. FIELD_RECORDING_DESIGN §5, TEST_PLAN W1-W10). -->
+## Why
+
+<!-- One or two sentences: the problem or goal. -->
+
+## What changed
+
+<!-- Bullets of the visible changes. -->
 
 ## How it was checked
 
-- [ ] `pre-commit run --all-files` passes
-- [ ] Tests for this change pass (list IDs / commands):
-- [ ] Device test needed? If yes, which (T#) and result:
+- [ ] `tools/check.sh` passes
+- Tests run (IDs or commands):
+- Device tests (T#) and result, if any:
 
-## Checklist
+## Plan
 
-- [ ] No recordings, videos, weights or SMPL files added
-- [ ] Docs updated (README / design / TEST_PLAN) if behaviour changed
-- [ ] `EXPERIMENT_LOG.md` updated if this is an experiment or a device test run
+- Stage / task:
+- [ ] Status in `docs/plan/dev-plan.md` updated
+- [ ] The doc that owns this topic is updated
+- [ ] `EXPERIMENT_LOG.md` updated (experiments and device tests only)
+- [ ] No recordings, videos, weights or SMPL files

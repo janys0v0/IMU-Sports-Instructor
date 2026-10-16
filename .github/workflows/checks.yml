@@ -14,7 +14,22 @@ jobs:
         with:
           python-version: "3.9"
       - run: pip install pre-commit
-      # Swift checks need Xcode, so they run locally only; branch rule is local only.
+      # Swift checks need Xcode, so they run locally only. Branch names are checked in pr-format.
       - run: pre-commit run --all-files --show-diff-on-failure
         env:
-          SKIP: swift-format,swift-format-lint,no-commit-to-branch
+          SKIP: swift-format,swift-format-lint,no-commit-to-branch,branch-name-format
+
+  pr-format:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Branch, title and body come in through env vars, never inline in the script.
+      - name: Branch, title and description follow the project format
+        env:
+          PR_BRANCH: ${{ github.head_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          printf '%s' "$PR_BODY" > "$RUNNER_TEMP/pr_body.md"
+          python3 tools/check_format.py --pr "$PR_BRANCH" "$PR_TITLE" "$RUNNER_TEMP/pr_body.md"

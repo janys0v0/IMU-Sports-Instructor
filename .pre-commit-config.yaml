@@ -4,7 +4,7 @@ default_install_hook_types: [pre-commit, commit-msg]
 default_stages: [pre-commit]
 default_language_version:
   python: python3
-exclude: ^code/(MobilePoser|IMUCoCo)/
+exclude: ^third_party/(MobilePoser|IMUCoCo)/
 
 repos:
   # General hygiene
@@ -13,9 +13,9 @@ repos:
     hooks:
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
-        exclude: ^patches/  # patch context lines must keep their whitespace
+        exclude: ^third_party/patches/  # patch context lines must keep their whitespace
       - id: end-of-file-fixer
-        exclude: ^patches/
+        exclude: ^third_party/patches/
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: check-yaml
@@ -52,6 +52,16 @@ repos:
         language: system
         types: [swift]
 
+  # Docs: every local link and #heading must exist
+  - repo: local
+    hooks:
+      - id: doc-links
+        name: doc links resolve
+        entry: python3 tools/check_doc_links.py
+        language: system
+        types: [markdown]
+        pass_filenames: false
+
   # Data guard: recordings and model files must never be committed
   - repo: local
     hooks:
@@ -59,12 +69,19 @@ repos:
         name: no recordings, videos or model files
         entry: Data and model files belong on the shared drive, not in git (see CONTRIBUTING.md)
         language: fail
-        files: (^code/recordings/|\.(mp4|mov|npz|npy|pt|pth|ckpt|pkl|zip|h5|jsonl|bin)$)
+        files: (^data/|\.(mp4|mov|npz|npy|pt|pth|ckpt|pkl|zip|h5|jsonl|bin)$)
 
-  # Commit messages: Conventional Commits
-  - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v3.6.0
+  # Branch names and commit messages: project format (tools/check_format.py, CONTRIBUTING.md)
+  - repo: local
     hooks:
-      - id: conventional-pre-commit
+      - id: branch-name-format
+        name: branch name format
+        entry: python3 tools/check_format.py --branch
+        language: system
+        always_run: true
+        pass_filenames: false
+      - id: commit-msg-format
+        name: commit message format
+        entry: python3 tools/check_format.py
+        language: system
         stages: [commit-msg]
-        args: [feat, fix, docs, test, refactor, perf, build, ci, chore, exp, data]

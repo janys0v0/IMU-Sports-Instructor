@@ -3,7 +3,7 @@
 [tool.ruff]
 line-length = 100
 target-version = "py39"
-extend-exclude = ["code/MobilePoser", "code/IMUCoCo"]
+extend-exclude = ["third_party"]
 
 [tool.ruff.lint]
 # pycodestyle, pyflakes, import order, bugbear, pyupgrade, simplify
@@ -14,7 +14,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["motion_io", "resample", "calibration", "common"]
+known-first-party = ["pipeline", "experiments"]
 
 [tool.pytest.ini_options]
-testpaths = ["code/tests"]
+testpaths = ["tests"]
