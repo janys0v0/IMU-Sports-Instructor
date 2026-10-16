@@ -85,7 +85,8 @@ One vocabulary for every name, so a branch, its commits and its pull request rea
 Never: AI co-author lines, "Generated with" footers, or commits directly on `main`.
 
 **Enforced by:** the `commit-msg` and branch-name hooks on every commit; GitHub Actions on every
-pull request (branch, title, description, and that the title's type matches the branch's).
+pull request (branch, title, description, and that the title's type matches the branch's),
+re-run whenever the title or description is edited.
 `git commit` opens `.gitmessage` as a prefilled template.
 
 ## Checks on every commit
