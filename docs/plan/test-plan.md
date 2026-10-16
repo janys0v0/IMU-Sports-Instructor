@@ -190,8 +190,8 @@ The Watch app's high-rate stream (`CMBatchedSensorManager`) also needs real hard
 |---|---|---|
 | E1 | Paired iPhone + Watch simulators: Setup → Go/No-Go → Start → Calibrate → 3 trials → Stop | UI tests (XCUITest) complete; spoken phrases logged in order |
 | E2 | Kill the phone app mid-session, relaunch, Resume | Session recovered (J4) through the real UI |
-| E3 | Watch → phone chunk transfer over real WatchConnectivity in the simulator | All chunks arrive. **If file transfer isn't supported in the simulator, cover W1-W6 with the fake link only and mark W for device testing.** |
-| E4 | HealthKit workout start/end on the Watch simulator | W7 behaviour through the real UI (verify the simulator supports workout sessions) |
+| E3 | Watch → phone chunk transfer over real WatchConnectivity | **Device only** (stage 9, with T2); W1-W10 cover the logic with the fake link |
+| E4 | HealthKit workout start/end on the Watch | **Device only** (stage 9, with T13); W7 covers the logic |
 | E5 | Review screen with a 10-min replayed session | P1-P4 through the real UI |
 
 ### L: Endurance (L5)

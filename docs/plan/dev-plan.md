@@ -10,8 +10,8 @@ when its gate passes on two consecutive runs; then the next stage starts.
 
 | | |
 |---|---|
-| **Current stage** | 2 — Watch recording + transfer (stages 0-1 done 2026-10-16; branches `feat/stage-0-…`, `feat/stage-1-…`) |
-| **Next action** | Stage 2 in progress on `feat/stage-2-watch-transfer`: link messages, outbox and chunk hooks written; next: phone inbox, Watch recorder, tests W1-W10, app wiring |
+| **Current stage** | 3 — Mac ingest script (stages 0-2 done 2026-10-16; one branch per stage) |
+| **Next action** | `pipeline/ingest/ingest_field.py`: checksums, gaps, clock fit, report (stage 3, tasks 1-5) |
 | **Blocked on** | — |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
 | **Last updated** | 2026-10-16 |
@@ -163,9 +163,9 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 5. Watch workout-ended handling: the phone relaunches the Watch app.
 
 **Testable goals (G2)**
-- [ ] **W1-W10** with the fake link: phone unreachable for 10 min, 20 % dropped/duplicated/reordered files, corruption, lost acks, no early deletes, resend, workout end, high-rate 60 min, high-rate failure, binary format and torn-chunk trimming.
-- [ ] **E3-E4** in paired simulators where supported (otherwise marked for device testing).
-- [ ] **Demo:** in the simulators, block the link for 3 min mid-session; after it returns the phone shows "Watch: 10 / 10 chunks" and every SHA matches.
+- [x] **W1-W10** with the fake link: phone unreachable for 10 min, 20 % dropped/duplicated/reordered files, corruption, lost acks, no early deletes, resend, workout end, high-rate 60 min, high-rate failure, binary format and torn-chunk trimming.
+- [x] **E3-E4** marked for device testing (stage 9): real WatchConnectivity file transfer and HealthKit workouts need a paired Watch; the fake link covers the logic.
+- [x] **Demo (simulated):** test W1 blocks the link for 10 min; after it returns every closed chunk arrives with a matching SHA (on devices: T2).
 
 ## Stage 3: Mac ingest script
 

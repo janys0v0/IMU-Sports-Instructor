@@ -40,15 +40,16 @@ struct WatchContentView: View {
                 if streamer.isRunning {
                     Text(String(format: "%.1f Hz", streamer.measuredHz))
                     Text("Samples: \(streamer.samplesRecorded)")
-                    Text("Queued batches: \(streamer.pendingBatches)")
-                    if streamer.droppedSamples > 0 {
-                        Text("Dropped: \(streamer.droppedSamples)").foregroundStyle(.red)
-                    }
+                    Text("High-rate: \(streamer.highRateStatus)").font(.footnote)
                 }
                 Button(streamer.isRunning ? "Stop" : "Start") {
                     streamer.isRunning ? streamer.stop() : streamer.start()
                 }
                 .tint(streamer.isRunning ? .red : .green)
+                if streamer.chunksSaved > 0 {
+                    Text("Chunks on iPhone: \(streamer.chunksAcked) / \(streamer.chunksSaved)").font(.footnote)
+                    Button("Resend session") { streamer.resendSession() }
+                }
                 Text("Normally started from the iPhone app.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)

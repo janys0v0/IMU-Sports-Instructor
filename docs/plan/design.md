@@ -105,6 +105,8 @@ free on the phone and 2 GB on the Watch.**
 - **High-rate chunks are sent after the session**, not during play (radio time and battery).
   Keep the Watch near the phone with the app open, ideally charging; the phone shows
   "High-rate: N / M sent". Expect several minutes per hour of data.
+- At Stop the Watch also sends a snapshot of its journal (`watch_journal.jsonl`) and a summary
+  message with its chunk counts, so the phone can show "N / M" and the Mac sees the Watch's side.
 - The Watch keeps every chunk until the **Mac has verified** the session. A "Resend session"
   button sends everything again; duplicates are harmless.
 - Move each received file out of the WatchConnectivity inbox before the delegate returns (the

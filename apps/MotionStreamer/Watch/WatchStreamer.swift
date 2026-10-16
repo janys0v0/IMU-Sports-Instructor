@@ -5,7 +5,8 @@ import MotionStreamerCore
 import WatchConnectivity
 import WatchKit
 
-/// Records wrist motion and forwards it to the iPhone in batches.
+/// Records wrist motion on the Watch's own disk (60 Hz chunks sent as they close, high-rate chunks
+/// after Stop) and sends live preview batches to the iPhone (design §3).
 /// A workout session keeps the app running while the wrist is down.
 final class WatchStreamer: NSObject, ObservableObject {
     static let shared = WatchStreamer()
@@ -13,17 +14,25 @@ final class WatchStreamer: NSObject, ObservableObject {
     @Published private(set) var isRunning = false
     @Published private(set) var phoneReachable = false
     @Published private(set) var samplesRecorded = 0
-    @Published private(set) var pendingBatches = 0
-    @Published private(set) var droppedSamples = 0
     @Published private(set) var measuredHz = 0.0
     @Published private(set) var status = "Idle"
+    @Published private(set) var chunksSaved = 0
+    @Published private(set) var chunksAcked = 0
+    @Published private(set) var highRateStatus = "Off"
 
-    /// Batches kept while the iPhone is unreachable (60 x 10 samples = 10 s at 60 Hz).
+    /// Live preview batches kept while the iPhone is unreachable; the full data is on disk anyway.
     private let maxPendingBatches = 60
 
     private let motion = CMMotionManager()
     private let healthStore = HKHealthStore()
     private var workout: HKWorkoutSession?
+    private let link = WCSessionLink()
+    private let store = LocalFileStore(
+        root: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0])
+    private let clock = SystemClock()
+    private var tickTimer: Timer?
+    private var highRateTasks: [Task<Void, Never>] = []
+    private let batched = CMBatchedSensorManager()
 
     // State below is touched only on `queue`.
     private let queue: OperationQueue = {
@@ -32,6 +41,8 @@ final class WatchStreamer: NSObject, ObservableObject {
         q.name = "WatchStreamer"
         return q
     }()
+    private var recorder: WatchRecorder?
+    private var loc = "wrist"
     private var buffer: [MotionSample] = []
     private var pending: [WatchBatch] = []
     private var seq = 0
@@ -46,11 +57,19 @@ final class WatchStreamer: NSObject, ObservableObject {
             WCSession.default.delegate = self
             WCSession.default.activate()
         }
+        link.onMessage = { [weak self] data in
+            guard let message = LinkMessage.decode(data) else { return }
+            self?.queue.addOperation {
+                self?.recorder?.outbox.handle(message)
+                self?.publishTransfer()
+            }
+        }
         let workoutType = HKObjectType.workoutType()
         healthStore.requestAuthorization(toShare: [workoutType], read: []) { _, _ in }
     }
 
-    func start() {
+    /// Starts recording. `sessionID` comes from the iPhone; without one the Watch makes its own.
+    func start(sessionID: String? = nil, loc: String? = nil) {
         guard !isRunning else { return }
         guard motion.isDeviceMotionAvailable else {
             setStatus("Device motion unavailable")
@@ -60,7 +79,10 @@ final class WatchStreamer: NSObject, ObservableObject {
 
         let ref = preferredReferenceFrame()
         let osVersion = WKInterfaceDevice.current().systemVersion
+        let id = sessionID ?? Self.newSessionID()
         queue.addOperation {
+            self.loc = loc ?? self.loc
+            self.recorder = self.openRecorder(id: id, ref: ref.name, os: osVersion)
             self.buffer = []
             self.pending = []
             self.seq = 0
@@ -77,26 +99,77 @@ final class WatchStreamer: NSObject, ObservableObject {
             guard let self, let data, error == nil else { return }
             self.handle(data)
         }
+        startHighRate()
+        tickTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            self?.queue.addOperation {
+                self?.recorder?.tick()
+                self?.publishTransfer()
+            }
+        }
         DispatchQueue.main.async {
             self.isRunning = true
             self.samplesRecorded = 0
-            self.droppedSamples = 0
-            self.status = "Streaming (\(ref.name))"
+            self.status = "Recording (\(ref.name))"
         }
     }
 
     func stop() {
         guard isRunning else { return }
         motion.stopDeviceMotionUpdates()
+        stopHighRate()
+        tickTimer?.invalidate()
+        tickTimer = nil
         queue.addOperation {
             if !self.buffer.isEmpty { self.enqueueBatch() }
             self.flush()
+            try? self.recorder?.stop()
+            self.publishTransfer()
         }
         workout?.end()
         workout = nil
         DispatchQueue.main.async {
             self.isRunning = false
-            self.status = "Stopped"
+            self.status = "Stopped; sending the rest to the iPhone"
+        }
+    }
+
+    /// The Watch's "Resend session" button: every chunk again (duplicates are harmless).
+    func resendSession() {
+        queue.addOperation { self.recorder?.outbox.resendAll() }
+    }
+
+    // MARK: - Recorder (on queue)
+
+    private func openRecorder(id: String, ref: String, os: String) -> WatchRecorder? {
+        let metadata: [String: Any] = [
+            "model": hardwareModel(), "os": os, "ref_frame": ref, "loc": loc,
+            "sample_rate_hz": MotionFormat.sampleRateHz,
+        ]
+        do {
+            if SessionRecorder.unclosedSessions(store: store).contains(id) {
+                _ = try SessionRecorder.recover(store: store, clock: clock, sessionID: id)
+                return try WatchRecorder.resume(store: store, clock: clock, link: link, sessionID: id)
+            }
+            let r = try WatchRecorder.start(store: store, clock: clock, link: link, sessionID: id, metadata: metadata)
+            return r
+        } catch {
+            setStatus("Cannot record: \(error)")
+            return nil
+        }
+    }
+
+    private static func newSessionID() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd-HHmmss"
+        return "\(formatter.string(from: Date()))-W"
+    }
+
+    private func publishTransfer() {
+        let saved = (recorder?.outbox.items.count) ?? 0
+        let acked = (recorder?.outbox.acked.count) ?? 0
+        DispatchQueue.main.async {
+            self.chunksSaved = saved
+            self.chunksAcked = acked
         }
     }
 
@@ -122,14 +195,24 @@ final class WatchStreamer: NSObject, ObservableObject {
         let batch = WatchBatch(
             seq: seq, firstIndex: nextIndex, bootToUnix: bootToUnixOffset(),
             refFrame: refFrameName, sentWatch: 0, samples: buffer)
+        // The durable copy: the same JSON packets the iPhone writes for the Watch stream.
+        let header: [String: Any] = [
+            "v": MotionFormat.version, "type": "imu", "session": recorder?.sessionID ?? "", "device": "watch",
+            "loc": loc, "seq": seq, "rate_hz": MotionFormat.sampleRateHz, "boot_to_unix": batch.bootToUnix,
+            "ref_frame": refFrameName, "source": "watch_disk",
+        ]
+        for (k, packet) in PacketEncoder.imuPackets(header: header, samples: buffer, firstIndex: nextIndex).enumerated()
+        {
+            let first = nextIndex + k * MotionFormat.samplesPerPacket
+            recorder?.recordMotion(
+                packet, firstIndex: first,
+                count: min(MotionFormat.samplesPerPacket, buffer.count - k * MotionFormat.samplesPerPacket))
+        }
         seq += 1
         nextIndex += buffer.count
         buffer = []
         pending.append(batch)
-        if pending.count > maxPendingBatches {
-            let lost = pending.removeFirst().samples.count
-            DispatchQueue.main.async { self.droppedSamples += lost }
-        }
+        if pending.count > maxPendingBatches { pending.removeFirst() }  // preview only; the disk has it
         let recorded = nextIndex
         DispatchQueue.main.async { self.samplesRecorded = recorded }
     }
@@ -144,20 +227,8 @@ final class WatchStreamer: NSObject, ObservableObject {
             var batch = pending.removeFirst()
             batch.sentWatch = uptime()
             guard let data = try? JSONEncoder().encode(batch) else { continue }
-            session.sendMessageData(data, replyHandler: nil) { [weak self] _ in
-                // Delivery failed: put the batch back so it is retried in order.
-                self?.queue.addOperation {
-                    self?.pending.insert(batch, at: 0)
-                    self?.publishPending()
-                }
-            }
+            session.sendMessageData(data, replyHandler: nil, errorHandler: nil)
         }
-        publishPending()
-    }
-
-    private func publishPending() {
-        let count = pending.count
-        DispatchQueue.main.async { self.pendingBatches = count }
     }
 
     private func makeHello(refFrame: String, os: String) -> Data? {
@@ -165,6 +236,55 @@ final class WatchStreamer: NSObject, ObservableObject {
             model: hardwareModel(), os: os,
             refFrame: refFrame, rateHz: MotionFormat.sampleRateHz)
         return try? JSONEncoder().encode(hello)
+    }
+
+    // MARK: - High-rate stream (CMBatchedSensorManager, design §2)
+
+    private func startHighRate() {
+        guard CMBatchedSensorManager.isAccelerometerSupported, CMBatchedSensorManager.isDeviceMotionSupported else {
+            queue.addOperation { self.recorder?.highRateFailed("not supported on this Watch") }
+            DispatchQueue.main.async { self.highRateStatus = "Not supported" }
+            return
+        }
+        DispatchQueue.main.async { self.highRateStatus = "800 / 200 Hz" }
+        let accel = Task { [weak self, batched] in
+            do {
+                for try await batch in batched.accelerometerUpdates() {
+                    let records = batch.map {
+                        HighRateFormat.Record.accel([
+                            $0.timestamp, $0.acceleration.x, $0.acceleration.y, $0.acceleration.z,
+                        ])
+                    }
+                    self?.queue.addOperation { self?.recorder?.recordHighRate(records) }
+                }
+            } catch {
+                self?.highRateStopped(error)
+            }
+        }
+        let deviceMotion = Task { [weak self, batched] in
+            do {
+                for try await batch in batched.deviceMotionUpdates() {
+                    let records = batch.map { HighRateFormat.Record.motion($0.sample) }
+                    self?.queue.addOperation { self?.recorder?.recordHighRate(records) }
+                }
+            } catch {
+                self?.highRateStopped(error)
+            }
+        }
+        highRateTasks = [accel, deviceMotion]
+    }
+
+    private func stopHighRate() {
+        highRateTasks.forEach { $0.cancel() }
+        highRateTasks = []
+        batched.stopAccelerometerUpdates()
+        batched.stopDeviceMotionUpdates()
+    }
+
+    private func highRateStopped(_ error: Error) {
+        guard !(error is CancellationError) else { return }
+        queue.addOperation { self.recorder?.highRateFailed(error.localizedDescription) }
+        DispatchQueue.main.async { self.highRateStatus = "Stopped: \(error.localizedDescription)" }
     }
 
     // MARK: - Workout
@@ -193,10 +313,15 @@ extension WatchStreamer: HKWorkoutSessionDelegate {
     func workoutSession(
         _ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState,
         from fromState: HKWorkoutSessionState, date: Date
-    ) {}
+    ) {
+        // Ended without our Stop (crown press, watchOS): tell the iPhone, which relaunches us (test W7).
+        guard toState == .ended, workoutSession === workout else { return }
+        queue.addOperation { self.recorder?.workoutEnded("workout ended (\(fromState.rawValue) → ended)") }
+    }
 
     func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
         setStatus("Workout error: \(error.localizedDescription)")
+        queue.addOperation { self.recorder?.workoutEnded("workout failed: \(error.localizedDescription)") }
     }
 }
 
@@ -212,7 +337,16 @@ extension WatchStreamer: WCSessionDelegate {
     func sessionReachabilityDidChange(_ session: WCSession) {
         let reachable = session.isReachable
         DispatchQueue.main.async { self.phoneReachable = reachable }
-        if reachable { queue.addOperation { self.flush() } }
+        if reachable {
+            queue.addOperation {
+                self.flush()
+                self.recorder?.outbox.tick()
+            }
+        }
+    }
+
+    func session(_ session: WCSession, didReceiveMessageData messageData: Data) {
+        link.received(messageData: messageData)
     }
 
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
@@ -237,9 +371,12 @@ extension WatchStreamer: WCSessionDelegate {
     }
 
     private func handleCommand(_ message: [String: Any]) {
+        let session = message["session"] as? String
+        let loc = message["loc"] as? String
         switch message["cmd"] as? String {
-        case "start": DispatchQueue.main.async { self.start() }
+        case "start": DispatchQueue.main.async { self.start(sessionID: session, loc: loc) }
         case "stop": DispatchQueue.main.async { self.stop() }
+        case "resend": resendSession()
         default: break
         }
     }

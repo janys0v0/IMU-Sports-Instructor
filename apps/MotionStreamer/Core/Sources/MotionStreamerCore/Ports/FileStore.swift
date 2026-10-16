@@ -117,7 +117,11 @@ public final class LocalFileStore: FileStore {
     }
 
     public func writeAtomically(_ data: Data, to path: String) throws {
-        try data.write(to: url(path), options: [.atomic])
+        #if os(iOS) || os(watchOS)
+            try data.write(to: url(path), options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        #else
+            try data.write(to: url(path), options: [.atomic])
+        #endif
     }
 
     public var freeBytes: Int64 {

@@ -49,6 +49,8 @@ final class StreamController: NSObject, ObservableObject {
     @Published var errorMessage: String?
     /// Countdown / hold text while a calibration is in progress.
     @Published private(set) var calibrationStatus: String?
+    /// "Watch: 58 / 60 chunks · high-rate 12 / 60" for the status section (design §3).
+    @Published private(set) var watchTransfer = "–"
     /// A session a crash left open, offered for Resume at launch (design §4).
     @Published private(set) var interrupted: (id: String, at: Date)?
 
@@ -75,6 +77,9 @@ final class StreamController: NSObject, ObservableObject {
         root: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0])
     private let clock = SystemClock()
     private var replay: ReplayMotionSource?
+    private let link = WCSessionLink()
+    private lazy var inbox = TransferInbox(store: store, clock: clock, link: link)
+    private lazy var supervisor = WatchSupervisor(clock: clock)
     /// Copies of the link state for the recording queue (the @Published ones belong to the main thread).
     private var ioWatchReachable = false
     private var ioAirPodsConnected = false
@@ -113,6 +118,29 @@ final class StreamController: NSObject, ObservableObject {
         UIDevice.current.isBatteryMonitoringEnabled = true
         observeLifecycle()
         findInterruptedSession()
+        setUpWatchTransfer()
+    }
+
+    /// Watch chunks arrive as files; acks and the Watch's summary as messages (design §3).
+    private func setUpWatchTransfer() {
+        link.onFile = { [weak self] data, metadata in
+            self?.ioQueue.async { self?.inbox.receive(data, metadata: metadata) }
+        }
+        ioQueue.async {
+            self.inbox.onChange = { [weak self] session in self?.publishTransfer(session) }
+            self.supervisor.onRelaunch = { [weak self] in DispatchQueue.main.async { self?.launchWatch() } }
+            self.supervisor.onEvent = { [weak self] name, detail in self?.logEvent(name, detail: detail) }
+            // Spoken in stage 7; logged now so every Watch stop is on record.
+            self.supervisor.onAlert = { [weak self] id in self?.logEvent("alert", detail: id) }
+        }
+    }
+
+    private func publishTransfer(_ session: String) {
+        let main = inbox.progress(session: session, kind: "60hz")
+        let hf = inbox.progress(session: session, kind: "hf")
+        let text =
+            "\(main.received) / \(main.total.map(String.init) ?? "…") chunks · high-rate \(hf.received) / \(hf.total.map(String.init) ?? "…")"
+        DispatchQueue.main.async { self.watchTransfer = text }
     }
 
     var phoneLocation: String { "\(wrist.rawValue)_pocket" }
@@ -244,11 +272,11 @@ final class StreamController: NSObject, ObservableObject {
                 guard let self, let data, error == nil else { return }
                 self.handlePhone(data.sample)
             }
-            launchWatch()
             startHeadphones()
         }
 
         sessionID = id
+        if replayRecording == nil { launchWatch() }
         isRecording = true
         packetsSent = 0
         macReceived = nil
@@ -258,8 +286,10 @@ final class StreamController: NSObject, ObservableObject {
         statsTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.publishStats()
             self?.ioQueue.async {
-                self?.recorder?.tick()
-                if self?.recorder?.checkClock() == true { self?.logEvent("clock_jump") }
+                guard let self else { return }
+                self.recorder?.tick()
+                if self.recorder?.checkClock() == true { self.logEvent("clock_jump") }
+                if self.active { self.supervisor.tick(watchReachable: self.ioWatchReachable) }
             }
         }
         syncTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
@@ -509,17 +539,21 @@ final class StreamController: NSObject, ObservableObject {
                 }
             }
         }
-        // Also send a start command in case the Watch app is already open.
-        sendWatchCommand("start")
+        // Also send a start command in case the Watch app is already open; the session ID makes the
+        // Watch save its chunks under the same session (and resume it after a relaunch).
+        sendWatchCommand("start", extra: ["session": sessionID, "loc": watchLocation])
     }
 
-    private func sendWatchCommand(_ command: String) {
+    private func sendWatchCommand(_ command: String, extra: [String: Any] = [:]) {
         let session = WCSession.default
         guard session.activationState == .activated else { return }
+        var message = extra
+        message["cmd"] = command
+        message["at"] = Date().timeIntervalSince1970
         if session.isReachable {
-            session.sendMessage(["cmd": command], replyHandler: nil, errorHandler: nil)
-        } else if command == "stop" {
-            try? session.updateApplicationContext(["cmd": "stop", "at": Date().timeIntervalSince1970])
+            session.sendMessage(message, replyHandler: nil, errorHandler: nil)
+        } else {
+            try? session.updateApplicationContext(message)
         }
     }
 
@@ -682,7 +716,21 @@ extension StreamController: WCSessionDelegate {
     }
 
     func session(_ session: WCSession, didReceiveMessageData messageData: Data) {
-        ioQueue.async { self.handleWatch(messageData) }
+        if let message = LinkMessage.decode(messageData) {
+            ioQueue.async {
+                self.inbox.handle(message)
+                self.supervisor.handle(message)
+            }
+        } else {
+            ioQueue.async {
+                self.handleWatch(messageData)
+                self.supervisor.batchReceived()
+            }
+        }
+    }
+
+    func session(_ session: WCSession, didReceive file: WCSessionFile) {
+        link.received(file: file)
     }
 
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
