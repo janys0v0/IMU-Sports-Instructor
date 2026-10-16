@@ -1,0 +1,689 @@
+{
+  "session": "20261008-153213-P01",
+  "segments": 1,
+  "calibration_passed": {
+    "head": true,
+    "right_pocket": true,
+    "right_wrist": true
+  },
+  "frames": 1336,
+  "configurations": {
+    "rw_rp_h": {
+      "devices": [
+        "head",
+        "right_pocket",
+        "right_wrist"
+      ],
+      "trained_combo": true,
+      "metrics": {
+        "orientation_error_deg": {
+          "head": {
+            "mean": 17.3,
+            "median": 14.2
+          },
+          "right_pocket": {
+            "mean": 21.1,
+            "median": 11.7
+          },
+          "right_wrist": {
+            "mean": 45.3,
+            "median": 40.1
+          }
+        },
+        "activities": {
+          "standing_still": {
+            "window_s": [
+              18.2,
+              19.5
+            ],
+            "reported_reps": null,
+            "wrist_height_right_m": 0.29,
+            "wrist_height_left_m": 0.29,
+            "orientation_error_deg": {
+              "head": 6.3,
+              "right_pocket": 4.9,
+              "right_wrist": 42.7
+            }
+          },
+          "jumping_jacks": {
+            "window_s": [
+              19.5,
+              32.0
+            ],
+            "reported_reps": 3,
+            "detected_reps": 3,
+            "peak_wrist_height_m": 0.82,
+            "peak_other_wrist_height_m": 0.81,
+            "orientation_error_deg": {
+              "head": 15.1,
+              "right_pocket": 9.2,
+              "right_wrist": 47.6
+            }
+          },
+          "tennis_swings": {
+            "window_s": [
+              32.0,
+              47.5
+            ],
+            "reported_reps": 3,
+            "orientation_error_deg": {
+              "head": 16.5,
+              "right_pocket": 16.7,
+              "right_wrist": 45.0
+            }
+          },
+          "squats": {
+            "window_s": [
+              47.5,
+              56.2
+            ],
+            "reported_reps": 3,
+            "detected_reps": 3,
+            "peak_knee_flexion_deg": 112.2,
+            "orientation_error_deg": {
+              "head": 9.2,
+              "right_pocket": 12.8,
+              "right_wrist": 31.0
+            }
+          },
+          "head_turns": {
+            "window_s": [
+              56.2,
+              59.5
+            ],
+            "reported_reps": 2,
+            "airpods_left_deg": 49.1,
+            "model_left_deg": 42.2,
+            "airpods_right_deg": -71.7,
+            "model_right_deg": -16.3,
+            "yaw_rmse_deg": 22.2,
+            "orientation_error_deg": {
+              "head": 31.3,
+              "right_pocket": 10.8,
+              "right_wrist": 82.0
+            }
+          }
+        }
+      }
+    },
+    "rp_h": {
+      "devices": [
+        "head",
+        "right_pocket"
+      ],
+      "trained_combo": true,
+      "metrics": {
+        "orientation_error_deg": {
+          "head": {
+            "mean": 23.7,
+            "median": 21.1
+          },
+          "right_pocket": {
+            "mean": 15.1,
+            "median": 9.8
+          },
+          "right_wrist": {
+            "mean": 88.1,
+            "median": 80.0
+          }
+        },
+        "activities": {
+          "standing_still": {
+            "window_s": [
+              18.2,
+              19.5
+            ],
+            "reported_reps": null,
+            "wrist_height_right_m": -0.09,
+            "wrist_height_left_m": -0.09,
+            "orientation_error_deg": {
+              "head": 11.2,
+              "right_pocket": 5.8,
+              "right_wrist": 92.8
+            }
+          },
+          "jumping_jacks": {
+            "window_s": [
+              19.5,
+              32.0
+            ],
+            "reported_reps": 3,
+            "detected_reps": 1,
+            "peak_wrist_height_m": 0.43,
+            "peak_other_wrist_height_m": 0.34,
+            "orientation_error_deg": {
+              "head": 25.8,
+              "right_pocket": 8.5,
+              "right_wrist": 76.2
+            }
+          },
+          "tennis_swings": {
+            "window_s": [
+              32.0,
+              47.5
+            ],
+            "reported_reps": 3,
+            "orientation_error_deg": {
+              "head": 22.1,
+              "right_pocket": 15.2,
+              "right_wrist": 98.5
+            }
+          },
+          "squats": {
+            "window_s": [
+              47.5,
+              56.2
+            ],
+            "reported_reps": 3,
+            "detected_reps": 3,
+            "peak_knee_flexion_deg": 108.4,
+            "orientation_error_deg": {
+              "head": 8.4,
+              "right_pocket": 11.1,
+              "right_wrist": 90.4
+            }
+          },
+          "head_turns": {
+            "window_s": [
+              56.2,
+              59.5
+            ],
+            "reported_reps": 2,
+            "airpods_left_deg": 49.1,
+            "model_left_deg": 7.6,
+            "airpods_right_deg": -71.7,
+            "model_right_deg": -45.7,
+            "yaw_rmse_deg": 21.9,
+            "orientation_error_deg": {
+              "head": 23.5,
+              "right_pocket": 10.9,
+              "right_wrist": 90.7
+            }
+          }
+        }
+      }
+    },
+    "rw_h": {
+      "devices": [
+        "head",
+        "right_wrist"
+      ],
+      "trained_combo": false,
+      "metrics": {
+        "orientation_error_deg": {
+          "head": {
+            "mean": 17.3,
+            "median": 13.3
+          },
+          "right_pocket": {
+            "mean": 26.1,
+            "median": 16.2
+          },
+          "right_wrist": {
+            "mean": 44.2,
+            "median": 40.7
+          }
+        },
+        "activities": {
+          "standing_still": {
+            "window_s": [
+              18.2,
+              19.5
+            ],
+            "reported_reps": null,
+            "wrist_height_right_m": 0.31,
+            "wrist_height_left_m": 0.3,
+            "orientation_error_deg": {
+              "head": 4.6,
+              "right_pocket": 5.2,
+              "right_wrist": 41.3
+            }
+          },
+          "jumping_jacks": {
+            "window_s": [
+              19.5,
+              32.0
+            ],
+            "reported_reps": 3,
+            "detected_reps": 3,
+            "peak_wrist_height_m": 0.86,
+            "peak_other_wrist_height_m": 0.86,
+            "orientation_error_deg": {
+              "head": 11.9,
+              "right_pocket": 11.4,
+              "right_wrist": 46.8
+            }
+          },
+          "tennis_swings": {
+            "window_s": [
+              32.0,
+              47.5
+            ],
+            "reported_reps": 3,
+            "orientation_error_deg": {
+              "head": 17.5,
+              "right_pocket": 22.7,
+              "right_wrist": 43.1
+            }
+          },
+          "squats": {
+            "window_s": [
+              47.5,
+              56.2
+            ],
+            "reported_reps": 3,
+            "detected_reps": 3,
+            "peak_knee_flexion_deg": 117.1,
+            "orientation_error_deg": {
+              "head": 8.9,
+              "right_pocket": 16.5,
+              "right_wrist": 27.2
+            }
+          },
+          "head_turns": {
+            "window_s": [
+              56.2,
+              59.5
+            ],
+            "reported_reps": 2,
+            "airpods_left_deg": 49.1,
+            "model_left_deg": 34.1,
+            "airpods_right_deg": -71.7,
+            "model_right_deg": 2.9,
+            "yaw_rmse_deg": 31.4,
+            "orientation_error_deg": {
+              "head": 48.3,
+              "right_pocket": 23.0,
+              "right_wrist": 76.1
+            }
+          }
+        }
+      }
+    },
+    "rw_rp": {
+      "devices": [
+        "right_pocket",
+        "right_wrist"
+      ],
+      "trained_combo": true,
+      "metrics": {
+        "orientation_error_deg": {
+          "head": {
+            "mean": 26.1,
+            "median": 18.1
+          },
+          "right_pocket": {
+            "mean": 15.3,
+            "median": 12.3
+          },
+          "right_wrist": {
+            "mean": 50.8,
+            "median": 40.9
+          }
+        },
+        "activities": {
+          "standing_still": {
+            "window_s": [
+              18.2,
+              19.5
+            ],
+            "reported_reps": null,
+            "wrist_height_right_m": 0.32,
+            "wrist_height_left_m": 0.33,
+            "orientation_error_deg": {
+              "head": 4.9,
+              "right_pocket": 4.7,
+              "right_wrist": 40.8
+            }
+          },
+          "jumping_jacks": {
+            "window_s": [
+              19.5,
+              32.0
+            ],
+            "reported_reps": 3,
+            "detected_reps": 4,
+            "peak_wrist_height_m": 0.69,
+            "peak_other_wrist_height_m": 0.69,
+            "orientation_error_deg": {
+              "head": 17.8,
+              "right_pocket": 9.7,
+              "right_wrist": 47.6
+            }
+          },
+          "tennis_swings": {
+            "window_s": [
+              32.0,
+              47.5
+            ],
+            "reported_reps": 3,
+            "orientation_error_deg": {
+              "head": 24.8,
+              "right_pocket": 16.2,
+              "right_wrist": 41.4
+            }
+          },
+          "squats": {
+            "window_s": [
+              47.5,
+              56.2
+            ],
+            "reported_reps": 3,
+            "detected_reps": 3,
+            "peak_knee_flexion_deg": 100.4,
+            "orientation_error_deg": {
+              "head": 13.1,
+              "right_pocket": 11.1,
+              "right_wrist": 35.5
+            }
+          },
+          "head_turns": {
+            "window_s": [
+              56.2,
+              59.5
+            ],
+            "reported_reps": 2,
+            "airpods_left_deg": 49.1,
+            "model_left_deg": 26.3,
+            "airpods_right_deg": -71.7,
+            "model_right_deg": -17.9,
+            "yaw_rmse_deg": 23.7,
+            "orientation_error_deg": {
+              "head": 48.0,
+              "right_pocket": 13.2,
+              "right_wrist": 80.8
+            }
+          }
+        }
+      }
+    },
+    "h": {
+      "devices": [
+        "head"
+      ],
+      "trained_combo": false,
+      "metrics": {
+        "orientation_error_deg": {
+          "head": {
+            "mean": 22.4,
+            "median": 21.8
+          },
+          "right_pocket": {
+            "mean": 26.3,
+            "median": 13.3
+          },
+          "right_wrist": {
+            "mean": 96.4,
+            "median": 94.1
+          }
+        },
+        "activities": {
+          "standing_still": {
+            "window_s": [
+              18.2,
+              19.5
+            ],
+            "reported_reps": null,
+            "wrist_height_right_m": -0.1,
+            "wrist_height_left_m": -0.09,
+            "orientation_error_deg": {
+              "head": 10.4,
+              "right_pocket": 6.6,
+              "right_wrist": 92.1
+            }
+          },
+          "jumping_jacks": {
+            "window_s": [
+              19.5,
+              32.0
+            ],
+            "reported_reps": 3,
+            "detected_reps": 1,
+            "peak_wrist_height_m": 0.4,
+            "peak_other_wrist_height_m": 0.41,
+            "orientation_error_deg": {
+              "head": 34.1,
+              "right_pocket": 10.0,
+              "right_wrist": 82.9
+            }
+          },
+          "tennis_swings": {
+            "window_s": [
+              32.0,
+              47.5
+            ],
+            "reported_reps": 3,
+            "orientation_error_deg": {
+              "head": 22.1,
+              "right_pocket": 30.6,
+              "right_wrist": 109.6
+            }
+          },
+          "squats": {
+            "window_s": [
+              47.5,
+              56.2
+            ],
+            "reported_reps": 3,
+            "detected_reps": 3,
+            "peak_knee_flexion_deg": 116.0,
+            "orientation_error_deg": {
+              "head": 14.1,
+              "right_pocket": 13.5,
+              "right_wrist": 102.4
+            }
+          },
+          "head_turns": {
+            "window_s": [
+              56.2,
+              59.5
+            ],
+            "reported_reps": 2,
+            "airpods_left_deg": 49.1,
+            "model_left_deg": 36.8,
+            "airpods_right_deg": -71.7,
+            "model_right_deg": -48.9,
+            "yaw_rmse_deg": 14.4,
+            "orientation_error_deg": {
+              "head": 18.7,
+              "right_pocket": 12.7,
+              "right_wrist": 103.9
+            }
+          }
+        }
+      }
+    },
+    "rp": {
+      "devices": [
+        "right_pocket"
+      ],
+      "trained_combo": true,
+      "metrics": {
+        "orientation_error_deg": {
+          "head": {
+            "mean": 28.7,
+            "median": 22.3
+          },
+          "right_pocket": {
+            "mean": 13.9,
+            "median": 9.5
+          },
+          "right_wrist": {
+            "mean": 93.6,
+            "median": 83.9
+          }
+        },
+        "activities": {
+          "standing_still": {
+            "window_s": [
+              18.2,
+              19.5
+            ],
+            "reported_reps": null,
+            "wrist_height_right_m": -0.04,
+            "wrist_height_left_m": -0.04,
+            "orientation_error_deg": {
+              "head": 8.5,
+              "right_pocket": 5.0,
+              "right_wrist": 72.3
+            }
+          },
+          "jumping_jacks": {
+            "window_s": [
+              19.5,
+              32.0
+            ],
+            "reported_reps": 3,
+            "detected_reps": 0,
+            "peak_wrist_height_m": null,
+            "peak_other_wrist_height_m": null,
+            "orientation_error_deg": {
+              "head": 22.4,
+              "right_pocket": 8.2,
+              "right_wrist": 82.1
+            }
+          },
+          "tennis_swings": {
+            "window_s": [
+              32.0,
+              47.5
+            ],
+            "reported_reps": 3,
+            "orientation_error_deg": {
+              "head": 25.0,
+              "right_pocket": 15.5,
+              "right_wrist": 98.3
+            }
+          },
+          "squats": {
+            "window_s": [
+              47.5,
+              56.2
+            ],
+            "reported_reps": 3,
+            "detected_reps": 3,
+            "peak_knee_flexion_deg": 100.6,
+            "orientation_error_deg": {
+              "head": 9.4,
+              "right_pocket": 9.7,
+              "right_wrist": 85.1
+            }
+          },
+          "head_turns": {
+            "window_s": [
+              56.2,
+              59.5
+            ],
+            "reported_reps": 2,
+            "airpods_left_deg": 49.1,
+            "model_left_deg": -21.7,
+            "airpods_right_deg": -71.7,
+            "model_right_deg": -56.8,
+            "yaw_rmse_deg": 44.4,
+            "orientation_error_deg": {
+              "head": 42.2,
+              "right_pocket": 12.0,
+              "right_wrist": 91.9
+            }
+          }
+        }
+      }
+    },
+    "rw": {
+      "devices": [
+        "right_wrist"
+      ],
+      "trained_combo": false,
+      "metrics": {
+        "orientation_error_deg": {
+          "head": {
+            "mean": 31.4,
+            "median": 26.5
+          },
+          "right_pocket": {
+            "mean": 27.5,
+            "median": 16.1
+          },
+          "right_wrist": {
+            "mean": 42.2,
+            "median": 39.9
+          }
+        },
+        "activities": {
+          "standing_still": {
+            "window_s": [
+              18.2,
+              19.5
+            ],
+            "reported_reps": null,
+            "wrist_height_right_m": 0.39,
+            "wrist_height_left_m": 0.37,
+            "orientation_error_deg": {
+              "head": 5.4,
+              "right_pocket": 5.9,
+              "right_wrist": 42.4
+            }
+          },
+          "jumping_jacks": {
+            "window_s": [
+              19.5,
+              32.0
+            ],
+            "reported_reps": 3,
+            "detected_reps": 4,
+            "peak_wrist_height_m": 0.7,
+            "peak_other_wrist_height_m": 0.71,
+            "orientation_error_deg": {
+              "head": 17.3,
+              "right_pocket": 13.4,
+              "right_wrist": 45.6
+            }
+          },
+          "tennis_swings": {
+            "window_s": [
+              32.0,
+              47.5
+            ],
+            "reported_reps": 3,
+            "orientation_error_deg": {
+              "head": 34.9,
+              "right_pocket": 26.0,
+              "right_wrist": 41.9
+            }
+          },
+          "squats": {
+            "window_s": [
+              47.5,
+              56.2
+            ],
+            "reported_reps": 3,
+            "detected_reps": 2,
+            "peak_knee_flexion_deg": 81.9,
+            "orientation_error_deg": {
+              "head": 27.7,
+              "right_pocket": 18.9,
+              "right_wrist": 25.9
+            }
+          },
+          "head_turns": {
+            "window_s": [
+              56.2,
+              59.5
+            ],
+            "reported_reps": 2,
+            "airpods_left_deg": 49.1,
+            "model_left_deg": 16.6,
+            "airpods_right_deg": -71.7,
+            "model_right_deg": -132.5,
+            "yaw_rmse_deg": 54.6,
+            "orientation_error_deg": {
+              "head": 81.6,
+              "right_pocket": 13.5,
+              "right_wrist": 67.9
+            }
+          }
+        }
+      }
+    }
+  }
+}

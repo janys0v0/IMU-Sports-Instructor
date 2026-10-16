@@ -1,0 +1,4 @@
+# Commit-check tools. Kept in their own venv (.venv-tools) because pre-commit needs a newer
+# `packaging` than the ML environment in code/.venv allows. See CONTRIBUTING.md.
+pre-commit>=3.5,<5
+ruff==0.8.4

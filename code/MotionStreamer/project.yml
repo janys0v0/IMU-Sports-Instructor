@@ -1,0 +1,70 @@
+# XcodeGen spec. Regenerate the Xcode project with:  xcodegen generate
+# Before running on devices: open MotionStreamer.xcodeproj, select each target,
+# Signing & Capabilities -> Team. If the bundle ID is taken, change BUNDLE_ID below.
+name: MotionStreamer
+
+options:
+  deploymentTarget:
+    iOS: "17.0"
+    watchOS: "10.0"
+
+settings:
+  base:
+    BUNDLE_ID: edu.es224.jjl.motionstreamer
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: R76T66Z8H8
+    MARKETING_VERSION: "0.1"
+    CURRENT_PROJECT_VERSION: "1"
+
+targets:
+  MotionStreamer:
+    type: application
+    platform: iOS
+    sources: [iOS, Shared]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID)
+        TARGETED_DEVICE_FAMILY: "1"
+    entitlements:
+      path: iOS/MotionStreamer.entitlements
+      properties:
+        com.apple.developer.healthkit: true
+    info:
+      path: iOS/Info.plist
+      properties:
+        CFBundleDisplayName: MotionStreamer
+        UILaunchScreen: {}
+        UIApplicationSupportsIndirectInputEvents: true
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+        NSMotionUsageDescription: Records phone motion for full-body pose estimation.
+        NSLocalNetworkUsageDescription: Streams motion data to the receiver on your Mac.
+        NSHealthShareUsageDescription: Starts a workout on Apple Watch so it can stream motion.
+        NSHealthUpdateUsageDescription: Starts a workout on Apple Watch so it can stream motion.
+    dependencies:
+      - target: MotionStreamerWatch
+
+  MotionStreamerWatch:
+    type: application
+    platform: watchOS
+    sources: [Watch, Shared]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID).watchkitapp
+        PRODUCT_NAME: MotionStreamerWatch
+    entitlements:
+      path: Watch/MotionStreamerWatch.entitlements
+      properties:
+        com.apple.developer.healthkit: true
+    info:
+      path: Watch/Info.plist
+      properties:
+        CFBundleDisplayName: MotionStreamer
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: $(BUNDLE_ID)
+        WKBackgroundModes: [workout-processing]
+        NSMotionUsageDescription: Records wrist motion for full-body pose estimation.
+        NSHealthShareUsageDescription: Runs a workout session so wrist motion keeps streaming.
+        NSHealthUpdateUsageDescription: Runs a workout session so wrist motion keeps streaming.

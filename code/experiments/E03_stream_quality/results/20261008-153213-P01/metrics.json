@@ -1,0 +1,158 @@
+{
+  "session": "20261008-153213-P01",
+  "events_s_after_start": [
+    [
+      "airpods_connected",
+      0.0022008749656379223
+    ],
+    [
+      "start",
+      0.0
+    ],
+    [
+      "airpods_auth",
+      0.000879541679751128
+    ],
+    [
+      "airpods_first_sample",
+      0.5832375833415426
+    ],
+    [
+      "watch_reachable",
+      0.6033938333275728
+    ],
+    [
+      "watch_hello",
+      0.7577411250094883
+    ],
+    [
+      "calibrate_requested",
+      5.171019958332181
+    ],
+    [
+      "calibrate",
+      15.177070166682824
+    ],
+    [
+      "calibrate_done",
+      18.172323249978945
+    ],
+    [
+      "stop",
+      63.67826849996345
+    ]
+  ],
+  "streams": {
+    "right_pocket": {
+      "device": "phone",
+      "whole_session": {
+        "requested_hz": 60.0,
+        "delivered_hz": 33.46,
+        "interval_ms_median": 29.89,
+        "interval_ms_p5_p95": [
+          29.89,
+          29.89
+        ],
+        "samples": 2120,
+        "expected_at_delivered_rate": 2130,
+        "coverage": 0.9953,
+        "missing_from_index": 10,
+        "duplicates": 0,
+        "gaps_over_100ms": 1,
+        "longest_gap_ms": 328.8,
+        "delivery_delay_ms_median": 172.6
+      },
+      "after_calibration": {
+        "requested_hz": 60.0,
+        "delivered_hz": 33.46,
+        "interval_ms_median": 29.89,
+        "interval_ms_p5_p95": [
+          29.89,
+          29.89
+        ],
+        "samples": 1512,
+        "expected_at_delivered_rate": 1522,
+        "coverage": 0.9934,
+        "missing_from_index": 10,
+        "duplicates": 0,
+        "gaps_over_100ms": 1,
+        "longest_gap_ms": 328.8,
+        "delivery_delay_ms_median": 172.6
+      }
+    },
+    "right_wrist": {
+      "device": "watch",
+      "whole_session": {
+        "requested_hz": 60.0,
+        "delivered_hz": 66.41,
+        "interval_ms_median": 15.06,
+        "interval_ms_p5_p95": [
+          15.06,
+          15.06
+        ],
+        "samples": 4205,
+        "expected_at_delivered_rate": 4229,
+        "coverage": 0.9943,
+        "missing_from_index": 5,
+        "duplicates": 0,
+        "gaps_over_100ms": 0,
+        "longest_gap_ms": 90.4,
+        "delivery_delay_ms_median": 341.3
+      },
+      "after_calibration": {
+        "requested_hz": 60.0,
+        "delivered_hz": 66.41,
+        "interval_ms_median": 15.06,
+        "interval_ms_p5_p95": [
+          15.06,
+          15.06
+        ],
+        "samples": 3012,
+        "expected_at_delivered_rate": 3022,
+        "coverage": 0.9967,
+        "missing_from_index": 5,
+        "duplicates": 0,
+        "gaps_over_100ms": 0,
+        "longest_gap_ms": 90.4,
+        "delivery_delay_ms_median": 341.3
+      }
+    },
+    "head": {
+      "device": "airpods",
+      "whole_session": {
+        "requested_hz": 25.0,
+        "delivered_hz": 50.0,
+        "interval_ms_median": 20.0,
+        "interval_ms_p5_p95": [
+          20.0,
+          20.0
+        ],
+        "samples": 2936,
+        "expected_at_delivered_rate": 3184,
+        "coverage": 0.9221,
+        "missing_from_index": 5,
+        "duplicates": 0,
+        "gaps_over_100ms": 30,
+        "longest_gap_ms": 253.2,
+        "delivery_delay_ms_median": 134.8
+      },
+      "after_calibration": {
+        "requested_hz": 25.0,
+        "delivered_hz": 50.0,
+        "interval_ms_median": 20.0,
+        "interval_ms_p5_p95": [
+          20.0,
+          20.0
+        ],
+        "samples": 2177,
+        "expected_at_delivered_rate": 2275,
+        "coverage": 0.9569,
+        "missing_from_index": 5,
+        "duplicates": 0,
+        "gaps_over_100ms": 14,
+        "longest_gap_ms": 219.2,
+        "delivery_delay_ms_median": 134.8
+      }
+    }
+  }
+}

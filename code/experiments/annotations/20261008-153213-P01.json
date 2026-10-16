@@ -1,0 +1,56 @@
+{
+  "session": "20261008-153213-P01",
+  "description": "Reference routine: slow jumping jacks, tennis swings, squats, then look left and right.",
+  "devices": {
+    "phone": "right front pocket, screen toward leg",
+    "watch": "right wrist",
+    "airpods": "worn"
+  },
+  "watch_side": "right",
+  "reported_by": "participant, after the session (2026-10-08)",
+  "window_source": "Times are seconds after Start. No trial markers were pressed; windows were set by hand from the Watch rotation rate, phone thigh inclination and AirPods yaw (see EXPERIMENT_LOG.md, 2026-10-08).",
+  "calibration": {
+    "calibrate_event_s": 15.2,
+    "hold_end_s": 18.2
+  },
+  "activities": [
+    {
+      "name": "standing_still",
+      "type": "standing",
+      "start": 18.2,
+      "end": 19.5,
+      "note": "Right after the calibration hold, arms hanging at the sides. A hanging arm puts the wrist about 0.05 m below the pelvis joint."
+    },
+    {
+      "name": "jumping_jacks",
+      "type": "jumping_jacks",
+      "start": 19.5,
+      "end": 32.0,
+      "reported_reps": 3,
+      "note": "Slow motion. The model shows 4 arm raises: a partial one near 21.5 s, then 3 full."
+    },
+    {
+      "name": "tennis_swings",
+      "type": "tennis_swings",
+      "start": 32.0,
+      "end": 47.5,
+      "reported_reps": 3,
+      "note": "Right arm (Watch arm). Torso and head rotate with each swing."
+    },
+    {
+      "name": "squats",
+      "type": "squats",
+      "start": 47.5,
+      "end": 56.2,
+      "reported_reps": 3
+    },
+    {
+      "name": "head_turns",
+      "type": "head_turns",
+      "start": 56.2,
+      "end": 59.5,
+      "reported_reps": 2,
+      "note": "One look left, one look right."
+    }
+  ]
+}

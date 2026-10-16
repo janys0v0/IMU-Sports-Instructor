@@ -1,0 +1,11 @@
+Starting evaluation: Imuposer
+============== offline ================
+SIP Error (deg): 21.97 (+/- 10.00)
+Angular Error (deg): 19.55 (+/- 8.95)
+Masked Angular Error (deg): 21.97 (+/- 10.00)
+Positional Error (cm): 8.15 (+/- 4.21)
+Masked Positional Error (cm): 7.48 (+/- 4.00)
+Mesh Error (cm): 10.44 (+/- 5.50)
+Jitter Error (100m/s^3): 0.97 (+/- 1.22)
+Distance Error (cm): 10.37 (+/- 7.27)
+python evaluate.py --model checkpoints/weights.pth --dataset imuposer  280.42s user 164.77s system 188% cpu 3:55.66 total

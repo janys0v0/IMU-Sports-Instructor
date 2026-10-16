@@ -1,0 +1,91 @@
+{
+  "reference_window_s": [
+    18.2,
+    19.5
+  ],
+  "routine_end_s": 59.5,
+  "full": {
+    "MobilePoser": {
+      "translation_m_at_routine_end": 1.08,
+      "translation_m_max": 1.08,
+      "translation_m_per_min": 1.62,
+      "vertical_range_m": 0.42,
+      "orientation": {
+        "head": {
+          "frames_back_at_reference": 431,
+          "drift_deg_per_min": 9.7,
+          "residual_at_reference_late_deg": 12.4,
+          "residual_mean_deg": 15.7
+        },
+        "right_pocket": {
+          "frames_back_at_reference": 201,
+          "drift_deg_per_min": 7.5,
+          "residual_at_reference_late_deg": 8.9,
+          "residual_mean_deg": 12.4
+        },
+        "right_wrist": {
+          "frames_back_at_reference": 0,
+          "drift_deg_per_min": null,
+          "residual_at_reference_late_deg": null,
+          "residual_mean_deg": 39.1
+        }
+      }
+    },
+    "IMUCoCo": {
+      "translation_m_at_routine_end": 0.19,
+      "translation_m_max": 0.56,
+      "translation_m_per_min": 0.28,
+      "vertical_range_m": 0.41,
+      "orientation": {
+        "head": {
+          "frames_back_at_reference": 431,
+          "drift_deg_per_min": 4.5,
+          "residual_at_reference_late_deg": 2.3,
+          "residual_mean_deg": 3.8
+        },
+        "right_pocket": {
+          "frames_back_at_reference": 201,
+          "drift_deg_per_min": 6.6,
+          "residual_at_reference_late_deg": 5.1,
+          "residual_mean_deg": 7.3
+        },
+        "right_wrist": {
+          "frames_back_at_reference": 0,
+          "drift_deg_per_min": null,
+          "residual_at_reference_late_deg": null,
+          "residual_mean_deg": 10.4
+        }
+      }
+    }
+  },
+  "translation_by_combo": {
+    "rw_rp_h": {
+      "MobilePoser": 1.08,
+      "IMUCoCo": 0.19
+    },
+    "rw_rp": {
+      "MobilePoser": 0.81,
+      "IMUCoCo": 0.5
+    },
+    "rp_h": {
+      "MobilePoser": 0.93,
+      "IMUCoCo": 0.43
+    },
+    "rp": {
+      "MobilePoser": 0.16,
+      "IMUCoCo": 0.22
+    },
+    "rw_h": {
+      "MobilePoser": 0.77,
+      "IMUCoCo": 1.2
+    },
+    "rw": {
+      "MobilePoser": 0.6,
+      "IMUCoCo": 2.52
+    },
+    "h": {
+      "MobilePoser": 0.2,
+      "IMUCoCo": 1.11
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "session": "20261008-153213-P01",
+  "frames": 1239,
+  "spearman_rho": {
+    "head": {
+      "rot_rate": {
+        "MobilePoser (input)": 0.32,
+        "MobilePoser (held out)": 0.35,
+        "IMUCoCo (input)": 0.4,
+        "IMUCoCo (held out)": 0.48
+      },
+      "acc": {
+        "MobilePoser (input)": 0.26,
+        "MobilePoser (held out)": 0.31,
+        "IMUCoCo (input)": 0.58,
+        "IMUCoCo (held out)": 0.31
+      },
+      "from_cal": {
+        "MobilePoser (input)": 0.33,
+        "MobilePoser (held out)": 0.37,
+        "IMUCoCo (input)": -0.02,
+        "IMUCoCo (held out)": 0.3
+      },
+      "age": {
+        "MobilePoser (input)": -0.03,
+        "MobilePoser (held out)": -0.04,
+        "IMUCoCo (input)": -0.02,
+        "IMUCoCo (held out)": 0.0
+      }
+    },
+    "right_pocket": {
+      "rot_rate": {
+        "MobilePoser (input)": 0.24,
+        "MobilePoser (held out)": 0.22,
+        "IMUCoCo (input)": 0.42,
+        "IMUCoCo (held out)": 0.15
+      },
+      "acc": {
+        "MobilePoser (input)": 0.22,
+        "MobilePoser (held out)": 0.16,
+        "IMUCoCo (input)": 0.32,
+        "IMUCoCo (held out)": 0.11
+      },
+      "from_cal": {
+        "MobilePoser (input)": 0.74,
+        "MobilePoser (held out)": 0.69,
+        "IMUCoCo (input)": 0.66,
+        "IMUCoCo (held out)": 0.52
+      },
+      "age": {
+        "MobilePoser (input)": 0.04,
+        "MobilePoser (held out)": 0.02,
+        "IMUCoCo (input)": 0.02,
+        "IMUCoCo (held out)": -0.01
+      }
+    },
+    "right_wrist": {
+      "rot_rate": {
+        "MobilePoser (input)": 0.1,
+        "MobilePoser (held out)": -0.19,
+        "IMUCoCo (input)": 0.34,
+        "IMUCoCo (held out)": -0.31
+      },
+      "acc": {
+        "MobilePoser (input)": 0.04,
+        "MobilePoser (held out)": -0.29,
+        "IMUCoCo (input)": 0.33,
+        "IMUCoCo (held out)": -0.34
+      },
+      "from_cal": {
+        "MobilePoser (input)": -0.45,
+        "MobilePoser (held out)": 0.4,
+        "IMUCoCo (input)": -0.18,
+        "IMUCoCo (held out)": 0.59
+      },
+      "age": {
+        "MobilePoser (input)": -0.0,
+        "MobilePoser (held out)": -0.0,
+        "IMUCoCo (input)": -0.0,
+        "IMUCoCo (held out)": -0.0
+      }
+    }
+  }
+}

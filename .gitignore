@@ -1,0 +1,50 @@
+# ── OS / editors ────────────────────────────────────────────────
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# ── Python ──────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+.venv-tools/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+
+# ── Xcode / XcodeGen ────────────────────────────────────────────
+# The .xcodeproj is generated from project.yml: run `xcodegen generate`.
+code/MotionStreamer/build/
+code/MotionStreamer/*.xcodeproj/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+
+# ── Upstream model repos (cloned + patched by tools/setup_upstream.sh) ──
+code/MobilePoser/
+code/IMUCoCo/
+
+# ── Data: kept on the shared drive, never in git ────────────────
+code/recordings/
+code/experiments/*/results/**
+!code/experiments/*/results/**/
+!code/experiments/*/results/**/*.md
+!code/experiments/*/results/**/*.json
+
+# Binary and model files anywhere
+*.mp4
+*.mov
+*.npz
+*.npy
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.zip
+*.h5
+*.bin

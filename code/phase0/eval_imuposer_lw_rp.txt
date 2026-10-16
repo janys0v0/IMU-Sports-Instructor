@@ -1,0 +1,11 @@
+Evaluation: imuposer, combo lw_rp, 34 sequences
+============== offline ================
+SIP Error (deg): 18.59 (+/- 7.02)
+Angular Error (deg): 18.65 (+/- 8.10)
+Masked Angular Error (deg): 18.59 (+/- 7.02)
+Positional Error (cm): 7.39 (+/- 3.74)
+Masked Positional Error (cm): 5.92 (+/- 2.76)
+Mesh Error (cm): 9.60 (+/- 4.85)
+Jitter Error (100m/s^3): 1.04 (+/- 1.32)
+Distance Error (cm): 10.68 (+/- 7.41)
+[0, tensor(0.3582), tensor(0.4933), tensor(0.6109), tensor(0.7330), tensor(0.8826), tensor(0.9370), tensor(0.9970)]

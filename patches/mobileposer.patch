@@ -1,0 +1,38 @@
+diff --git a/mobileposer/config.py b/mobileposer/config.py
+index 9e3495d..58800fb 100644
+--- a/mobileposer/config.py
++++ b/mobileposer/config.py
+@@ -31,7 +31,7 @@ class paths:
+     weights_file = root_dir / "checkpoints/weights.pth"
+     raw_amass = Path("/data/projects/Pose/raw/AMASS")           # TODO: replace with your path
+     raw_dip = Path("/data/projects/Pose/raw/DIP_IMU")           # TODO: replace with your path
+-    raw_imuposer = Path("/data/projects/Pose/raw/IMUPoser")     # TODO: replace with your path
++    raw_imuposer = root_dir / "data/raw/IMUPoser"
+     eval_dir = root_dir / "data/processed_datasets/eval"
+     processed_datasets = root_dir / "data/processed_datasets"
+     raw_totalcapture_official = root_dir / "data/raw/TotalCapture/raw"  # TODO: replace with your path
+diff --git a/mobileposer/models/net.py b/mobileposer/models/net.py
+index 6c6a6c8..57a3359 100644
+--- a/mobileposer/models/net.py
++++ b/mobileposer/models/net.py
+@@ -83,9 +83,11 @@ class MobilePoserNet(L.LightningModule):
+ 
+     def reset(self):
+         self.rnn_state = None
++        self.velocity.rnn_state = None  # ES224: velocity RNN state otherwise carries across sequences
+         self.imu = None
+         self.current_root_y = 0
+         self.last_root_pos = torch.zeros(3).to(self.C.device)
++        self.last_lfoot_pos, self.last_rfoot_pos = (pos.to(self.C.device) for pos in self.feet_pos)
+ 
+     def _prob_to_weight(self, p):
+         return (p.clamp(self.prob_threshold[0], self.prob_threshold[1]) - self.prob_threshold[0]) / (self.prob_threshold[1] - self.prob_threshold[0])
+@@ -194,7 +196,7 @@ class MobilePoserNet(L.LightningModule):
+         # velocity from network-based estimation
+         root_vel = vel.view(-1, 24, 3)[:, 0]
+         pred_vel = root_vel[self.num_past_frames] / (datasets.fps/amass.vel_scale)
+-        weight = self._prob_to_weight(contact.max())
++        weight = self._prob_to_weight(contact.max().sigmoid())  # ES224: logits -> probability, as offline
+         velocity = art.math.lerp(pred_vel, contact_vel, weight)
+ 
+         # remove penetration
