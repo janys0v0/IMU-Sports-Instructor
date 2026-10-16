@@ -351,7 +351,7 @@ at most once per problem per minute; one Watch tap acknowledges (logged).
 | 🟡 Warn | Once | 1 long tap, banner |
 | 🔴 Stop and fix | Every 30 s until fixed or acknowledged | 3 strong taps, banner + sound |
 | 🔁 Redo trial | Once | 2 taps, trial card turns red |
-| ✅ Recovered ("The watch is recording again.") | Once | — |
+| ✅ Recovered ("The watch is recording again.", "The AirPods are back.") | Once | — |
 
 **Trial check ③**
 

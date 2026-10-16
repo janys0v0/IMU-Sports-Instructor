@@ -125,6 +125,14 @@ final class StreamController: NSObject, ObservableObject {
     private var headIndex = 0
     private var sent = 0
     private var lastAckUptime: Double?
+    // Watchdog state (ioQueue unless noted).
+    private let dropDetector = PhoneDropDetector()
+    private var lastWatchBatch: Double?
+    private var lastWriteError: Double?
+    private var watchStopped = false
+    private var highRateFailed = false
+    /// Load shedding: skip UDP while the sensors need the CPU (design §8).
+    private var shedLoad = false
     private var startUptime = 0.0
     private var phoneRefFrame = ""
     private var active = false
@@ -166,7 +174,10 @@ final class StreamController: NSObject, ObservableObject {
             self.supervisor.onRelaunch = { [weak self] in DispatchQueue.main.async { self?.launchWatch() } }
             self.supervisor.onEvent = { [weak self] name, detail in self?.logEvent(name, detail: detail) }
             // Spoken in stage 7; logged now so every Watch stop is on record.
-            self.supervisor.onAlert = { [weak self] id in self?.logEvent("alert", detail: id) }
+            self.supervisor.onAlert = { [weak self] id in
+                if id == "watch_stopped" { self?.watchStopped = true }
+                if id == "high_rate_failed" { self?.highRateFailed = true }
+            }
         }
     }
 
@@ -259,7 +270,10 @@ final class StreamController: NSObject, ObservableObject {
             return
         }
         recorder.phone.onWriteError = { [weak self] error in
-            self?.ioQueue.async { self?.logEvent("write_error", detail: String(describing: error)) }
+            self?.ioQueue.async {
+                self?.lastWriteError = uptime()
+                self?.logEvent("write_error", detail: String(describing: error))
+            }
         }
         recorder.healthProvider = { [weak self] in self?.healthFields() ?? [:] }
 
@@ -292,6 +306,10 @@ final class StreamController: NSObject, ObservableObject {
             self.lastAckUptime = nil
             self.startUptime = now
             self.phoneRefFrame = ref.name
+            self.dropDetector.reset()
+            self.lastWatchBatch = nil
+            self.watchStopped = false
+            self.highRateFailed = false
             self.active = true
             sender?.start()
             self.logEvent(
@@ -322,6 +340,7 @@ final class StreamController: NSObject, ObservableObject {
         statsTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.publishStats()
             self?.remindIfDue()
+            self?.runWatchdog()
             self?.checkKeepAlive()
             self?.ioQueue.async {
                 guard let self else { return }
@@ -497,6 +516,8 @@ final class StreamController: NSObject, ObservableObject {
 
     private func handlePhone(_ sample: MotionSample) {
         guard active else { return }
+        let watchRecent = (recent["watch"] ?? []).suffix(30).map(\.sample)
+        dropDetector.add(sample, watchMoving: watchRecent.contains { abs($0[11]) + abs($0[12]) + abs($0[13]) > 0.6 })
         remember("phone", [sample])
         phoneBuffer.append(sample)
         if phoneBuffer.count >= MotionFormat.batchSize { emitPhoneBatch() }
@@ -573,6 +594,8 @@ final class StreamController: NSObject, ObservableObject {
             ], samples: batch.samples, firstIndex: batch.firstIndex)
         watchCounter.add(samples: batch.samples, firstIndex: batch.firstIndex, now: now)
         remember("watch", batch.samples)
+        lastWatchBatch = now
+        watchStopped = false
     }
 
     private func handleHello(_ data: Data) {
@@ -609,7 +632,7 @@ final class StreamController: NSObject, ObservableObject {
     }
 
     private func send(_ data: Data, device: String? = nil, firstIndex: Int? = nil, count: Int = 0) {
-        udp?.send(data)
+        if !shedLoad { udp?.send(data) }
         recorder?.record(data, device: device, firstIndex: firstIndex, count: count)
         sent += 1
     }
@@ -787,6 +810,134 @@ final class StreamController: NSObject, ObservableObject {
 
     // MARK: - UI
 
+    // MARK: - Go / No-Go (design §8 ①)
+
+    /// Measures the sensors for 2 s and gathers everything the Go / No-Go check needs.
+    func preflight(
+        plannedMinutes: Double, required: Set<String>, heardVoice: Bool?, completion: @escaping (GoNoGo) -> Void
+    ) {
+        var phoneCount = 0
+        var headCount = 0
+        let probe = CMMotionManager()
+        probe.deviceMotionUpdateInterval = 1.0 / MotionFormat.sampleRateHz
+        if probe.isDeviceMotionAvailable {
+            probe.startDeviceMotionUpdates(to: .main) { data, _ in if data != nil { phoneCount += 1 } }
+        }
+        let headProbe = CMHeadphoneMotionManager()
+        if headProbe.isDeviceMotionAvailable {
+            headProbe.startDeviceMotionUpdates(to: .main) { data, _ in if data != nil { headCount += 1 } }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            guard let self else { return }
+            probe.stopDeviceMotionUpdates()
+            headProbe.stopDeviceMotionUpdates()
+            var i = GoNoGo.Input()
+            i.requiredDevices = required
+            i.plannedMinutes = plannedMinutes
+            // Delivered rates vary by model (an iPhone 16 gives ~33 Hz); 25 Hz is the floor that works.
+            i.liveRates["phone"] = (Double(phoneCount) / 2, 30)
+            i.liveRates["airpods"] = (Double(headCount) / 2, 20)
+            i.liveRates["watch"] = (self.watchReachable ? 60 : 0, 60)  // the Watch streams only after Start
+            let level = UIDevice.current.batteryLevel
+            i.batteryPhone = level >= 0 ? Double(level) : nil
+            i.freeDiskPhone = self.store.freeBytes
+            i.lowPowerPhone = ProcessInfo.processInfo.isLowPowerModeEnabled
+            i.signingDaysLeft = Self.signingDaysLeft()
+            i.heardVoice = heardVoice
+            i.landmark = self.landmark
+            completion(GoNoGo(i))
+        }
+    }
+
+    /// Days until the provisioning profile expires (free Apple ID builds last 7 days); nil if unknown.
+    static func signingDaysLeft() -> Double? {
+        guard let url = Bundle.main.url(forResource: "embedded", withExtension: "mobileprovision"),
+            let data = try? Data(contentsOf: url), let text = String(data: data, encoding: .isoLatin1),
+            let key = text.range(of: "<key>ExpirationDate</key>"),
+            let open = text.range(of: "<date>", range: key.upperBound..<text.endIndex),
+            let close = text.range(of: "</date>", range: open.upperBound..<text.endIndex)
+        else { return nil }
+        let formatter = ISO8601DateFormatter()
+        guard let date = formatter.date(from: String(text[open.upperBound..<close.lowerBound])) else { return nil }
+        return date.timeIntervalSinceNow / 86400
+    }
+
+    /// The audibility check: speaks the question; `tapReceived()` comes from the Watch's OK or the phone.
+    private(set) lazy var audibility = AudibilityCheck(clock: clock)
+    func startAudibilityCheck() { audibility.start(speaker: speaker) }
+
+    // MARK: - Watchdog (design §8)
+
+    private lazy var watchdog = Watchdog(clock: clock)
+    private lazy var alertCenter: AlertCenter = {
+        let center = AlertCenter(speaker: speaker, clock: clock)
+        center.onEvent = { [weak self] name, fields in self?.ioQueue.async { self?.logEvent(name, extra: fields) } }
+        return center
+    }()
+    private var lastWatchdog = 0.0
+
+    /// Builds the watchdog's view of the session, runs it once a second, applies the fixes.
+    private func runWatchdog() {
+        guard isRecording, uptime() - lastWatchdog >= 1 else { return }
+        lastWatchdog = uptime()
+        var input = ioQueue.sync { () -> WatchdogInput in
+            var input = WatchdogInput()
+            let now = uptime()
+            func stream(_ device: String, _ snap: StreamSnapshot, required: Bool) -> WatchdogInput.Stream {
+                let samples = (recent[device] ?? []).filter { now - $0.arrival <= 5 }
+                return .init(
+                    required: required, lastSampleAge: (recent[device]?.last?.arrival).map { now - $0 },
+                    rate5s: Double(samples.count) / 5, baselineHz: snap.nominalHz > 0 ? snap.nominalHz : nil,
+                    recent: samples.map(\.sample))
+            }
+            input.streams = [
+                "phone": stream("phone", phoneCounter.snapshot(now: now), required: true),
+                "watch": stream(
+                    "watch", watchCounter.snapshot(now: now), required: ioWatchReachable || lastWatchBatch != nil),
+                "airpods": stream("airpods", headCounter.snapshot(now: now), required: headIndex > 0),
+            ]
+            input.watchBatchAge = lastWatchBatch.map { now - $0 }
+            input.watchReachable = ioWatchReachable
+            input.watchStopped = watchStopped
+            input.highRateFailed = highRateFailed
+            input.writeErrorRecently = lastWriteError.map { now - $0 < 10 } ?? false
+            input.freeDiskBytes = store.freeBytes
+            input.phoneDropped = dropDetector.dropped
+            input.airpodsConnected = ioAirPodsConnected
+            return input
+        }
+        input.airpodsRouteAway =
+            airPodsConnected && !PhoneVoice.airPodsAreOutput && (input.streams["airpods"]?.lastSampleAge ?? 0) > 1
+        let level = UIDevice.current.batteryLevel
+        input.batteryPhone = level >= 0 ? Double(level) : nil
+        input.lowPower = ProcessInfo.processInfo.isLowPowerModeEnabled
+        input.thermal = ProcessInfo.processInfo.thermalState.rawValue
+        let (problems, actions) = watchdog.evaluate(input)
+        alertCenter.update(problems)
+        let shed = actions.contains(.shedLoad)
+        ioQueue.async { self.shedLoad = shed }
+        for case .restartUpdates(let device) in actions { restartUpdates(device) }
+    }
+
+    /// The frozen-sensor fix: stop and start that device's motion updates.
+    private func restartUpdates(_ device: String) {
+        ioQueue.async { self.logEvent("sensor_restart", detail: device) }
+        switch device {
+        case "airpods":
+            headphones.stopDeviceMotionUpdates()
+            startHeadphones()
+        case "phone":
+            motion.stopDeviceMotionUpdates()
+            motion.startDeviceMotionUpdates(using: preferredReferenceFrame().frame, to: motionQueue) {
+                [weak self] data, error in
+                guard let self, let data, error == nil else { return }
+                self.handlePhone(data.sample)
+            }
+        default:
+            launchWatch()
+        }
+    }
+
     private func publishStats() {
         ioQueue.async {
             let now = uptime()
@@ -863,7 +1014,9 @@ extension StreamController: WCSessionDelegate {
             switch message["cmd"] as? String {
             case "calibrate": self.startCalibration()
             case "repeat": self.repeatPrompt()
-            case "acknowledge": self.ioQueue.async { self.logEvent("alert_acknowledged") }
+            case "acknowledge":
+                self.alertCenter.acknowledge()
+                self.audibility.tapReceived()
             default: break
             }
         }

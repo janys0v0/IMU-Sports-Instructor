@@ -10,8 +10,8 @@ when its gate passes on two consecutive runs; then the next stage starts.
 
 | | |
 |---|---|
-| **Current stage** | 7 — Watchdog + alerts (stages 0-5 done; stage 6 code done, its gate waits for device test T6) |
-| **Next action** | Go/No-Go screen and the per-second watchdog (stage 7, tasks 1-2) |
+| **Current stage** | 8 — Trial button + extra sensors (stages 0-7 done; stage 6's gate waits for device test T6) |
+| **Next action** | Trial button on the Watch with the trial check and court-exit check in the app (stage 8, task 1) |
 | **Blocked on** | Devices: stage 0b check (= T6) closes stage 6's gate and the keep-alive decision · People: V9 listen-through |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
 | **Last updated** | 2026-10-16 |
@@ -253,8 +253,8 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 4. Trial check after each trial; court-exit check (60 Hz chunks on phone, high-rate closed on Watch).
 
 **Testable goals (G7)**
-- [ ] **A1-A13:** every fault in the scenario tables produces the right event, fix and alert; no false "phone dropped" during jumping jacks; debounce and escalation; trial check; court-exit check with and without high-rate chunks still on the Watch.
-- [ ] **Demo:** replay a session with a scripted AirPods disconnect; hear "Stop. The AirPods disconnected." within 3 s, then "The AirPods are back" after reconnect.
+- [x] **A1-A13:** every fault in the scenario tables produces the right event, fix and alert; no false "phone dropped" during jumping jacks; debounce and escalation; trial check; court-exit check with and without high-rate chunks still on the Watch.
+- [x] **Demo:** the reference recording replayed second by second with the AirPods cut from 20-28 s: "Stop. The AirPods disconnected." at 22 s, "The AirPods are back." at 29 s (`WatchdogDemoTests`).
 
 ## Stage 8: Trial button + extra sensors
 

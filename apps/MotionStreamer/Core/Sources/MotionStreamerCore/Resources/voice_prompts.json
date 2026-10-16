@@ -102,13 +102,17 @@
       "level": "redo",
       "text": "Redo trial {trial}. {reason}"
     },
-    "recovered": {
-      "level": "ok",
-      "text": "{device} is recording again."
-    },
     "keep_app_open": {
       "level": "yellow",
       "text": "Heads up: keep the app open in your pocket."
+    },
+    "airpods_back": {
+      "level": "ok",
+      "text": "The AirPods are back."
+    },
+    "watch_back": {
+      "level": "ok",
+      "text": "The watch is recording again."
     }
   },
   "banned_words": [

@@ -20,6 +20,7 @@ struct ContentView: View {
     @State private var lastSession = ""
     @State private var checkReview: ReviewData?
     @State private var showReview = false
+    @State private var showGoNoGo = false
 
     var body: some View {
         NavigationStack {
@@ -56,6 +57,7 @@ struct ContentView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + delay) { showReview = true }
             }
         }
+        .sheet(isPresented: $showGoNoGo) { GoNoGoView().environmentObject(controller) }
         .sheet(isPresented: $showReview) {
             NavigationStack { ReviewContainer(sessionID: controller.sessionID) }.environmentObject(controller)
         }
@@ -127,7 +129,7 @@ struct ContentView: View {
                         controller.loadReview(lastSession) { checkReview = $0 }
                     }
                 } else {
-                    controller.start()
+                    showGoNoGo = true
                 }
             } label: {
                 Label(
