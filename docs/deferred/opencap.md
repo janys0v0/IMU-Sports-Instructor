@@ -1,6 +1,6 @@
 # OpenCap ground truth (deferred)
 
-**Status:** deferred until ground-truth comparison starts ([`decisions.md`](decisions.md)). The app
+**Status:** deferred until ground-truth comparison starts ([`decisions.md`](../plan/decisions.md)). The app
 keeps the Trial button and sync gesture (design §9) so recordings are ready for this.
 
 ## 1. Recording with OpenCap

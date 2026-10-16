@@ -16,17 +16,17 @@ date; don't leave the old version in other docs. Other docs link here instead of
 | 2026-10-14 | **Offload the same day**; delete from devices only after ingest PASS + backup | No single point of loss | design §10 |
 | 2026-10-14 | **Recalibration interval measured** by test T20; reminder setting defaults to 10 min until then | Drift rate is unknown for our devices | design §7 |
 | 2026-10-14 | **Free Apple ID signing:** rebuild every 7 days; Go/No-Go shows days left | No paid developer account | design §8 |
-| 2026-10-14 | **OpenCap deferred** until ground-truth comparison starts; Trial button and sync gesture kept | Focus on reliable IMU collection first | [`opencap.md`](opencap.md) |
+| 2026-10-14 | **OpenCap deferred** until ground-truth comparison starts; Trial button and sync gesture kept | Focus on reliable IMU collection first | [`opencap.md`](../deferred/opencap.md) |
 | 2026-10-14 | **Every instruction and alert is spoken**; haptics are backup | Buzzes are hard to feel during play | design §7 |
 | 2026-10-14 | **Calibration = standing pose + arms-out pose**, started from the Watch | Fixes the E02 forearm calibration issue | design §7 |
 | 2026-10-15 | **High-rate data in a binary format**, transferred after the session; the court-exit check needs only the 60 Hz chunks | JSON would be ~250 MB/h; transfer must not delay leaving | design §2, §3, §8 |
 | 2026-10-15 | **Microphone: phone's built-in mic only**, never `.allowBluetooth` | Using the AirPods mic switches them to call mode | design §7 |
 | 2026-10-15 | **Extra sensors** (barometer, magnetometer, audio level, optional UWB) as new packet types | Proposal hypothesis; old packets unchanged | design §9 |
-| 2026-10-15 | **Repo:** private GitHub repo `IMU-Sports-Instructor`; recordings and model files out of git; MobilePoser / IMUCoCo pinned + patched; Conventional Commits; no AI co-author lines | Clean, small, consistent history | [`CONTRIBUTING.md`](../CONTRIBUTING.md) |
-| 2026-10-16 | **Human testing:** one early device check (stage 0b); all other device tests in stage 9 | Research answered most device questions | [`dev-plan.md`](dev-plan.md), [`device-research.md`](device-research.md) |
+| 2026-10-15 | **Repo:** private GitHub repo `IMU-Sports-Instructor`; recordings and model files out of git; MobilePoser / IMUCoCo pinned + patched; Conventional Commits; no AI co-author lines | Clean, small, consistent history | [`CONTRIBUTING.md`](../../CONTRIBUTING.md) |
+| 2026-10-16 | **Human testing:** one early device check (stage 0b); all other device tests in stage 9 | Research answered most device questions | [`dev-plan.md`](dev-plan.md), [`device-research.md`](../research/device-research.md) |
 
 ## Open
 
 | Question | Options | Recommendation | Decided by |
 |---|---|---|---|
-| How does the iPhone app stay awake in a pocket? | Background location (3 km) · workout mirroring · pocket mode (foreground) | Background location; mirroring optional; pocket mode as fallback ([`device-research.md`](device-research.md) §1) | Stage 0b device check |
+| How does the iPhone app stay awake in a pocket? | Background location (3 km) · workout mirroring · pocket mode (foreground) | Background location; mirroring optional; pocket mode as fallback ([`device-research.md`](../research/device-research.md) §1) | Stage 0b device check |

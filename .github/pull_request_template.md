@@ -11,5 +11,5 @@
 ## Checklist
 
 - [ ] No recordings, videos, weights or SMPL files added
-- [ ] The doc that owns this topic is updated; Status in `docs/dev-plan.md` is current
+- [ ] The doc that owns this topic is updated; Status in `docs/plan/dev-plan.md` is current
 - [ ] `EXPERIMENT_LOG.md` updated if this is an experiment or a device test run

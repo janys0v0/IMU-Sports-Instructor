@@ -32,7 +32,7 @@ no Wi-Fi, and never lose more than a few seconds of data.
 | 6 | **Delete only after the Mac verifies** | No single point of loss |
 
 The packet format (`Shared/MotionFormat.swift`, described in
-[`code/MotionStreamer/README.md`](../code/MotionStreamer/README.md#data)) and the Mac loader
+[`code/MotionStreamer/README.md`](../../code/MotionStreamer/README.md#data)) and the Mac loader
 (`live/motion_io.py`) stay unchanged: each chunk line is one of today's packets.
 
 **Setting:** solo recording, everything controlled from the Watch with spoken guidance. Watch on
@@ -71,7 +71,7 @@ SHA-256, rename `.open` → `.jsonl`, journal `chunk_closed`.
 | `session_close` | Stop or recovery | `clean: true/false` |
 
 **High-rate Watch stream** (`CMBatchedSensorManager`, always on): 800 Hz acceleration + 200 Hz
-device motion, available on our Series 8 during a workout ([`device-research.md`](device-research.md) §3).
+device motion, available on our Series 8 during a workout ([`device-research.md`](../research/device-research.md) §3).
 Stored as binary because JSON would be ~250 MB/h:
 
 ```
@@ -132,7 +132,7 @@ free on the phone and 2 GB on the Watch.**
 ## 5. Keeping all three recording in a pocket
 
 Core Motion doesn't keep an app awake; the app must stay awake through a background mode
-([`device-research.md`](device-research.md) §1).
+([`device-research.md`](../research/device-research.md) §1).
 
 | Device | How | Status |
 |---|---|---|
@@ -365,7 +365,7 @@ Watch data is checked from the live preview first, then again once its chunk arr
 
 - **Trial button** (Watch): logs a `marker` with trial number and time. Each trial starts with the
   **sync gesture**: 2 s still · 3 hops · 3 head nods · 2 s still. It gives a shared time reference
-  across devices (and for OpenCap later: [`opencap.md`](opencap.md)).
+  across devices (and for OpenCap later: [`opencap.md`](../deferred/opencap.md)).
 - **Extra sensors** from the proposal, as new packet types (motion packets unchanged):
 
 | Sensor | Plan |

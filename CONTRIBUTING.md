@@ -25,20 +25,20 @@ Every work session, by a person or by Claude, follows the same three steps.
 ```
  ① PLAN ─────────────────▶ ② IMPLEMENT ────────────────▶ ③ CHECK + PUSH
  read Status in             branch feat/stage-N-…          tools/check.sh
- docs/dev-plan.md           tests first, then code         update the one doc that owns
+ docs/plan/dev-plan.md           tests first, then code         update the one doc that owns
  pick the next task         small commits                  the topic; update Status
        ▲                                                   commit + push the branch
        └──────────────────── next session ◀──────────────────────────┘
 ```
 
 ### ① Plan: stay on track
-1. `git switch main && git pull`, then open [`docs/dev-plan.md`](docs/dev-plan.md#status) **Status**.
+1. `git switch main && git pull`, then open [`docs/plan/dev-plan.md`](docs/plan/dev-plan.md#status) **Status**.
 2. Take the **Next action**. If it isn't in the current stage's task list, stop and update the plan
-   first: new work goes into a stage (or [`docs/decisions.md`](docs/decisions.md) if it's a decision).
+   first: new work goes into a stage (or [`docs/plan/decisions.md`](docs/plan/decisions.md) if it's a decision).
 3. Branch: `feat/stage-N-<name>` (or `fix/…`, `docs/…`, `test/…`, `exp/…`, `chore/…`).
 
 ### ② Implement
-1. Write the stage's tests first (IDs from [`docs/test-plan.md`](docs/test-plan.md)); watch them fail.
+1. Write the stage's tests first (IDs from [`docs/plan/test-plan.md`](docs/plan/test-plan.md)); watch them fail.
 2. Write the code until they pass. Commit small, each commit building and passing checks.
 3. Stay inside the current stage. Anything else you notice goes into the plan as a task, not into
    this branch.
@@ -47,7 +47,7 @@ Every work session, by a person or by Claude, follows the same three steps.
 1. Run **`tools/check.sh`** (all pre-commit checks + tests). Fix everything it reports.
 2. Docs stay short: change the **one file that owns the topic** (see the table in
    [`README.md`](README.md)); delete text that's no longer true instead of adding notes about it.
-3. Update **Status** in `docs/dev-plan.md` (stage, next action, blockers, date) and tick finished
+3. Update **Status** in `docs/plan/dev-plan.md` (stage, next action, blockers, date) and tick finished
    goals. Log experiments and device tests in `EXPERIMENT_LOG.md` with the commit hash.
 4. Commit and **push the branch at the end of every session**, even mid-stage, so nothing lives
    only on one laptop.
@@ -111,9 +111,9 @@ GitHub Actions runs the same checks on every pull request (Swift checks run loca
 - **Python:** ruff + ruff-format settings in `pyproject.toml`; target Python 3.9 (the ML env).
   Type hints on new functions. Scripts take paths as arguments; no hard-coded user paths.
 - **Swift:** `.swift-format` (4 spaces, 120 chars). New logic goes into testable code behind the
-  protocols in [`docs/test-plan.md`](docs/test-plan.md) §0, not into views.
+  protocols in [`docs/plan/test-plan.md`](docs/plan/test-plan.md) §0, not into views.
 - **Comments** explain *why*, not *what*. Keep the existing doc-comment style.
-- **Tests:** IDs from [`docs/test-plan.md`](docs/test-plan.md); name tests after them
+- **Tests:** IDs from [`docs/plan/test-plan.md`](docs/plan/test-plan.md); name tests after them
   (e.g. `test_R3_chunk_close`). A stage's gate must pass before the next stage starts.
 
 ## What goes in git, and what doesn't

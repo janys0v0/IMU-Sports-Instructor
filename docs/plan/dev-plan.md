@@ -64,7 +64,7 @@ The app already records all three devices and has been used for 35 sessions. The
 
 ## Human testing: what blocks and what waits
 
-Online research ([`device-research.md`](device-research.md)) answered most device questions.
+Online research ([`device-research.md`](../research/device-research.md)) answered most device questions.
 
 | When | Human tests | Blocking? |
 |---|---|---|
@@ -81,7 +81,7 @@ Online research ([`device-research.md`](device-research.md)) answered most devic
 
 ## How to work through a stage
 
-Follow the development loop in [`CONTRIBUTING.md`](../CONTRIBUTING.md#development-loop): read
+Follow the development loop in [`CONTRIBUTING.md`](../../CONTRIBUTING.md#development-loop): read
 **Status** → implement on `feat/stage-N-<name>` (tests first) → `tools/check.sh` → update Status →
 push. Merge when the stage's gate passes twice in a row.
 

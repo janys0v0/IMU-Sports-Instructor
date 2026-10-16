@@ -1,6 +1,6 @@
 # Device research: what we know without testing
 
-> Online research (2026-10-16) to answer the device questions in [`dev-plan.md`](dev-plan.md)
+> Online research (2026-10-16) to answer the device questions in [`dev-plan.md`](../plan/dev-plan.md)
 > without human testing. Sources are Apple documentation, Apple's WWDC sessions, and Apple
 > Developer Forums threads with Apple engineer (DTS) answers. Each finding is marked:
 > ✅ confirmed by Apple · ⚠️ reported by developers, not documented · ❓ still unknown.
@@ -51,7 +51,7 @@
 - Apple's DTS also notes the App Store reviews background modes against what the app does. **This
   app isn't going to the App Store**, so a location keep-alive is acceptable here.
 
-**Implication (design §5; open decision in [`decisions.md`](decisions.md#open)):**
+**Implication (design §5; open decision in [`decisions.md`](../plan/decisions.md#open)):**
 - **Primary keep-alive: background location** at the lowest accuracy (3 km, no updates in
   practice), which Apple confirms keeps motion flowing. It also adds the `location` background mode
   and a "When In Use" location permission.
@@ -66,7 +66,7 @@
 - ✅ **One bud at a time:** "motion data is delivered to you from one bud at a time"; if that bud is
   removed, the other one takes over. ([WWDC23 10179])
 - ✅ **Ear detection:** taking the buds out gives a disconnect event; putting them back gives a
-  connect event. Matches test A1 in [`test-plan.md`](test-plan.md). ([WWDC23 10179])
+  connect event. Matches test A1 in [`test-plan.md`](../plan/test-plan.md). ([WWDC23 10179])
 - ✅ `NSMotionUsageDescription` is required, or the app crashes when updates start (already in our
   `project.yml`).
 - ⚠️ **watchOS:** the docs list watchOS 7+, but developers report `isDeviceMotionAvailable` is
@@ -118,9 +118,9 @@
 
 ## Where this is applied
 
-- Keep-alive options and the open decision: design §5, [`decisions.md`](decisions.md#open).
-- The one remaining device check: stage 0b in [`dev-plan.md`](dev-plan.md) = test T6 in [`test-plan.md`](test-plan.md) §4.
-- No mirroring or high-rate stream in simulators: [`test-plan.md`](test-plan.md) §2 E.
+- Keep-alive options and the open decision: design §5, [`decisions.md`](../plan/decisions.md#open).
+- The one remaining device check: stage 0b in [`dev-plan.md`](../plan/dev-plan.md) = test T6 in [`test-plan.md`](../plan/test-plan.md) §4.
+- No mirroring or high-rate stream in simulators: [`test-plan.md`](../plan/test-plan.md) §2 E.
 - Watch `audio` background mode and workout crash recovery: design §4, §5; dev-plan stage 6.
 - Speech vs AirPods is not blocking: the `Voice` protocol can route speech to the Watch (design §7).
 
