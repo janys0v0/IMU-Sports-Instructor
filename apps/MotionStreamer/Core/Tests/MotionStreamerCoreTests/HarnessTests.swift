@@ -52,25 +52,16 @@ final class HarnessTests: XCTestCase {
         XCTAssertEqual(counters["phone"]!.missing, 0)
     }
 
-    func test_C1_stopDuringCountdownDoesNotBlockNextCalibration() {
-        var countdown = CalibrationCountdown()
-        XCTAssertEqual(countdown.start(), .countdown(remaining: 10))
-        _ = countdown.tick()
-        countdown.cancel()  // Stop pressed during the countdown
-        XCTAssertFalse(countdown.isRunning)
-        XCTAssertEqual(countdown.start(), .countdown(remaining: 10), "a new calibration must start")
-    }
-
-    func test_calibrationCountdownFullSequence() {
-        var countdown = CalibrationCountdown()
-        XCTAssertNotNil(countdown.start())
-        XCTAssertNil(countdown.start(), "no second calibration while one runs")
-        var steps: [CalibrationCountdown.Step] = []
-        for _ in 0..<20 { if let s = countdown.tick() { steps.append(s) } }
-        XCTAssertEqual(steps.filter { $0 == .holdStarted }.count, 1)
-        XCTAssertEqual(steps.last, .finished)
-        XCTAssertEqual(steps.count, 9 + 1 + 1)
-        XCTAssertFalse(countdown.isRunning)
+    func test_C1_stopDuringCalibrationDoesNotBlockTheNextOne() {
+        let h = CalibrationHarness()
+        h.flow.start()
+        h.run(seconds: 3)
+        XCTAssertTrue(h.flow.isRunning)
+        h.flow.cancel()  // Stop pressed during the calibration
+        XCTAssertFalse(h.flow.isRunning)
+        h.flow.start()
+        h.run()
+        XCTAssertEqual(h.result?.passed, true, "a new calibration runs to the end")
     }
 }
 

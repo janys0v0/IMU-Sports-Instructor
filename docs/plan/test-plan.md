@@ -101,7 +101,7 @@ IDs are stable so failures can be referenced. "Pass" is what must be true.
 
 | ID | Test | Pass |
 |---|---|---|
-| C1 | **Timer bug regression:** Stop during the countdown, Start, Calibrate | Calibration runs (it fails today) |
+| C1 | **Timer bug regression:** Stop during a calibration, Start, Calibrate | The new calibration runs to the end |
 | C2 | Still standing + arms-out (synthetic, all devices) | ✅ pass; windows start 0.3 s after "now" finishes speaking |
 | C3 | Moving during a hold | "You moved. Hold still." spoken once, hold restarts; after 2 failed retries the final message |
 | C4 | Arms not level after 6 s | C8 prompt spoken, then proceeds when level |

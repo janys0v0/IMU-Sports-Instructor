@@ -27,6 +27,15 @@ final class StreamController: NSObject, ObservableObject {
     @Published var participant: String { didSet { defaults.set(participant, forKey: "participant") } }
     @Published var activity: String { didSet { defaults.set(activity, forKey: "activity") } }
     @Published var wrist: WatchWrist { didSet { defaults.set(wrist.rawValue, forKey: "wrist") } }
+    /// What to face at every calibration (design §7), e.g. "the net".
+    @Published var landmark: String { didSet { defaults.set(landmark, forKey: "landmark") } }
+    /// Minutes between calibration reminders (default 10 until test T20 measures it).
+    @Published var reminderMinutes: Double {
+        didSet {
+            defaults.set(reminderMinutes, forKey: "reminderMinutes")
+            reminder.interval = reminderMinutes * 60
+        }
+    }
     @Published var pocketScreen: PocketScreen {
         didSet { defaults.set(pocketScreen.rawValue, forKey: "pocketScreen") }
     }
@@ -61,7 +70,15 @@ final class StreamController: NSObject, ObservableObject {
     private var statsTimer: Timer?
     private var syncTimer: Timer?
     private var calibrationTimer: Timer?
-    private var countdown = CalibrationCountdown()
+    private lazy var phoneVoice = PhoneVoice()
+    private lazy var watchVoice = WatchVoice(link: link)
+    private lazy var speaker = Speaker(clock: clock, outputs: [])
+    private lazy var flow = CalibrationFlow(speaker: speaker, clock: clock) { [weak self] device, from, to in
+        self?.ioQueue.sync { self?.recentSamples(device, from, to) } ?? []
+    }
+    private lazy var reminder = CalibrationReminder(clock: clock)
+    /// Last 30 s of samples per device, by arrival time, for the calibration checks (ioQueue).
+    private var recent: [String: [(arrival: Double, sample: MotionSample)]] = [:]
 
     // State below is touched only on `ioQueue`.
     private let ioQueue = DispatchQueue(label: "StreamController.io")
@@ -108,7 +125,11 @@ final class StreamController: NSObject, ObservableObject {
         activity = defaults.string(forKey: "activity") ?? "test"
         wrist = WatchWrist(rawValue: defaults.string(forKey: "wrist") ?? "") ?? .left
         pocketScreen = PocketScreen(rawValue: defaults.string(forKey: "pocketScreen") ?? "") ?? .leg
+        landmark = defaults.string(forKey: "landmark") ?? "the net"
+        let minutes = defaults.double(forKey: "reminderMinutes")
+        reminderMinutes = minutes > 0 ? minutes : 10
         super.init()
+        setUpSpeech()
         if WCSession.isSupported() {
             WCSession.default.delegate = self
             WCSession.default.activate()
@@ -285,6 +306,7 @@ final class StreamController: NSObject, ObservableObject {
         UIApplication.shared.isIdleTimerDisabled = true
         statsTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.publishStats()
+            self?.remindIfDue()
             self?.ioQueue.async {
                 guard let self else { return }
                 self.recorder?.tick()
@@ -305,7 +327,8 @@ final class StreamController: NSObject, ObservableObject {
         syncTimer?.invalidate()
         calibrationTimer?.invalidate()
         calibrationTimer = nil
-        countdown.cancel()
+        flow.cancel()
+        speaker.stopAll()
         calibrationStatus = nil
         sendWatchCommand("stop")
         stopReplay()
@@ -335,48 +358,69 @@ final class StreamController: NSObject, ObservableObject {
         UIDevice.current.isProximityMonitoringEnabled = false
     }
 
-    /// Countdown so the phone can be pocketed first. One buzz: stand still.
-    /// Two buzzes: done. Events mark the still window for the Mac.
+    /// The spoken calibration (design §7), started from the Watch or the phone.
     func startCalibration() {
-        guard isRecording, let first = countdown.start() else { return }
-        let screen = pocketScreen.rawValue
-        let location = phoneLocation
+        guard isRecording, !flow.isRunning else { return }
+        flow.landmark = landmark
+        flow.requireAirPods = airPodsConnected
+        flow.requireWatch = watchReachable
         ioQueue.async { self.logEvent("calibrate_requested") }
-        show(first)
-        calibrationTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
+        calibrationStatus = "Calibrating: follow the voice"
+        flow.start()
+        calibrationTimer?.invalidate()
+        calibrationTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
             guard let self else { return timer.invalidate() }
-            guard let step = self.countdown.tick() else { return }
-            self.show(step)
-            switch step {
-            case .countdown:
-                break
-            case .holdStarted:
-                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-                self.ioQueue.async {
-                    self.logEvent(
-                        "calibrate",
-                        extra: [
-                            "hold_s": CalibrationCountdown.holdSeconds, "loc": location,
-                            "pocket_screen": screen,
-                        ])
-                }
-            case .finished:
+            self.flow.tick()
+            if !self.flow.isRunning {
                 timer.invalidate()
                 self.calibrationTimer = nil
-                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-                }
-                self.ioQueue.async { self.logEvent("calibrate_done") }
             }
         }
     }
 
-    private func show(_ step: CalibrationCountdown.Step) {
-        switch step {
-        case .countdown(let remaining): calibrationStatus = "Pocket the phone, stand straight: \(remaining)"
-        case .holdStarted: calibrationStatus = "Hold still…"
-        case .finished: calibrationStatus = nil
+    /// The Watch's Repeat button.
+    func repeatPrompt() { speaker.repeatLast() }
+
+    private func setUpSpeech() {
+        PhoneVoice.configureAudioSession()
+        speaker.outputs = [
+            .init(name: "airpods", isAvailable: { PhoneVoice.airPodsAreOutput }, voice: phoneVoice),
+            .init(
+                name: "watch", isAvailable: { [weak self] in self?.watchVoice.isReachable ?? false }, voice: watchVoice),
+            .init(name: "speaker", isAvailable: { true }, voice: phoneVoice),
+        ]
+        let log: (String, [String: Any]) -> Void = { [weak self] name, fields in
+            self?.ioQueue.async { self?.logEvent(name, extra: fields) }
+        }
+        speaker.onEvent = log
+        flow.onEvent = log
+        flow.airpodsConnected = { [weak self] in self?.airPodsConnected ?? false }
+        flow.onFinish = { [weak self] result in
+            guard let self else { return }
+            self.calibrationStatus = result.passed ? nil : "Calibration didn't work: \(result.failure?.rawValue ?? "")"
+            if result.passed { self.reminder.calibrated() }
+        }
+        reminder.interval = reminderMinutes * 60
+    }
+
+    /// Called every 0.5 s while recording: speaks the reminder when it's due.
+    private func remindIfDue() {
+        guard isRecording, !flow.isRunning, reminder.tick() else { return }
+        let script = VoiceScript.shared
+        speaker.say(script.reminder("R1"), id: "R1")
+        speaker.say(VoiceScript.fill(script.reminder("R2"), ["landmark": landmark]), id: "R2")
+    }
+
+    /// Samples of one device that arrived between two uptimes (ioQueue).
+    private func recentSamples(_ device: String, _ from: Double, _ to: Double) -> [MotionSample] {
+        (recent[device] ?? []).filter { $0.arrival >= from && $0.arrival <= to }.map(\.sample)
+    }
+
+    private func remember(_ device: String, _ samples: [MotionSample]) {
+        let now = uptime()
+        recent[device, default: []] += samples.map { (now, $0) }
+        if let first = recent[device]?.first, now - first.arrival > 40 {
+            recent[device]?.removeAll { now - $0.arrival > 30 }
         }
     }
 
@@ -392,6 +436,7 @@ final class StreamController: NSObject, ObservableObject {
 
     private func handlePhone(_ sample: MotionSample) {
         guard active else { return }
+        remember("phone", [sample])
         phoneBuffer.append(sample)
         if phoneBuffer.count >= MotionFormat.batchSize { emitPhoneBatch() }
     }
@@ -431,6 +476,7 @@ final class StreamController: NSObject, ObservableObject {
             }
             guard let data, self.active else { return }
             if self.headIndex == 0 && self.headBuffer.isEmpty { self.logEvent("airpods_first_sample") }
+            self.remember("airpods", [data.sample])
             self.headBuffer.append(data.sample)
             if self.headBuffer.count >= MotionFormat.samplesPerPacket { self.emitHeadBatch() }
         }
@@ -465,6 +511,7 @@ final class StreamController: NSObject, ObservableObject {
                 "recv_phone": now, "send_phone": now,
             ], samples: batch.samples, firstIndex: batch.firstIndex)
         watchCounter.add(samples: batch.samples, firstIndex: batch.firstIndex, now: now)
+        remember("watch", batch.samples)
     }
 
     private func handleHello(_ data: Data) {
@@ -727,6 +774,10 @@ extension StreamController: WCSessionDelegate {
 
     func session(_ session: WCSession, didReceiveMessageData messageData: Data) {
         if let message = LinkMessage.decode(messageData) {
+            if message.kind == .spoken, let id = message.utterance {
+                DispatchQueue.main.async { self.watchVoice.finished(id) }
+                return
+            }
             ioQueue.async {
                 self.inbox.handle(message)
                 self.supervisor.handle(message)
@@ -745,6 +796,15 @@ extension StreamController: WCSessionDelegate {
 
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         if let hello = message["hello"] as? Data { handleHello(hello) }
+        // The Watch's buttons (design §7: every action during a session is one Watch tap).
+        DispatchQueue.main.async {
+            switch message["cmd"] as? String {
+            case "calibrate": self.startCalibration()
+            case "repeat": self.repeatPrompt()
+            case "acknowledge": self.ioQueue.async { self.logEvent("alert_acknowledged") }
+            default: break
+            }
+        }
     }
 }
 

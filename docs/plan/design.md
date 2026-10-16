@@ -210,22 +210,22 @@ resets on reconnect. E02 measured ~5-10°/min of model orientation drift for hea
  "Calibration complete. You can start."  or  "Calibration didn't work: {reason}. Let's try again."
 ```
 
-**Script** (`Shared/voice_prompts.json`; `{landmark}` is set in Setup, e.g. "the net"):
+**Script** (`MotionStreamerCore/Resources/voice_prompts.json`, with every alert phrase; generate a listening copy with `tools/make_voice_sample.py`; `{landmark}` is set in Setup, e.g. "the net"):
 
 | # | Spoken (exactly) | Data |
 |---|---|---|
 | C1 | "Calibration. Face {landmark} and stand still." | `prompt` events with start/finish time (all prompts) |
 | C2 | "Starting in three, two, one." (one number per second) | |
-| C3 | "Stand up straight. Feet hip-width apart. Arms relaxed at your sides. Look straight ahead." | |
-| C4 | "Hold still… now." | hold window starts 0.3 s after "now" finishes |
+| C3 | "Stand up straight, feet hip-width apart, arms relaxed, looking ahead." | |
+| C4 | "Hold still… now." | hold window starts 0.3 s after "now" finishes; `calibrate` event (`t_phone` + 0.3 = window start, `hold_s` 3.3) |
 | C5 | "You moved. Hold still." (once; the hold restarts) | |
 | C6 | "Good." | `cal_hold_end` |
-| C7 | "Now raise both arms straight out to the sides, at shoulder height, palms facing down." | |
+| C7 | "Now raise both arms out sideways, shoulder height, palms down." | |
 | C8 | "Raise your arms a little higher, level with your shoulders." (if not level after 6 s) | |
-| C9 | "Hold still… now." | as C4 |
+| C9 | "Hold still… now." | as C4; `calibrate_arms` event |
 | C10 | "Arms down." | `cal_hold_end` |
 | C11 | "Calibration complete. You can start." | `calibrate_result: pass` |
-| C12 | "Calibration didn't work: {reason}. Let's try again." (at most 2 retries, then "Please check the devices, then tap Calibrate.") | `calibrate_result: fail` |
+| C12 | "Calibration didn't work: {reason}." then "Let's try again." (at most 2 retries, then "Please check the devices, then tap Calibrate.") | `calibrate_result: fail` |
 
 Reasons: "you moved" · "the phone isn't upright in your pocket" · "your arms weren't level" ·
 "the AirPods aren't connected" · "the watch isn't sending data".
@@ -242,7 +242,7 @@ Reasons: "you moved" · "the phone isn't upright in your pocket" · "your arms w
 
 **When:** start of session · before each trial · after an AirPods reconnect, strap adjustment,
 re-pocketing or crash resume · at the reminder interval (a setting, default 10 min until test T20
-measures it). Reminder: "Time to recalibrate. When you're ready, face {landmark} and tap the
+measures it). Reminder: "Time to recalibrate." then "When you're ready, face {landmark} and tap the
 watch." (repeats every 2 min until done or dismissed). The app also logs `still_upright` whenever
 the user stands still and upright for 2 s; these correct tilt, not heading.
 

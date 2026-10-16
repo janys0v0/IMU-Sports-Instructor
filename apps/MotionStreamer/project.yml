@@ -47,6 +47,7 @@ targets:
         NSLocalNetworkUsageDescription: Streams motion data to the receiver on your Mac.
         NSHealthShareUsageDescription: Starts a workout on Apple Watch so it can stream motion.
         NSHealthUpdateUsageDescription: Starts a workout on Apple Watch so it can stream motion.
+        UIBackgroundModes: [audio]
     dependencies:
       - target: MotionStreamerWatch
       - package: MotionStreamerCore
@@ -70,6 +71,7 @@ targets:
         WKApplication: true
         WKCompanionAppBundleIdentifier: $(BUNDLE_ID)
         WKBackgroundModes: [workout-processing]
+        UIBackgroundModes: [audio]
         NSMotionUsageDescription: Records wrist motion for full-body pose estimation.
         NSHealthShareUsageDescription: Runs a workout session so wrist motion keeps streaming.
         NSHealthUpdateUsageDescription: Runs a workout session so wrist motion keeps streaming.

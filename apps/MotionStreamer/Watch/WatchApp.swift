@@ -42,6 +42,14 @@ struct WatchContentView: View {
                     Text("Samples: \(streamer.samplesRecorded)")
                     Text("High-rate: \(streamer.highRateStatus)").font(.footnote)
                 }
+                if streamer.isRunning {
+                    Button("Calibrate") { streamer.send(command: "calibrate") }
+                        .tint(.blue)
+                    HStack {
+                        Button("Repeat") { streamer.send(command: "repeat") }
+                        Button("OK") { streamer.send(command: "acknowledge") }
+                    }
+                }
                 Button(streamer.isRunning ? "Stop" : "Start") {
                     streamer.isRunning ? streamer.stop() : streamer.start()
                 }

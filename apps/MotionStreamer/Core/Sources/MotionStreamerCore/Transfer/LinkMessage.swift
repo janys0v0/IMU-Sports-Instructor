@@ -16,6 +16,10 @@ public struct LinkMessage: Codable, Equatable {
         case highRateFailed = "high_rate_failed"
         /// Phone → Watch: send every chunk of the session again.
         case resendAll = "resend_all"
+        /// Phone → Watch: speak this phrase (`detail`) on the Watch (no AirPods connected).
+        case speak
+        /// Watch → phone: the phrase `utterance` has finished speaking.
+        case spoken
     }
 
     public var kind: Kind
@@ -25,10 +29,12 @@ public struct LinkMessage: Codable, Equatable {
     public var chunks60Hz: Int?
     public var chunksHighRate: Int?
     public var detail: String?
+    /// Identifies a phrase for `speak` / `spoken`.
+    public var utterance: String?
 
     public init(
         kind: Kind, session: String, file: String? = nil, sha256: String? = nil, chunks60Hz: Int? = nil,
-        chunksHighRate: Int? = nil, detail: String? = nil
+        chunksHighRate: Int? = nil, detail: String? = nil, utterance: String? = nil
     ) {
         self.kind = kind
         self.session = session
@@ -37,6 +43,7 @@ public struct LinkMessage: Codable, Equatable {
         self.chunks60Hz = chunks60Hz
         self.chunksHighRate = chunksHighRate
         self.detail = detail
+        self.utterance = utterance
     }
 
     public var encoded: Data { (try? JSONEncoder().encode(self)) ?? Data() }

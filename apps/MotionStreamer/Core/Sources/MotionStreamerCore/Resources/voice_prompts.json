@@ -1,0 +1,54 @@
+{
+  "_comment": "Every spoken phrase (design §7, §8). Wording rules (test V1): at most 12 words once placeholders are filled, the same every time, no jargon. {landmark} is the Setup setting (at most 3 words).",
+  "calibration": {
+    "C1": "Calibration. Face {landmark} and stand still.",
+    "C2": "Starting in three, two, one.",
+    "C3": "Stand up straight, feet hip-width apart, arms relaxed, looking ahead.",
+    "C4": "Hold still… now.",
+    "C5": "You moved. Hold still.",
+    "C6": "Good.",
+    "C7": "Now raise both arms out sideways, shoulder height, palms down.",
+    "C8": "Raise your arms a little higher, level with your shoulders.",
+    "C9": "Hold still… now.",
+    "C10": "Arms down.",
+    "C11": "Calibration complete. You can start.",
+    "C12a": "Calibration didn't work: {reason}.",
+    "C12b": "Let's try again.",
+    "C12_final": "Please check the devices, then tap Calibrate."
+  },
+  "reasons": {
+    "moved": "you moved",
+    "phone_not_upright": "the phone isn't upright in your pocket",
+    "arms_not_level": "your arms weren't level",
+    "airpods_missing": "the AirPods aren't connected",
+    "watch_silent": "the watch isn't sending data",
+    "interrupted": "it was interrupted"
+  },
+  "reminder": {
+    "R1": "Time to recalibrate.",
+    "R2": "When you're ready, face {landmark} and tap the watch."
+  },
+  "audibility": "Can you hear me? Tap the watch if you can.",
+  "alerts": {
+    "watch_stopped": {"level": "red", "text": "Stop. The watch stopped recording."},
+    "airpods_disconnected": {"level": "red", "text": "Stop. The AirPods disconnected."},
+    "airpods_switched": {"level": "red", "text": "Stop. The AirPods switched to another device."},
+    "phone_dropped": {"level": "red", "text": "Stop. The phone fell out of your pocket."},
+    "write_error": {"level": "red", "text": "Stop. The phone can't save data."},
+    "low_rate": {"level": "red", "text": "Stop. A sensor is recording too slowly."},
+    "low_power": {"level": "red", "text": "Stop. Turn off Low Power Mode."},
+    "frozen_sensor": {"level": "red", "text": "Stop. A sensor stopped changing."},
+    "high_rate_failed": {"level": "red", "text": "Stop. The watch's fast recording stopped."},
+    "battery_critical": {"level": "red", "text": "Finish this trial and stop. Battery is low."},
+    "rate_dropping": {"level": "yellow", "text": "Heads up: a sensor is slowing down."},
+    "phone_hot": {"level": "yellow", "text": "Heads up: the phone is getting hot."},
+    "compass_disturbed": {"level": "yellow", "text": "Compass disturbed. Recalibrate away from the fence."},
+    "watch_preview_paused": {"level": "yellow", "text": "Heads up: watch preview paused. Data is safe."},
+    "battery_low": {"level": "yellow", "text": "Heads up: battery below twenty percent."},
+    "phone_moved": {"level": "yellow", "text": "Phone moved. Re-seat it and recalibrate."},
+    "watch_strap": {"level": "yellow", "text": "Tighten the watch strap, then recalibrate."},
+    "redo_trial": {"level": "redo", "text": "Redo trial {trial}. {reason}"},
+    "recovered": {"level": "ok", "text": "{device} is recording again."}
+  },
+  "banned_words": ["N-pose", "T-pose", "chunk", "sample", "quaternion", "fsync"]
+}

@@ -11,7 +11,9 @@ let package = Package(
         .library(name: "MotionStreamerCore", targets: ["MotionStreamerCore"])
     ],
     targets: [
-        .target(name: "MotionStreamerCore", resources: [.copy("Resources/quality_thresholds.json")]),
+        .target(
+            name: "MotionStreamerCore",
+            resources: [.copy("Resources/quality_thresholds.json"), .copy("Resources/voice_prompts.json")]),
         .testTarget(name: "MotionStreamerCoreTests", dependencies: ["MotionStreamerCore"]),
     ]
 )

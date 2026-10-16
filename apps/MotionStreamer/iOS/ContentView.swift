@@ -93,6 +93,13 @@ struct ContentView: View {
                 ForEach(WatchWrist.allCases) { Text($0.rawValue.capitalized).tag($0) }
             }
             .pickerStyle(.segmented)
+            LabeledContent("Face at calibration") {
+                TextField("the net", text: $controller.landmark).multilineTextAlignment(.trailing)
+            }
+            Stepper(
+                "Recalibrate every \(Int(controller.reminderMinutes)) min", value: $controller.reminderMinutes,
+                in: 2...60,
+                step: 1)
             Picker("Phone screen faces", selection: $controller.pocketScreen) {
                 Text("Leg").tag(PocketScreen.leg)
                 Text("Outward").tag(PocketScreen.outward)
@@ -155,11 +162,9 @@ struct ContentView: View {
                     }
                     .buttonStyle(.bordered)
                 }
-                Text(
-                    "Calibrate: tap, pocket the phone within 10 s and stand straight. One buzz: hold still 3 s. Two buzzes: done."
-                )
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+                Text("Calibrate: follow the voice (start it from the Watch while the phone is in your pocket).")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
         }
     }

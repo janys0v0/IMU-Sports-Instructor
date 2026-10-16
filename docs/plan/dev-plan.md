@@ -10,9 +10,9 @@ when its gate passes on two consecutive runs; then the next stage starts.
 
 | | |
 |---|---|
-| **Current stage** | 5 — Spoken calibration (stages 0-4 done 2026-10-16; one branch per stage) |
-| **Next action** | `voice_prompts.json` and the speech-driven calibration flow (stage 5, tasks 1-3) |
-| **Blocked on** | — |
+| **Current stage** | 6 — Keeping the app alive (stages 0-5 done 2026-10-16, except V9 listen-through; one branch per stage) |
+| **Next action** | Background-location keep-alive with pocket-mode fallback (stage 6, tasks 1-3) |
+| **Blocked on** | People: V9 listen-through (stage 5); stage 0b device check before stage 6's gate |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
 | **Last updated** | 2026-10-16 |
 
@@ -217,9 +217,10 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 6. `pipeline/preprocessing/calibration.py`: many calibrations, arms-out step, slerp blend between neighbours.
 
 **Testable goals (G5)**
-- [ ] **C1-C10:** timer regression, clean run, moving, arms not level, each fail reason, reminders, agreement with `calibration.py` within 0.5°, blend removes 8°/min drift to within 1°, piecewise across segments, interval setting.
-- [ ] **V1-V9:** script lint, phrase order and timing, prompts logged, priority, output fallback, repeat, mic route, audibility check, and a **listen-through signed off by both of you**.
-- [ ] **Demo:** play the generated audio of a full calibration on the Mac speaker; follow it standing up without looking at a screen.
+- [x] **C1-C10:** timer regression, clean run, moving, arms not level, each fail reason, reminders, agreement with `calibration.py` within 0.5°, blend removes 8°/min drift to within 1°, piecewise across segments, interval setting.
+- [x] **V1-V8:** script lint, phrase order and timing, prompts logged, priority, output fallback, repeat, mic route, audibility check.
+- [ ] **V9 (people):** listen-through of `data/voice/voice_sample.m4a` (made by `tools/make_voice_sample.py`) signed off by both of you. Not blocking the code stages; wording changes go in `voice_prompts.json`.
+- [ ] **Demo (people):** play `data/voice/voice_sample.m4a` on the Mac speaker and follow the calibration standing up, without looking at a screen.
 
 ## Stage 6: Keeping the app alive
 

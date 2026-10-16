@@ -33,6 +33,7 @@ final class WatchStreamer: NSObject, ObservableObject {
     private var tickTimer: Timer?
     private var highRateTasks: [Task<Void, Never>] = []
     private let batched = CMBatchedSensorManager()
+    private let speech = WatchSpeech()
 
     // State below is touched only on `queue`.
     private let queue: OperationQueue = {
@@ -57,8 +58,16 @@ final class WatchStreamer: NSObject, ObservableObject {
             WCSession.default.delegate = self
             WCSession.default.activate()
         }
+        speech.onFinished = { [weak self] id in
+            self?.link.sendMessage(LinkMessage(kind: .spoken, session: "", utterance: id).encoded)
+        }
         link.onMessage = { [weak self] data in
             guard let message = LinkMessage.decode(data) else { return }
+            if message.kind == .speak, let text = message.detail, let id = message.utterance {
+                DispatchQueue.main.async { self?.speech.speak(text, id: id) }
+                WKInterfaceDevice.current().play(.click)
+                return
+            }
             self?.queue.addOperation {
                 self?.recorder?.outbox.handle(message)
                 self?.publishTransfer()
@@ -131,6 +140,16 @@ final class WatchStreamer: NSObject, ObservableObject {
             self.isRunning = false
             self.status = "Stopped; sending the rest to the iPhone"
         }
+    }
+
+    /// The Watch's session buttons (design §7): one tap each, handled on the iPhone.
+    func send(command: String) {
+        guard WCSession.default.activationState == .activated, WCSession.default.isReachable else {
+            WKInterfaceDevice.current().play(.failure)
+            return
+        }
+        WCSession.default.sendMessage(["cmd": command], replyHandler: nil, errorHandler: nil)
+        WKInterfaceDevice.current().play(.click)
     }
 
     /// The Watch's "Resend session" button: every chunk again (duplicates are harmless).
