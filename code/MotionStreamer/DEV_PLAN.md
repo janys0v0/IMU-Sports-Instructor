@@ -7,23 +7,49 @@
 
 ## Overview
 
-| Stage | Build | Gate | Est. working days | Where it runs |
-|---|---|---|---|---|
-| 0 | Test harness + timer bug fix | G0 | 2-3 | Mac |
-| 0b | Risk spike: background recording (optional, recommended) | — | 1 | Devices |
-| 1 | Phone recorder | G1 | 2-3 | Mac |
-| 2 | Watch recording + transfer (incl. high-rate) | G2 | 3-4 | Mac + simulators |
-| 3 | Mac ingest script | G3 | 2 | Mac |
-| 4 | Phone preview | G4 | 2-3 | Mac + simulators |
-| 5 | Spoken calibration | G5 | 3-4 | Mac + simulators |
-| 6 | Keeping the app alive | G6 | 1-2 | Simulators + **first device test** |
-| 7 | Watchdog + alerts | G7 | 3-4 | Mac + simulators |
-| 8 | Trial button + extra sensors | G8 | 2-3 | Mac + simulators |
-| 9 | Endurance + device tests | G9 | 3-4 | Simulators + devices |
-| 10 | Calibration interval | G10 | 2 (two court days) | Devices |
+| Stage | Build | Already built | Gate | Est. working days | Where it runs |
+|---|---|---|---|---|---|
+| 0 | Test harness + timer bug fix | Python replay + fake packets | G0 | 2-3 | Mac |
+| 0b | Risk spike: background recording (optional, recommended) | — | — | 1 | Devices |
+| 1 | Phone recorder | ◐ single-file copy, sample indices, events | G1 | 2 | Mac |
+| 2 | Watch recording + transfer (incl. high-rate) | ◐ workout, auto-launch, 10 s retry buffer | G2 | 3-4 | Mac + simulators |
+| 3 | Mac ingest script | ◐ coverage PASS/FAIL, exact gaps, clock mapping | G3 | 1-2 | Mac |
+| 4 | Phone preview | ◐ live per-stream rate, coverage, missing | G4 | 2 | Mac + simulators |
+| 5 | Spoken calibration | ◐ countdown + buzz calibration, Mac calibration | G5 | 3 | Mac + simulators |
+| 6 | Keeping the app alive | ◐ pocket mode (fallback) | G6 | 1 | Simulators + **first device test** |
+| 7 | Watchdog + alerts | ◐ AirPods check screen, connect/disconnect events | G7 | 3 | Mac + simulators |
+| 8 | Trial button + extra sensors | ◐ Trial marker on the phone | G8 | 2 | Mac + simulators |
+| 9 | Endurance + device tests | 35 real recordings to replay | G9 | 3-4 | Simulators + devices |
+| 10 | Calibration interval | — | G10 | 2 (two court days) | Devices |
 
-**Total: about 26-35 working days (5-7 weeks).** Estimates assume one person coding with Claude;
-device stages depend on court and weather.
+◐ = partly built (details below). **Total: about 22-29 working days (4-6 weeks).** Estimates
+assume one person coding with Claude; device stages depend on court and weather.
+
+## What already exists
+
+The app already records all three devices and has been used for 35 sessions. These parts are
+**reused, not rebuilt**: stage 0 moves them into the testable package, and later stages extend them.
+
+| Feature | Where | Status | Used in stage |
+|---|---|---|---|
+| Phone + Watch + AirPods motion, 14-value packets with `seq` / `first_index` | `Shared/MotionFormat.swift`, `iOS/StreamController.swift` | ✅ works, 35 recordings | 1 (format kept, R8) |
+| On-phone copy of each session (`stream.jsonl` + `manifest.json`) | `iOS/SessionRecorder.swift` | ◐ one file, no `fsync`, manifest only at Stop | 1 (replaced by chunks + journal) |
+| Watch workout session keeps the Watch app running | `Watch/WatchStreamer.swift` | ✅ | 2 |
+| Phone starts the Watch app (`startWatchApp`) and sends start/stop | `iOS/StreamController.swift` | ✅ | 2, 7 (relaunch on workout end) |
+| Watch → phone batches with a 10 s retry buffer, dropped-sample count | `Watch/WatchStreamer.swift` | ◐ data lost after 10 s | 2 (becomes preview only) |
+| Clock-sync pings phone ↔ Watch every 5 s | `iOS/StreamController.swift` | ✅ | 3 (clock fit) |
+| Events: start, stop, calibrate, marker, Watch and AirPods status | `iOS/StreamController.swift` | ✅ | 1-8 |
+| Live per-stream rate, nominal rate, coverage, missing, last-packet age | `StreamCounter` in `iOS/StreamController.swift`, `iOS/ContentView.swift` | ◐ no dots or thresholds | 4 (live strip) |
+| Calibrate button: 10 s countdown, 3 s hold, buzzes | `iOS/StreamController.swift` | ◐ screen + buzz only; **Stop-during-countdown bug** | 0 (bug), 5 (spoken flow) |
+| Trial marker button | `iOS/ContentView.swift` | ◐ phone only, no trial check | 8 (Watch button, trial check) |
+| Pocket mode (proximity sensor) + auto-lock off | `iOS/ContentView.swift`, `iOS/StreamController.swift` | ✅ | 6 (fallback) |
+| AirPods check: connection, rate, live head angles | `iOS/HeadphoneMonitor.swift` | ✅ | 7 (Go/No-Go) |
+| Setup: participant, activity, wrist, pocket screen direction | `iOS/ContentView.swift` | ✅ | 7 (settings check) |
+| Mac receiver: per-stream coverage, `summary.json`, PASS/FAIL | `receiver/phase1_receiver.py` | ◐ live UDP only, no checksums | 3 |
+| Exact missing samples (by index), gaps > 100 ms, delay, clock mapping | `experiments/common/stream_quality.py` (E03) | ✅ | 3 (reused in ingest), S2 baseline |
+| Recording loader, 30 Hz resampling with gap marks | `live/motion_io.py`, `live/resample.py` | ✅ | 3 (merged stream must load here) |
+| Standing calibration + checks on the Mac | `live/calibration.py` | ◐ one calibration only, no arms-out pose | 5 |
+| Replay a recording over UDP; synthetic packets | `live/send_recording.py`, `receiver/fake_phone.py` | ✅ | 0 (basis for replay fakes) |
 
 ## Rules for every stage
 
@@ -39,12 +65,14 @@ device stages depend on court and weather.
 
 **Goal:** all later logic can be tested on the Mac in seconds, using real recordings and fakes.
 
+**Already there:** Python replay (`send_recording.py`) and synthetic packets (`fake_phone.py`); the Swift side has no tests yet.
+
 **Tasks**
 1. Create the Swift package `MotionStreamerCore` (macOS, iOS, watchOS) inside `code/MotionStreamer/`.
 2. Add the protocols and fakes: `MotionSource`, `Clock`, `FileStore`, `WatchLink`, `Voice`, plus settable `Battery`, `Thermal`, `AudioRoute`, `LowPower` (TEST_PLAN §0).
 3. Write the replay `MotionSource`: plays a `mac_stream.jsonl` recording through the fake clock.
 4. Add `code/tests/` (pytest) and `tools/run_tests.sh` (runs `swift test` + `pytest`).
-5. Link the package into both app targets in `project.yml`; the app still builds.
+5. Move the existing logic (`StreamCounter`, packet encoding, calibration timer) into the package behind the protocols; link the package into both app targets in `project.yml`. The app still records exactly as before.
 6. Fix the calibration-timer bug (`calibrationTimer = nil` in `StreamController.stop()`), with test C1.
 
 **Testable goals (G0)**
@@ -53,6 +81,7 @@ device stages depend on court and weather.
 - [ ] A 60-min fake-clock replay finishes in under 10 s.
 - [ ] `tools/run_tests.sh` exits 0 and runs in GitHub Actions on every PR.
 - [ ] **C1** passes: Stop during the countdown, Start, Calibrate → calibration runs.
+- [ ] **No change in behaviour:** a replayed session through the moved code produces byte-identical `stream.jsonl` packets to the current app (except timestamps of writing).
 - [ ] **Demo:** run `tools/run_tests.sh` and see a summary line listing every test that passed.
 
 ## Stage 0b: Risk spike: background recording (optional, recommended)
@@ -73,6 +102,8 @@ background (design §7). The answer decides how stages 6 and 7 are built.
 
 **Goal:** the phone saves everything to disk in 60 s chunks and survives crashes, with no Mac.
 
+**Already there:** the session copy (`SessionRecorder`), sample indices and events. Replace the single file with chunks + journal; keep the packet format.
+
 **Tasks**
 1. Chunk writer: write per packet, `fsync` every 1 s, rotate every 60 s, SHA-256, rename `.open` → `.jsonl` (design §4).
 2. Append-only `journal.jsonl` and a `manifest.json` rebuilt from it.
@@ -91,6 +122,8 @@ background (design §7). The answer decides how stages 6 and 7 are built.
 
 **Goal:** the Watch saves its own data and delivers every chunk to the phone exactly once.
 
+**Already there:** the workout session, auto-launch from the phone, batching and the 10 s retry buffer (kept as the live preview).
+
 **Tasks**
 1. Watch chunk writer + journal (same code as stage 1, Watch target).
 2. Send each 60 Hz chunk with `transferFile` as it closes; the phone verifies SHA-256 and acks (design §5).
@@ -106,6 +139,8 @@ background (design §7). The answer decides how stages 6 and 7 are built.
 ## Stage 3: Mac ingest script
 
 **Goal:** one command on the Mac says whether a session is complete, and why if not.
+
+**Already there:** coverage PASS/FAIL (`phase1_receiver.py`), exact missing samples, gaps and clock mapping (`stream_quality.py`). Reuse them; add checksums, segments and the report.
 
 **Tasks**
 1. `receiver/ingest_field.py <session_dir>`: checksum every chunk, check all journalled chunks exist.
@@ -124,8 +159,10 @@ background (design §7). The answer decides how stages 6 and 7 are built.
 
 **Goal:** you can see on the phone that data was saved correctly.
 
+**Already there:** live rate, coverage, missing and last-packet age per stream. Add the dots and thresholds; the review screen and session card are new.
+
 **Tasks**
-1. Live strip: Hz, last-sample age, 🟢🟡🔴 per stream (design §8).
+1. Live strip: add 🟢🟡🔴 per stream from `quality_thresholds.json` to the existing status numbers (design §8).
 2. Review screen reading **closed chunks from disk**: whole-session timeline + last-60 s plots (Swift Charts, ≤ 500 points).
 3. Session check card after Stop: PASS / WARN / FAIL from the shared thresholds.
 
@@ -137,6 +174,8 @@ background (design §7). The answer decides how stages 6 and 7 are built.
 ## Stage 5: Spoken calibration
 
 **Goal:** a person with the phone in a pocket can calibrate by voice from the Watch, and the Mac uses every calibration.
+
+**Already there:** the countdown-and-hold calibration with `calibrate` events (bug fixed in stage 0), and the standing calibration in `live/calibration.py`. Speech, the arms-out pose, Watch start and multi-calibration are new.
 
 **Tasks**
 1. `Shared/voice_prompts.json` with the script C1-C12 and alert phrases (design §9).
@@ -155,9 +194,11 @@ background (design §7). The answer decides how stages 6 and 7 are built.
 
 **Goal:** recording continues with the phone locked in a pocket for a full hour.
 
+**Already there:** pocket mode with the proximity sensor and auto-lock off; it becomes the fallback.
+
 **Tasks**
 1. Workout mirroring from the Watch; phone `workoutSessionMirroringStartHandler` (or the stage 0b decision).
-2. Foreground pocket mode as the fallback, chosen automatically if mirroring fails.
+2. Switch to the existing pocket mode automatically if mirroring fails.
 3. App lifecycle events logged and followed by `fsync`.
 
 **Testable goals (G6)**
@@ -168,6 +209,8 @@ background (design §7). The answer decides how stages 6 and 7 are built.
 ## Stage 7: Watchdog + alerts
 
 **Goal:** problems are found within seconds, fixed automatically where possible, and spoken otherwise.
+
+**Already there:** the AirPods check screen (connection, rate, head angles) and AirPods / Watch status events. Reuse the check screen inside Go/No-Go.
 
 **Tasks**
 1. Go/No-Go screen: devices, rates, battery for planned minutes, disk, Low Power, signing days left, audibility check.
@@ -183,8 +226,10 @@ background (design §7). The answer decides how stages 6 and 7 are built.
 
 **Goal:** trials are marked and checked; barometer, magnetometer and audio level are recorded.
 
+**Already there:** the phone's Trial marker button and `marker` events. Move it to the Watch; the sensors are new.
+
 **Tasks**
-1. Trial button on the Watch (large, one tap) and the sync gesture detector.
+1. Trial button on the Watch (large, one tap), sending the existing `marker` event; add the sync gesture detector.
 2. New packet types: barometer (~1 Hz), magnetometer field + accuracy, audio level + onsets (no raw audio), optional UWB distance.
 3. `motion_io.py` and `ingest_field.py` accept the new packets without breaking old recordings.
 
