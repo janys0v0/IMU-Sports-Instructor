@@ -32,8 +32,8 @@ no Wi-Fi, and never lose more than a few seconds of data.
 | 6 | **Delete only after the Mac verifies** | No single point of loss |
 
 The packet format (`Shared/MotionFormat.swift`, described in
-[`code/MotionStreamer/README.md`](../../code/MotionStreamer/README.md#data)) and the Mac loader
-(`live/motion_io.py`) stay unchanged: each chunk line is one of today's packets.
+[`apps/MotionStreamer/README.md`](../../apps/MotionStreamer/README.md#data)) and the Mac loader
+(`pipeline/preprocessing/motion_io.py`) stay unchanged: each chunk line is one of today's packets.
 
 **Setting:** solo recording, everything controlled from the Watch with spoken guidance. Watch on
 the racket arm, iPhone in the front trouser pocket on the same side (or a fitted armband), AirPods
@@ -232,7 +232,7 @@ Reasons: "you moved" · "the phone isn't upright in your pocket" · "your arms w
 
 | Check | Pass |
 |---|---|
-| Still | Rotation RMS < 0.15 rad/s on every device (as `live/calibration.py`) |
+| Still | Rotation RMS < 0.15 rad/s on every device (as `pipeline/preprocessing/calibration.py`) |
 | Phone upright | Gravity along the phone's long axis > 0.85 |
 | Arms level | Watch forearm axis within ~20° of horizontal |
 | All devices present | Samples from each in the window |
@@ -247,7 +247,7 @@ the user stands still and upright for 2 s; these correct tilt, not heading.
 **On the Mac:** blend between neighbouring calibrations (slerp) to remove steady drift; use the
 last calibration before each frame across segment breaks or next to a failed one.
 `ingest_report.json` lists drift per interval; above ~10° between calibrations means calibrate
-more often. `live/calibration.py` must handle many calibrations and the arms-out pose.
+more often. `pipeline/preprocessing/calibration.py` must handle many calibrations and the arms-out pose.
 
 ### Voice rules (calibration and alerts)
 
@@ -380,7 +380,7 @@ Watch data is checked from the live preview first, then again once its chunk arr
 
 ```
  ① Copy (Finder / AirDrop) ─▶ ② ingest_field.py ─▶ ③ Back up (2nd drive) ─▶ ④ Clear devices
-    → code/recordings/field/      SHA-256 per chunk       only after PASS           only sessions listed
+    → data/recordings/field/      SHA-256 per chunk       only after PASS           only sessions listed
                                   all chunks present                                in verified.json
                                   gaps + causes, clock fit, drift
                                   ingest_report.json: PASS / FAIL / PENDING

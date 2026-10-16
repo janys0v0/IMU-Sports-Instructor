@@ -24,7 +24,7 @@ With these, the same core code runs in three places: `swift test` on the Mac (fa
 iOS + watchOS simulators, and the devices.
 
 **Test data:**
-- **35 real recordings** in `code/recordings/` (`mac_stream.jsonl` each), replayed through `MotionSource`. Key fixtures:
+- **35 real recordings** in `data/recordings/` (`mac_stream.jsonl` each), replayed through `MotionSource`. Key fixtures:
   - `20261008-153213-P01`: reference routine, all 3 devices.
   - `20261008-153037-P01`: no calibrate events (the timer bug).
   - `20261008-152437-P01`: AirPods start after the first calibration.
@@ -60,7 +60,7 @@ IDs are stable so failures can be referenced. "Pass" is what must be true.
 | R5 | `fsync` fails | Same as R4 |
 | R6 | Free space below 2 GB at Start | Start blocked with the reason |
 | R7 | File protection attribute | `.completeUntilFirstUserAuthentication` on every file |
-| R8 | Packet format | Every line parses with today's `live/motion_io.py` unchanged |
+| R8 | Packet format | Every line parses with today's `pipeline/preprocessing/motion_io.py` unchanged |
 
 ### J: Journal and recovery (design §2, §4)
 
@@ -107,7 +107,7 @@ IDs are stable so failures can be referenced. "Pass" is what must be true.
 | C4 | Arms not level after 6 s | C8 prompt spoken, then proceeds when level |
 | C5 | Each fail reason (phone not upright, AirPods missing, Watch silent, arms not level) | Correct reason phrase in the result |
 | C6 | Reminder | Spoken once the reminder interval (default 10 min) passes without calibration and after each trigger event; repeats every 2 min |
-| C7 | Replay `20261008-153213-P01` calibration window | On-phone check agrees with `live/calibration.py` (same pass/fail, rotation within 0.5°) |
+| C7 | Replay `20261008-153213-P01` calibration window | On-phone check agrees with `pipeline/preprocessing/calibration.py` (same pass/fail, rotation within 0.5°) |
 | C8 | Mac multi-calibration blend with **injected known drift** (linear yaw drift 8°/min) | Blended result removes the drift to within 1° |
 | C9 | Piecewise mode across a segment break | Uses the last calibration before each frame |
 | C10 | Reminder interval is a setting | Changing it changes when the spoken reminder fires; T20's drift-check poses are logged as `drift_check` events, not as calibrations |

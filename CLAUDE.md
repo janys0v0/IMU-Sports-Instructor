@@ -13,5 +13,5 @@ Rules:
 - Never commit on `main`; never commit recordings, videos, weights or SMPL files.
 - Keep docs short: edit or delete stale text instead of appending notes. Decisions go in
   [`docs/plan/decisions.md`](docs/plan/decisions.md), device facts in [`docs/research/device-research.md`](docs/research/device-research.md).
-- Python tools for checks live in `.venv-tools`; the ML environment is `code/.venv` (Python 3.9).
+- Python tools for checks live in `.venv-tools`; the ML environment is `.venv` (Python 3.9). Run Python as `.venv/bin/python -m pipeline.…` / `-m experiments.…` from the repo root.
 - Device tests in the background run with Xcode detached ([`docs/plan/test-plan.md`](docs/plan/test-plan.md) §4).

@@ -56,11 +56,11 @@ The app already records all three devices and has been used for 35 sessions. The
 | Pocket mode (proximity sensor) + auto-lock off | `iOS/ContentView.swift`, `iOS/StreamController.swift` | ✅ | 6 (fallback) |
 | AirPods check: connection, rate, live head angles | `iOS/HeadphoneMonitor.swift` | ✅ | 7 (Go/No-Go) |
 | Setup: participant, activity, wrist, pocket screen direction | `iOS/ContentView.swift` | ✅ | 7 (settings check) |
-| Mac receiver: per-stream coverage, `summary.json`, PASS/FAIL | `receiver/phase1_receiver.py` | ◐ live UDP only, no checksums | 3 |
+| Mac receiver: per-stream coverage, `summary.json`, PASS/FAIL | `pipeline/live/receiver.py` | ◐ live UDP only, no checksums | 3 |
 | Exact missing samples (by index), gaps > 100 ms, delay, clock mapping | `experiments/common/stream_quality.py` (E03) | ✅ | 3 (reused in ingest), S2 baseline |
-| Recording loader, 30 Hz resampling with gap marks | `live/motion_io.py`, `live/resample.py` | ✅ | 3 (merged stream must load here) |
-| Standing calibration + checks on the Mac | `live/calibration.py` | ◐ one calibration only, no arms-out pose | 5 |
-| Replay a recording over UDP; synthetic packets | `live/send_recording.py`, `receiver/fake_phone.py` | ✅ | 0 (basis for replay fakes) |
+| Recording loader, 30 Hz resampling with gap marks | `pipeline/preprocessing/motion_io.py`, `pipeline/preprocessing/resample.py` | ✅ | 3 (merged stream must load here) |
+| Standing calibration + checks on the Mac | `pipeline/preprocessing/calibration.py` | ◐ one calibration only, no arms-out pose | 5 |
+| Replay a recording over UDP; synthetic packets | `pipeline/live/send_recording.py`, `pipeline/live/fake_phone.py` | ✅ | 0 (basis for replay fakes) |
 
 ## Human testing: what blocks and what waits
 
@@ -94,10 +94,10 @@ push. Merge when the stage's gate passes twice in a row.
 **Already there:** Python replay (`send_recording.py`) and synthetic packets (`fake_phone.py`); the Swift side has no tests yet.
 
 **Tasks**
-1. Create the Swift package `MotionStreamerCore` (macOS, iOS, watchOS) inside `code/MotionStreamer/`.
+1. Create the Swift package `MotionStreamerCore` (macOS, iOS, watchOS) inside `apps/MotionStreamer/`.
 2. Add the protocols and fakes: `MotionSource`, `Clock`, `FileStore`, `WatchLink`, `Voice`, plus settable `Battery`, `Thermal`, `AudioRoute`, `LowPower` (test-plan §0).
 3. Write the replay `MotionSource`: plays a `mac_stream.jsonl` recording through the fake clock.
-4. Add `code/tests/` (pytest) and `tools/run_tests.sh` (runs `swift test` + `pytest`).
+4. Add `tests/` (pytest) and `tools/run_tests.sh` (runs `swift test` + `pytest`).
 5. Move the existing logic (`StreamCounter`, packet encoding, calibration timer) into the package behind the protocols; link the package into both app targets in `project.yml`. The app still records exactly as before.
 6. Fix the calibration-timer bug (`calibrationTimer = nil` in `StreamController.stop()`), with test C1.
 
@@ -171,10 +171,10 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 
 **Goal:** one command on the Mac says whether a session is complete, and why if not.
 
-**Already there:** coverage PASS/FAIL (`phase1_receiver.py`), exact missing samples, gaps and clock mapping (`stream_quality.py`). Reuse them; add checksums, segments and the report.
+**Already there:** coverage PASS/FAIL (`pipeline/live/receiver.py`), exact missing samples, gaps and clock mapping (`stream_quality.py`). Reuse them; add checksums, segments and the report.
 
 **Tasks**
-1. `receiver/ingest_field.py <session_dir>`: checksum every chunk, check all journalled chunks exist.
+1. `pipeline/ingest/ingest_field.py <session_dir>`: checksum every chunk, check all journalled chunks exist.
 2. Gaps per device per segment, each with its cause from events.
 3. Clock fit to Unix time (incl. Watch sync pings) and drift report.
 4. Binary high-rate loader (`numpy`); `watch_hf: PENDING` when chunks are still on the Watch.
@@ -206,7 +206,7 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 
 **Goal:** a person with the phone in a pocket can calibrate by voice from the Watch, and the Mac uses every calibration.
 
-**Already there:** the countdown-and-hold calibration with `calibrate` events (bug fixed in stage 0), and the standing calibration in `live/calibration.py`. Speech, the arms-out pose, Watch start and multi-calibration are new.
+**Already there:** the countdown-and-hold calibration with `calibrate` events (bug fixed in stage 0), and the standing calibration in `pipeline/preprocessing/calibration.py`. Speech, the arms-out pose, Watch start and multi-calibration are new.
 
 **Tasks**
 1. `Shared/voice_prompts.json` with the script C1-C12 and alert phrases (design §7).
@@ -214,7 +214,7 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 3. On-phone checks: still, phone upright, arms level, all devices present, drift since last.
 4. Audio session: built-in mic, `.allowBluetoothA2DP`, never `.allowBluetooth`; `audio` background mode.
 5. Reminders at the interval setting (default 10 min).
-6. `live/calibration.py`: many calibrations, arms-out step, slerp blend between neighbours.
+6. `pipeline/preprocessing/calibration.py`: many calibrations, arms-out step, slerp blend between neighbours.
 
 **Testable goals (G5)**
 - [ ] **C1-C10:** timer regression, clean run, moving, arms not level, each fail reason, reminders, agreement with `calibration.py` within 0.5°, blend removes 8°/min drift to within 1°, piecewise across segments, interval setting.

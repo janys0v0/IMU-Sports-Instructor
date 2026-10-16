@@ -4,7 +4,7 @@ default_install_hook_types: [pre-commit, commit-msg]
 default_stages: [pre-commit]
 default_language_version:
   python: python3
-exclude: ^code/(MobilePoser|IMUCoCo)/
+exclude: ^third_party/(MobilePoser|IMUCoCo)/
 
 repos:
   # General hygiene
@@ -13,9 +13,9 @@ repos:
     hooks:
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
-        exclude: ^patches/  # patch context lines must keep their whitespace
+        exclude: ^third_party/patches/  # patch context lines must keep their whitespace
       - id: end-of-file-fixer
-        exclude: ^patches/
+        exclude: ^third_party/patches/
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: check-yaml
@@ -69,7 +69,7 @@ repos:
         name: no recordings, videos or model files
         entry: Data and model files belong on the shared drive, not in git (see CONTRIBUTING.md)
         language: fail
-        files: (^code/recordings/|\.(mp4|mov|npz|npy|pt|pth|ckpt|pkl|zip|h5|jsonl|bin)$)
+        files: (^data/|\.(mp4|mov|npz|npy|pt|pth|ckpt|pkl|zip|h5|jsonl|bin)$)
 
   # Commit messages: Conventional Commits
   - repo: https://github.com/compilerla/conventional-pre-commit

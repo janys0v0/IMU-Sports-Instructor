@@ -9,14 +9,16 @@ the plan.** Commits use Conventional Commit messages; branches are squash-merged
 python3 -m venv .venv-tools
 .venv-tools/bin/pip install -r requirements-dev.txt
 .venv-tools/bin/pre-commit install
-tools/setup_upstream.sh
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # ML environment
+tools/setup_third_party.sh
 ```
 
-- `.venv-tools` holds only the commit-check tools. The ML environment stays in `code/.venv`
-  (see `code/README.md`); don't install the tools there, it breaks `lightning`'s pins.
-- `tools/setup_upstream.sh` clones MobilePoser and IMUCoCo at their pinned commits and applies
-  `patches/`. Then download their licensed files (SMPL, weights, datasets) as their READMEs say.
-- iOS app: `cd code/MotionStreamer && xcodegen generate`. The `.xcodeproj` is generated, not committed.
+- `.venv-tools` holds only the commit-check tools; `.venv` is the ML environment (Python 3.9).
+  Don't install the tools into `.venv`: it breaks `lightning`'s pins.
+- `tools/setup_third_party.sh` clones MobilePoser and IMUCoCo into `third_party/` at their pinned
+  commits and applies `third_party/patches/`. Then download their licensed files (SMPL, weights,
+  datasets) as [`third_party/README.md`](third_party/README.md) says.
+- iOS app: `cd apps/MotionStreamer && xcodegen generate`. The `.xcodeproj` is generated, not committed.
 
 ## Development loop
 
@@ -120,15 +122,24 @@ GitHub Actions runs the same checks on every pull request (Swift checks run loca
 
 | In git | Not in git (shared drive) |
 |---|---|
-| Code, configs, docs, design and test plans | `code/recordings/` (personal motion data) |
+| Code, configs, docs, design and test plans | `data/` (recordings: personal motion data) |
 | Small results: `results/**/*.md`, `*.json` | Videos, plots' raw arrays (`.npz`), model outputs |
 | Annotations (`experiments/annotations/`) | MobilePoser / IMUCoCo repos, SMPL, weights, datasets |
-| Patches to upstream repos (`patches/`) | Virtual environments, Xcode build output |
+| Patches to third-party repos (`third_party/patches/`) | Virtual environments, Xcode build output |
 
 - Recordings use participant codes (`P01`), never names.
 - Never commit secrets, Apple signing files or API keys.
 
-## Upstream model repos
+## Where new code goes
 
-Edit the code in `code/MobilePoser`, then refresh the patch:
-`git -C code/MobilePoser -c core.fileMode=false diff > patches/mobileposer.patch`.
+| Kind of code | Folder |
+|---|---|
+| iPhone / Watch app | `apps/MotionStreamer/` |
+| Loading, resampling, calibrating recordings | `pipeline/preprocessing/` |
+| Running models, rendering | `pipeline/pose/` |
+| Checking and merging field sessions (`ingest_field.py`) | `pipeline/ingest/` |
+| Anything that talks UDP to the app | `pipeline/live/` |
+| Plots and metrics on one recording | `pipeline/analysis/` |
+| A study with a question and results | `experiments/ENN_name/` (see [`experiments/README.md`](experiments/README.md)) |
+| Developer scripts | `tools/` |
+| Changes to MobilePoser / IMUCoCo | edit in `third_party/`, then refresh the patch ([`third_party/README.md`](third_party/README.md)) |

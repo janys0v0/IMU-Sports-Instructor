@@ -4,6 +4,22 @@ Full-body motion capture for sports such as tennis, from an iPhone, Apple Watch 
 
 **Where we are:** see **Status** at the top of [`docs/plan/dev-plan.md`](docs/plan/dev-plan.md#status).
 
+## Repository layout
+
+```
+apps/MotionStreamer/      iPhone + Apple Watch recording app (Swift)
+pipeline/                 Mac-side Python, run as `python -m pipeline.<folder>.<script>`
+├── preprocessing/            load, resample, calibrate recordings
+├── pose/                     run MobilePoser, render meshes
+├── live/                     UDP receiver, live viewer, test senders
+└── analysis/                 trajectory and knee plots
+experiments/              offline studies E00-E03, shared code, annotations
+docs/                     plan/ (design, dev plan, tests, decisions) · research/ · deferred/
+tools/                    checks and setup scripts
+third_party/              MobilePoser, IMUCoCo (cloned, not in git) + our patches
+data/                     recordings (not in git)
+```
+
 ## Documents
 
 Each topic lives in exactly one file; other files link to it instead of repeating it.
@@ -18,8 +34,10 @@ Each topic lives in exactly one file; other files link to it instead of repeatin
 | OpenCap ground truth (deferred) | [`docs/deferred/opencap.md`](docs/deferred/opencap.md) |
 | Literature, model survey, proposal | [`docs/research/`](docs/research) |
 | Experiment and device-test log | [`EXPERIMENT_LOG.md`](EXPERIMENT_LOG.md) |
-| Code overview and commands | [`code/README.md`](code/README.md) |
-| iOS / Watch app setup and data format | [`code/MotionStreamer/README.md`](code/MotionStreamer/README.md) |
+| Mac pipeline and commands | [`pipeline/README.md`](pipeline/README.md) |
+| Experiments and how to run them | [`experiments/README.md`](experiments/README.md) |
+| iOS / Watch app setup and data format | [`apps/MotionStreamer/README.md`](apps/MotionStreamer/README.md) |
+| Third-party models and patches | [`third_party/README.md`](third_party/README.md) |
 | Setup, development loop, commit rules | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 Recordings and model files are not in git; they live on the shared drive.
