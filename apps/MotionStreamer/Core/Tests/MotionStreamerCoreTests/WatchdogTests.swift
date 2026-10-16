@@ -209,6 +209,18 @@ final class WatchdogTests: XCTestCase {
         XCTAssertTrue(TrialCheck(input).keep)
     }
 
+    func test_A11_checkRunAsTheTrialEndsDoesNotSeeAFalseGap() {
+        let items = (0..<3300).map { k in (index: k, t: 100 + Double(k) / 33) }  // data up to 200 s
+        var input = TrialCheck.Input(
+            trial: 1, start: 110, end: 200, items: ["phone": items], requiredDevices: ["phone"],
+            syncGestureDetected: true)
+        input.lastGoodCalibration = 105
+        input.dataUntil = 200
+        XCTAssertTrue(TrialCheck(input).keep, "no gap from the 2 s padding that hasn't happened yet")
+        input.dataUntil = nil
+        XCTAssertFalse(TrialCheck(input).keep)
+    }
+
     func test_A12_courtExitCheck() {
         let trials = [(number: 1, keep: true), (number: 2, keep: false), (number: 3, keep: true)]
         XCTAssertEqual(

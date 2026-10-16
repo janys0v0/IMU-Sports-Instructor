@@ -10,8 +10,8 @@ when its gate passes on two consecutive runs; then the next stage starts.
 
 | | |
 |---|---|
-| **Current stage** | 8 — Trial button + extra sensors (stages 0-7 done; stage 6's gate waits for device test T6) |
-| **Next action** | Trial button on the Watch with the trial check and court-exit check in the app (stage 8, task 1) |
+| **Current stage** | 9 — Endurance + device tests (stages 0-8 done; stage 6's gate waits for device test T6) |
+| **Next action** | Endurance tests L1-L3, then the device round (stage 0b check first) |
 | **Blocked on** | Devices: stage 0b check (= T6) closes stage 6's gate and the keep-alive decision · People: V9 listen-through |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
 | **Last updated** | 2026-10-16 |
@@ -268,10 +268,10 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 3. `motion_io.py` and `ingest_field.py` accept the new packets without breaking old recordings.
 
 **Testable goals (G8)**
-- [ ] **A11-A13** again, now with real trials.
-- [ ] **X1-X4:** barometer, magnetometer, audio level with no raw audio stored, old recordings still load.
-- [ ] **E1:** full simulator flow Setup → Go/No-Go → Start → Calibrate → 3 trials → Stop.
-- [ ] **Demo:** run E1 and open the session check card: 3 trials ✅ and the barometer trace on the review screen.
+- [x] **A11-A13** again, now with real trials (trial tracker tests, and the app's own trial checks in E1).
+- [x] **X1-X4:** barometer, magnetometer, audio level with no raw audio stored, old recordings still load.
+- [x] **E1:** in the iOS simulator, driven by a launch script through the app's controller (not UI taps), on a replayed recording: Go/No-Go → Start → spoken calibration (one "you moved" retry, then pass) → 3 trials checked and spoken → Stop, every step in the session's events.
+- [ ] **Demo (device round):** 3 trials ✅ needs real sync hops, and the barometer trace needs a real barometer; replayed recordings have neither. Moved to T7 in stage 9.
 
 ## Stage 9: Endurance + device tests
 

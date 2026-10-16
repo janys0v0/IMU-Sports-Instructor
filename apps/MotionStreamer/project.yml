@@ -49,6 +49,7 @@ targets:
         NSHealthUpdateUsageDescription: Starts a workout on Apple Watch so it can stream motion.
         UIBackgroundModes: [audio, location]
         NSLocationWhenInUseUsageDescription: Keeps recording while the phone is locked in your pocket. Your location is not saved.
+        NSMicrophoneUsageDescription: Measures sound level only (ball strikes, claps). No audio is recorded or saved.
     dependencies:
       - target: MotionStreamerWatch
       - package: MotionStreamerCore

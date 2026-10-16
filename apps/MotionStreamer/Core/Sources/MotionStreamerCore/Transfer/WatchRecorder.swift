@@ -99,6 +99,10 @@ public final class WatchRecorder {
         motion.append(packet, device: "watch", firstIndex: firstIndex, count: count)
     }
 
+    /// Writes any other packet (barometer, magnetometer) to the 60 Hz stream's chunks.
+    @discardableResult
+    public func recordOther(_ packet: Data) -> Bool { motion.append(packet) }
+
     /// Writes one batch of high-rate records (CMBatchedSensorManager delivers ~1 s per batch).
     @discardableResult
     public func recordHighRate(_ records: [HighRateFormat.Record]) -> Bool {

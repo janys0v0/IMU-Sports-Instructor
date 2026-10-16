@@ -65,6 +65,10 @@ final class StreamController: NSObject, ObservableObject {
     @Published var errorMessage: String?
     /// Countdown / hold text while a calibration is in progress.
     @Published private(set) var calibrationStatus: String?
+    /// "Trial 3 running" / "Trial 3 ✅ keep" / "Trial 3 🔁 redo".
+    @Published private(set) var trialStatus: String?
+    /// The court-exit check after Stop (design §8 ④).
+    @Published private(set) var courtExit: CourtExitCheck.Verdict?
     /// "Watch: 58 / 60 chunks · high-rate 12 / 60" for the status section (design §3).
     @Published private(set) var watchTransfer = "–"
     /// A session a crash left open, offered for Resume at launch (design §4).
@@ -88,7 +92,7 @@ final class StreamController: NSObject, ObservableObject {
     private lazy var keepAlivePolicy = KeepAlivePolicy(clock: clock, method: keepAliveMethod)
     /// The mirrored workout from the Watch, kept so it stays alive (method `.mirroring`).
     private var mirroredWorkout: HKWorkoutSession?
-    /// Last 30 s of samples per device, by arrival time, for the calibration checks (ioQueue).
+    /// Last 3 min of samples per device, by arrival time, for calibration and trial checks (ioQueue).
     private var recent: [String: [(arrival: Double, sample: MotionSample)]] = [:]
 
     // State below is touched only on `ioQueue`.
@@ -127,6 +131,14 @@ final class StreamController: NSObject, ObservableObject {
     private var lastAckUptime: Double?
     // Watchdog state (ioQueue unless noted).
     private let dropDetector = PhoneDropDetector()
+    private var lastGoodCalibration: Double?
+    private var calibrationResets: [Double] = []
+    private var compassLow = false
+    private lazy var trials = TrialTracker(clock: clock)
+    private var sensors = SensorPacketWriter()
+    private let altimeter = CMAltimeter()
+    private let audioLevel = AudioLevelRecorder()
+    private var lastMagnetic = 0.0
     private var lastWatchBatch: Double?
     private var lastWriteError: Double?
     private var watchStopped = false
@@ -181,7 +193,21 @@ final class StreamController: NSObject, ObservableObject {
         }
     }
 
+    /// The court-exit check (design §8 ④): every trial kept, the Watch's 60 Hz chunks on the phone,
+    /// its high-rate chunks closed (they may still be on the Watch).
+    private func updateCourtExit(_ session: String) {
+        let summary = inbox.expected[session].map { ($0.chunks60Hz, $0.chunksHighRate, true) }
+        let watchUsed = lastWatchBatch != nil || summary != nil
+        let verdict = CourtExitCheck(
+            trials: trials.trials, watchSummary: summary,
+            chunks60HzOnPhone: inbox.count(session: session, kind: "60hz"),
+            watchRequired: watchUsed
+        ).verdict
+        DispatchQueue.main.async { self.courtExit = verdict }
+    }
+
     private func publishTransfer(_ session: String) {
+        updateCourtExit(session)
         let main = inbox.progress(session: session, kind: "60hz")
         let hf = inbox.progress(session: session, kind: "hf")
         let text =
@@ -307,11 +333,22 @@ final class StreamController: NSObject, ObservableObject {
             self.startUptime = now
             self.phoneRefFrame = ref.name
             self.dropDetector.reset()
+            self.sensors = SensorPacketWriter()
+            self.calibrationResets = []
+            self.lastGoodCalibration = nil
             self.lastWatchBatch = nil
             self.watchStopped = false
             self.highRateFailed = false
             self.active = true
             sender?.start()
+            if let g = self.lastGoNoGo {
+                self.logEvent(
+                    "gonogo",
+                    extra: [
+                        "can_start": g.canStart,
+                        "checks": g.checks.map { ["id": $0.id, "ok": $0.ok, "detail": $0.detail] },
+                    ])
+            }
             self.logEvent(
                 resumeID == nil ? "start" : "resume",
                 extra: ["loc": self.phoneLocation, "pocket_screen": screen, "segment": recorder.segment])
@@ -324,12 +361,18 @@ final class StreamController: NSObject, ObservableObject {
             motion.startDeviceMotionUpdates(using: ref.frame, to: motionQueue) { [weak self] data, error in
                 guard let self, let data, error == nil else { return }
                 self.handlePhone(data.sample)
+                self.handleMagnetic(data)
             }
             startHeadphones()
         }
 
         sessionID = id
+        trials = TrialTracker(clock: clock)
+        trials.onEvent = { [weak self] name, fields in self?.ioQueue.async { self?.logEvent(name, extra: fields) } }
+        trialStatus = nil
+        courtExit = nil
         if replayRecording == nil { launchWatch() }
+        startExtraSensors()
         if keepAliveMethod == .location { locationKeepAlive.start() }
         isRecording = true
         packetsSent = 0
@@ -365,6 +408,8 @@ final class StreamController: NSObject, ObservableObject {
         flow.cancel()
         speaker.stopAll()
         locationKeepAlive.stop()
+        altimeter.stopRelativeAltitudeUpdates()
+        audioLevel.stop()
         calibrationStatus = nil
         sendWatchCommand("stop")
         stopReplay()
@@ -382,6 +427,7 @@ final class StreamController: NSObject, ObservableObject {
                 ])
             try? self.recorder?.stop()
             self.recorder = nil
+            if let id = self.manifest["session"] as? String { self.updateCourtExit(id) }
             self.active = false
             // Give the last datagrams time to leave before closing the socket.
             let udp = self.udp
@@ -434,9 +480,13 @@ final class StreamController: NSObject, ObservableObject {
         flow.onFinish = { [weak self] result in
             guard let self else { return }
             self.calibrationStatus = result.passed ? nil : "Calibration didn't work: \(result.failure?.rawValue ?? "")"
-            if result.passed { self.reminder.calibrated() }
+            if result.passed {
+                self.reminder.calibrated()
+                self.ioQueue.async { self.lastGoodCalibration = uptime() }
+            }
         }
         reminder.interval = reminderMinutes * 60
+        trials.onEvent = { [weak self] name, fields in self?.ioQueue.async { self?.logEvent(name, extra: fields) } }
     }
 
     /// Called every 0.5 s while recording: speaks the reminder when it's due.
@@ -499,13 +549,97 @@ final class StreamController: NSObject, ObservableObject {
     private func remember(_ device: String, _ samples: [MotionSample]) {
         let now = uptime()
         recent[device, default: []] += samples.map { (now, $0) }
-        if let first = recent[device]?.first, now - first.arrival > 40 {
-            recent[device]?.removeAll { now - $0.arrival > 30 }
+        if let first = recent[device]?.first, now - first.arrival > 200 {
+            recent[device]?.removeAll { now - $0.arrival > 180 }
         }
     }
 
     /// Marks a trial boundary (for example a clap).
-    func markTrial() { ioQueue.async { self.logEvent("marker") } }
+    // MARK: - Extra sensors (design §9)
+
+    private func startExtraSensors() {
+        if CMAltimeter.isRelativeAltitudeAvailable() {
+            altimeter.startRelativeAltitudeUpdates(to: motionQueue) { [weak self] data, _ in
+                guard let self, let data, self.active,
+                    let packet = self.sensors.barometer(
+                        device: "phone", t: data.timestamp, pressureKPa: data.pressure.doubleValue,
+                        relativeAltitudeM: data.relativeAltitude.doubleValue, bootToUnix: bootToUnixOffset())
+                else { return }
+                self.send(packet)
+            }
+        }
+        audioLevel.onLevel = { [weak self] t, rms, peak, onset in
+            self?.ioQueue.async {
+                guard let self, self.active,
+                    let packet = self.sensors.audioLevel(
+                        t: t, rmsDB: rms, peakDB: peak, onset: onset, bootToUnix: bootToUnixOffset())
+                else { return }
+                self.send(packet)
+            }
+        }
+        audioLevel.start()
+    }
+
+    /// Magnetometer once a second (ioQueue); low accuracy feeds the "compass disturbed" check.
+    private func handleMagnetic(_ data: CMDeviceMotion) {
+        guard active, data.timestamp - lastMagnetic >= 1 else { return }
+        lastMagnetic = data.timestamp
+        let f = data.magneticField
+        compassLow = f.accuracy == .uncalibrated || f.accuracy == .low
+        if let packet = sensors.magnetometer(
+            device: "phone", t: data.timestamp, field: [f.field.x, f.field.y, f.field.z],
+            accuracy: Int(f.accuracy.rawValue),
+            bootToUnix: bootToUnixOffset())
+        {
+            send(packet)
+        }
+    }
+
+    /// The Trial button (Watch or phone): starts a trial, or ends it and checks it (design §8 ③, §9).
+    func markTrial() {
+        guard isRecording else { return }
+        let result = trials.tap { [weak self] number, start, end in
+            self?.trialCheck(number, start, end)
+                ?? TrialCheck(
+                    TrialCheck.Input(
+                        trial: number, start: start, end: end, items: [:], requiredDevices: [],
+                        syncGestureDetected: false))
+        }
+        switch result {
+        case .started(let n):
+            trialStatus = "Trial \(n) running: do the 3 hops"
+        case .ended(let n, let keep, let spoken):
+            trialStatus = keep ? "Trial \(n) ✅ keep" : "Trial \(n) 🔁 redo"
+            if let spoken { speaker.say(spoken, id: "redo_trial") }
+        }
+    }
+
+    private func trialCheck(_ number: Int, _ start: Double, _ end: Double) -> TrialCheck {
+        ioQueue.sync {
+            var items: [String: [(index: Int, t: Double)]] = [:]
+            for (device, list) in recent {
+                items[device] = list.enumerated().map { ($0.offset, $0.element.arrival) }
+            }
+            let now = uptime()
+            let phone = (recent["phone"] ?? []).map(\.sample)
+            let hops = SyncGesture.detected(phone, from: start - 2, to: start + 8)
+            var required: Set<String> = ["phone"]
+            if lastWatchBatch.map({ now - $0 < 30 }) ?? false { required.insert("watch") }
+            if headIndex > 0 { required.insert("airpods") }
+            var input = TrialCheck.Input(
+                trial: number, start: start, end: end, items: items, requiredDevices: required,
+                syncGestureDetected: hops)
+            input.baselineHz = [
+                "phone": phoneCounter.nominalHz ?? 0, "watch": watchCounter.nominalHz ?? 0,
+                "airpods": headCounter.nominalHz ?? 0,
+            ].filter { $0.value > 0 }
+            input.lastGoodCalibration = lastGoodCalibration
+            input.calibrationResets = calibrationResets
+            input.reminderInterval = reminderMinutes * 60
+            input.dataUntil = now
+            return TrialCheck(input)
+        }
+    }
 
     /// Turns the screen off when the phone is in a pocket; the app keeps running.
     func setPocketMode(_ on: Bool) {
@@ -713,7 +847,8 @@ final class StreamController: NSObject, ObservableObject {
     private static let journalledEvents: Set<String> = [
         "start", "resume", "stop", "calibrate_requested", "calibrate", "calibrate_done", "marker",
         "watch_reachable", "watch_unreachable", "watch_launch_failed", "airpods_connected",
-        "airpods_disconnected", "write_error", "clock_jump",
+        "airpods_disconnected", "write_error", "clock_jump", "gonogo", "calibrate_arms", "calibrate_result",
+        "trial_check", "alert", "alert_acknowledged", "pocket_mode_needed", "sensor_restart", "workout_mirrored",
     ]
 
     // MARK: - Health, lifecycle, recovery
@@ -836,6 +971,10 @@ final class StreamController: NSObject, ObservableObject {
             i.plannedMinutes = plannedMinutes
             // Delivered rates vary by model (an iPhone 16 gives ~33 Hz); 25 Hz is the floor that works.
             i.liveRates["phone"] = (Double(phoneCount) / 2, 30)
+            if let replay = ReplaySettings.recording(), let s = replay.streams["phone"]?.samples, s.count > 1 {
+                // Simulator runs replay a recording: its rate stands in for the phone's sensor.
+                i.liveRates["phone"] = (Double(s.count - 1) / (s.last!.sample[0] - s.first!.sample[0]), 30)
+            }
             i.liveRates["airpods"] = (Double(headCount) / 2, 20)
             i.liveRates["watch"] = (self.watchReachable ? 60 : 0, 60)  // the Watch streams only after Start
             let level = UIDevice.current.batteryLevel
@@ -861,6 +1000,9 @@ final class StreamController: NSObject, ObservableObject {
         guard let date = formatter.date(from: String(text[open.upperBound..<close.lowerBound])) else { return nil }
         return date.timeIntervalSinceNow / 86400
     }
+
+    /// The last Go / No-Go result, logged when the session starts.
+    var lastGoNoGo: GoNoGo?
 
     /// The audibility check: speaks the question; `tapReceived()` comes from the Watch's OK or the phone.
     private(set) lazy var audibility = AudibilityCheck(clock: clock)
@@ -903,6 +1045,7 @@ final class StreamController: NSObject, ObservableObject {
             input.writeErrorRecently = lastWriteError.map { now - $0 < 10 } ?? false
             input.freeDiskBytes = store.freeBytes
             input.phoneDropped = dropDetector.dropped
+            input.compassAccuracyLow = compassLow
             input.airpodsConnected = ioAirPodsConnected
             return input
         }
@@ -932,6 +1075,7 @@ final class StreamController: NSObject, ObservableObject {
                 [weak self] data, error in
                 guard let self, let data, error == nil else { return }
                 self.handlePhone(data.sample)
+                self.handleMagnetic(data)
             }
         default:
             launchWatch()
@@ -1013,6 +1157,7 @@ extension StreamController: WCSessionDelegate {
         DispatchQueue.main.async {
             switch message["cmd"] as? String {
             case "calibrate": self.startCalibration()
+            case "trial": self.markTrial()
             case "repeat": self.repeatPrompt()
             case "acknowledge":
                 self.alertCenter.acknowledge()
@@ -1027,7 +1172,11 @@ extension StreamController: CMHeadphoneMotionManagerDelegate {
     func headphoneMotionManagerDidConnect(_ manager: CMHeadphoneMotionManager) {
         DispatchQueue.main.async { self.airPodsConnected = true }
         ioQueue.async { self.ioAirPodsConnected = true }
-        ioQueue.async { if self.active { self.logEvent("airpods_connected") } }
+        ioQueue.async {
+            guard self.active else { return }
+            self.logEvent("airpods_connected")
+            self.calibrationResets.append(uptime())
+        }
     }
 
     func headphoneMotionManagerDidDisconnect(_ manager: CMHeadphoneMotionManager) {

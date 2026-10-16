@@ -146,6 +146,9 @@ public struct TrialCheck {
         public var calibrationResets: [Double] = []
         public var reminderInterval: Double = 600
         public var syncGestureDetected: Bool
+        /// The newest time data can have (the check runs as the trial ends, so the window's
+        /// padding after the end is clipped here instead of counting as a gap).
+        public var dataUntil: Double?
 
         public init(
             trial: Int, start: Double, end: Double, items: [String: [(index: Int, t: Double)]],
@@ -168,7 +171,7 @@ public struct TrialCheck {
     public init(_ i: Input, thresholds t: QualityThresholds = .shared, script: VoiceScript = .shared) {
         var reasons: [String] = []
         let pad = t.value("trial_check.window_padding_s")
-        let window = (i.start - pad)...(i.end + pad)
+        let window = (i.start - pad)...max(i.start, min(i.end + pad, i.dataUntil ?? .infinity))
         let names = ["phone": ("phone", "was"), "watch": ("watch", "was"), "airpods": ("AirPods", "were")]
         for device in ["phone", "watch", "airpods"] where i.requiredDevices.contains(device) {
             let items = (i.items[device] ?? []).filter { window.contains($0.t) }

@@ -53,6 +53,21 @@ struct ContentView: View {
         }
         .onAppear {
             if ReplaySettings.autoStart { controller.start() }
+            for step in ReplaySettings.script {
+                DispatchQueue.main.asyncAfter(deadline: .now() + step.at) {
+                    switch step.action {
+                    case "gonogo":
+                        controller.preflight(plannedMinutes: 10, required: ["phone"], heardVoice: nil) {
+                            controller.lastGoNoGo = $0
+                        }
+                    case "start": controller.start()
+                    case "calibrate": controller.startCalibration()
+                    case "trial": controller.markTrial()
+                    case "stop": controller.stop()
+                    default: break
+                    }
+                }
+            }
             if let delay = ReplaySettings.openReviewAfter {
                 DispatchQueue.main.asyncAfter(deadline: .now() + delay) { showReview = true }
             }
@@ -148,6 +163,12 @@ struct ContentView: View {
             if let checkReview, !controller.isRecording {
                 SessionCheckCard(data: checkReview)
             }
+            if let status = controller.trialStatus, controller.isRecording {
+                Text(status).font(.headline)
+            }
+            if let verdict = controller.courtExit, !controller.isRecording {
+                CourtExitCard(verdict: verdict)
+            }
             if controller.isRecording {
                 Text("\(controller.sessionID) · \(formatDuration(controller.elapsed))")
                     .font(.footnote.monospaced())
@@ -160,7 +181,7 @@ struct ContentView: View {
                     .buttonStyle(.bordered)
                     .disabled(controller.calibrationStatus != nil)
                     Spacer()
-                    Button("Trial marker") { controller.markTrial() }
+                    Button("Trial") { controller.markTrial() }
                         .buttonStyle(.bordered)
                     Spacer()
                     Button("Pocket mode") {
@@ -288,4 +309,23 @@ struct ReviewContainer: View {
     }
 
     private func load() { controller.loadReview(sessionID) { review = $0 } }
+}
+
+/// The court-exit check after Stop (design §8 ④).
+struct CourtExitCard: View {
+    let verdict: CourtExitCheck.Verdict
+
+    var body: some View {
+        switch verdict {
+        case .safe:
+            Label("Safe to leave", systemImage: "checkmark.seal.fill").foregroundStyle(.green).font(.headline)
+        case .redo(let trials):
+            Label(
+                "Redo trials \(trials.map(String.init).joined(separator: ", "))", systemImage: "arrow.counterclockwise"
+            )
+            .foregroundStyle(.orange).font(.headline)
+        case .waiting(let why):
+            Label("Not yet: \(why)", systemImage: "hourglass").foregroundStyle(.secondary)
+        }
+    }
 }

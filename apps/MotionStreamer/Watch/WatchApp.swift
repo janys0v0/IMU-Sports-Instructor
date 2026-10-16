@@ -48,6 +48,9 @@ struct WatchContentView: View {
                     Text("High-rate: \(streamer.highRateStatus)").font(.footnote)
                 }
                 if streamer.isRunning {
+                    Button("Trial") { streamer.send(command: "trial") }
+                        .tint(.orange)
+                        .font(.title3.bold())
                     Button("Calibrate") { streamer.send(command: "calibrate") }
                         .tint(.blue)
                     HStack {

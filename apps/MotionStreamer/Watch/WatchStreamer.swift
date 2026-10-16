@@ -34,6 +34,9 @@ final class WatchStreamer: NSObject, ObservableObject {
     private var highRateTasks: [Task<Void, Never>] = []
     private let batched = CMBatchedSensorManager()
     private let speech = WatchSpeech()
+    private let altimeter = CMAltimeter()
+    private var sensors = SensorPacketWriter()
+    private var lastMagnetic = 0.0
 
     // State below is touched only on `queue`.
     private let queue: OperationQueue = {
@@ -109,6 +112,7 @@ final class WatchStreamer: NSObject, ObservableObject {
             self.handle(data)
         }
         startHighRate()
+        startExtraSensors()
         tickTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             self?.queue.addOperation {
                 self?.recorder?.tick()
@@ -126,6 +130,7 @@ final class WatchStreamer: NSObject, ObservableObject {
         guard isRunning else { return }
         motion.stopDeviceMotionUpdates()
         stopHighRate()
+        altimeter.stopRelativeAltitudeUpdates()
         tickTimer?.invalidate()
         tickTimer = nil
         queue.addOperation {
@@ -196,6 +201,16 @@ final class WatchStreamer: NSObject, ObservableObject {
 
     private func handle(_ data: CMDeviceMotion) {
         buffer.append(data.sample)
+        if data.timestamp - lastMagnetic >= 1 {
+            lastMagnetic = data.timestamp
+            let f = data.magneticField
+            if let packet = sensors.magnetometer(
+                device: "watch", t: data.timestamp, field: [f.field.x, f.field.y, f.field.z],
+                accuracy: Int(f.accuracy.rawValue), bootToUnix: bootToUnixOffset())
+            {
+                recorder?.recordOther(packet)
+            }
+        }
         rateWindowCount += 1
         let now = uptime()
         if now - rateWindowStart >= 2 {
@@ -255,6 +270,21 @@ final class WatchStreamer: NSObject, ObservableObject {
             model: hardwareModel(), os: os,
             refFrame: refFrame, rateHz: MotionFormat.sampleRateHz)
         return try? JSONEncoder().encode(hello)
+    }
+
+    // MARK: - Extra sensors (design §9)
+
+    private func startExtraSensors() {
+        sensors = SensorPacketWriter()
+        guard CMAltimeter.isRelativeAltitudeAvailable() else { return }
+        altimeter.startRelativeAltitudeUpdates(to: queue) { [weak self] data, _ in
+            guard let self, let data,
+                let packet = self.sensors.barometer(
+                    device: "watch", t: data.timestamp, pressureKPa: data.pressure.doubleValue,
+                    relativeAltitudeM: data.relativeAltitude.doubleValue, bootToUnix: bootToUnixOffset())
+            else { return }
+            self.recorder?.recordOther(packet)
+        }
     }
 
     // MARK: - High-rate stream (CMBatchedSensorManager, design §2)

@@ -167,6 +167,17 @@ def clock_fit(syncs: list) -> dict:
     }
 
 
+def extra_sensors(packets: list) -> dict:
+    """Packets of the extra sensors (design §9) per type and device; UWB is optional."""
+    counts = {}
+    for p in packets:
+        kind = p.get("type")
+        if kind in ("baro", "mag", "audio_level", "uwb"):
+            key = f"{kind}/{p.get('device', '?')}"
+            counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
 def check_high_rate(session: Path, journal: list, verified: dict, phone_only: bool) -> dict:
     summary = next((e for e in reversed(journal) if e.get("j") == "watch_summary"), None)
     received = sorted(rel for rel in verified if rel.startswith("watch_hf/"))
@@ -234,6 +245,7 @@ def ingest(session: Path, phone_only: bool = False) -> dict:
         "streams": streams,
         "watch_hf": high_rate,
         "clock_fit": clock_fit([p for p in packets if p.get("type") == "sync"]),
+        "extra_sensors": extra_sensors(packets),
     }
     with open(session / "stream.jsonl", "w") as f:
         for p in packets:

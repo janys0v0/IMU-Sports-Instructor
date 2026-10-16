@@ -38,6 +38,8 @@ public struct WatchdogInput {
     public var freeDiskBytes: Int64 = .max
     public var writeErrorRecently = false
     public var phoneDropped = false
+    /// The phone's magnetometer accuracy is low (court fences and posts disturb it; test X2).
+    public var compassAccuracyLow = false
 
     public init() {}
 }
@@ -105,6 +107,7 @@ public final class Watchdog {
             }
         }
         if input.lowPower { problems["low_power"] = (.red, nil) }
+        if input.compassAccuracyLow { problems["compass_disturbed"] = (.yellow, nil) }
         if input.thermal >= 2 {
             problems["phone_hot"] = (.yellow, nil)
             actions.append(.shedLoad)

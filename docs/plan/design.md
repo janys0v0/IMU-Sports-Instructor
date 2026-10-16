@@ -367,18 +367,22 @@ Watch data is checked from the live preview first, then again once its chunk arr
 
 ## 9. Trials and extra sensors
 
-- **Trial button** (Watch): logs a `marker` with trial number and time. Each trial starts with the
-  **sync gesture**: 2 s still · 3 hops · 3 head nods · 2 s still. It gives a shared time reference
+- **Trial button** (Watch, one large tap; also on the phone): the first tap starts trial N and logs
+  a `marker` (`edge: start`), the next tap ends it, logs `marker` (`edge: end`) and runs the trial
+  check (§8 ③) at once: ✅ keep, or 🔁 "Redo trial N. {reason}." spoken. Each trial starts with the
+  **sync gesture**: 2 s still · 3 hops · 3 head nods · 2 s still (the hops are detected from the
+  phone: three acceleration peaks above 1 g, 0.25-1.5 s apart). It gives a shared time reference
   across devices (and for OpenCap later: [`opencap.md`](../deferred/opencap.md)).
-- **Extra sensors** from the proposal, as new packet types (motion packets unchanged):
+- **Extra sensors** as new packet types (motion packets unchanged; `motion_io.py` ignores them,
+  `ingest_field.py` counts them). Each has a running index `i`, so gaps count like motion:
 
-| Sensor | Plan |
-|---|---|
-| Barometer (phone + Watch) | `CMAltimeter` pressure + relative altitude, ~1 Hz |
-| Magnetometer (phone + Watch) | Calibrated field + accuracy from device motion |
-| Audio (phone) | Level and onset times only, **no raw audio**; built-in microphone only |
-| Watch ↔ phone distance | Optional UWB (Nearby Interaction) |
-| Light | Not available to apps; dropped |
+| Packet `type` | Devices | Fields | Rate |
+|---|---|---|---|
+| `baro` | phone, Watch | `pressure_kpa`, `rel_alt_m` (`CMAltimeter`) | ~1 Hz |
+| `mag` | phone, Watch | `field_ut` (calibrated, device frame), `accuracy` (−1…2); low accuracy → 🟡 compass disturbed | 1 Hz |
+| `audio_level` | phone | `rms_db`, `peak_db`, `onset`; built-in microphone only, **no audio stored** | 20 Hz |
+| `uwb` | phone | `distance_m` (Nearby Interaction, optional; not built yet) | — |
+| Light | — | not available to apps; dropped | — |
 
 ## 10. After the session
 
