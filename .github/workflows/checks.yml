@@ -1,7 +1,9 @@
 name: checks
 
 on:
+  # edited: fixing a PR's title or description re-runs pr-format.
   pull_request:
+    types: [opened, edited, synchronize, reopened]
   push:
     branches: [main]
 
