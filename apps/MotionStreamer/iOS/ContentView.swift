@@ -17,6 +17,9 @@ struct ContentView: View {
     @EnvironmentObject private var controller: StreamController
     @EnvironmentObject private var headphones: HeadphoneMonitor
     @State private var pocketMode = false
+    @State private var lastSession = ""
+    @State private var checkReview: ReviewData?
+    @State private var showReview = false
 
     var body: some View {
         NavigationStack {
@@ -47,7 +50,15 @@ struct ContentView: View {
                 "Session \(controller.interrupted?.id ?? "") stopped at \(controller.interrupted?.at.formatted(date: .omitted, time: .standard) ?? ""). Resume it as a new segment?"
             )
         }
-        .onAppear { if ReplaySettings.autoStart { controller.start() } }
+        .onAppear {
+            if ReplaySettings.autoStart { controller.start() }
+            if let delay = ReplaySettings.openReviewAfter {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) { showReview = true }
+            }
+        }
+        .sheet(isPresented: $showReview) {
+            NavigationStack { ReviewContainer(sessionID: controller.sessionID) }.environmentObject(controller)
+        }
         .alert(
             "Cannot start",
             isPresented: Binding(
@@ -96,7 +107,16 @@ struct ContentView: View {
     private var controlSection: some View {
         Section {
             Button {
-                controller.isRecording ? controller.stop() : controller.start()
+                if controller.isRecording {
+                    lastSession = controller.sessionID
+                    controller.stop()
+                    // The session check reads the closed chunks once Stop has written them.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        controller.loadReview(lastSession) { checkReview = $0 }
+                    }
+                } else {
+                    controller.start()
+                }
             } label: {
                 Label(
                     controller.isRecording ? "Stop" : "Start",
@@ -106,6 +126,14 @@ struct ContentView: View {
                 .font(.headline)
             }
             .tint(controller.isRecording ? .red : .green)
+            if controller.isRecording || !lastSession.isEmpty {
+                NavigationLink("Review saved data") {
+                    ReviewContainer(sessionID: controller.isRecording ? controller.sessionID : lastSession)
+                }
+            }
+            if let checkReview, !controller.isRecording {
+                SessionCheckCard(data: checkReview)
+            }
             if controller.isRecording {
                 Text("\(controller.sessionID) · \(formatDuration(controller.elapsed))")
                     .font(.footnote.monospaced())
@@ -182,7 +210,10 @@ struct ContentView: View {
 
     private func streamRow(_ title: String, _ s: StreamSnapshot) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(title).font(.subheadline.bold())
+            HStack {
+                if controller.isRecording { LiveDotView(dots: LiveDots(snapshot: s, baselineHz: s.nominalHz)) }
+                Text(title).font(.subheadline.bold())
+            }
             Text(
                 String(
                     format: "%.1f Hz (device %.1f) · %d samples · coverage %.0f%%",
@@ -222,4 +253,27 @@ struct ContentView: View {
         let s = Int(seconds)
         return String(format: "%d:%02d", s / 60, s % 60)
     }
+}
+
+/// Loads the review from disk and refreshes it every 10 s while the session records.
+struct ReviewContainer: View {
+    @EnvironmentObject private var controller: StreamController
+    let sessionID: String
+    @State private var review: ReviewData?
+    private let refresh = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        ScrollView {
+            if let review {
+                ReviewScreen(data: review)
+            } else {
+                ProgressView("Reading saved chunks…").padding()
+            }
+        }
+        .navigationTitle("Review")
+        .onAppear(perform: load)
+        .onReceive(refresh) { _ in if controller.isRecording { load() } }
+    }
+
+    private func load() { controller.loadReview(sessionID) { review = $0 } }
 }

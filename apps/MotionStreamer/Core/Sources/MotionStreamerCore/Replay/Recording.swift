@@ -14,14 +14,19 @@ public struct Recording {
     public var streams: [String: Stream]
     public var events: [[String: Any]]
 
-    /// Parses one JSON object per line; lines that don't parse (a torn last line) are skipped.
-    public init(jsonl data: Data) {
+    /// One JSON object per line; lines that don't parse (a torn last line) are skipped.
+    public static func packets(jsonl data: Data) -> [[String: Any]] {
         var packets: [[String: Any]] = []
         for line in data.split(separator: 0x0A) where !line.isEmpty {
             if let obj = try? JSONSerialization.jsonObject(with: Data(line)) as? [String: Any] {
                 packets.append(obj)
             }
         }
+        return packets
+    }
+
+    public init(jsonl data: Data) {
+        let packets = Self.packets(jsonl: data)
         self.packets = packets
         var streams: [String: Stream] = [:]
         var seen: [String: Set<Int>] = [:]

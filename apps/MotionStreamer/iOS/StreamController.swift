@@ -666,6 +666,16 @@ final class StreamController: NSObject, ObservableObject {
         replay = nil
     }
 
+    // MARK: - Review (design §6)
+
+    /// The review of a session, read from its closed chunks on disk (never from memory).
+    func loadReview(_ id: String, completion: @escaping (ReviewData?) -> Void) {
+        ioQueue.async {
+            let review = try? ReviewLoader.load(store: self.store, sessionID: id)
+            DispatchQueue.main.async { completion(review) }
+        }
+    }
+
     // MARK: - UI
 
     private func publishStats() {

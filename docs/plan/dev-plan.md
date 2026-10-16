@@ -10,8 +10,8 @@ when its gate passes on two consecutive runs; then the next stage starts.
 
 | | |
 |---|---|
-| **Current stage** | 4 — Phone preview (stages 0-3 done 2026-10-16; one branch per stage) |
-| **Next action** | Status dots on the live strip, then the review screen reading closed chunks (stage 4, tasks 1-2) |
+| **Current stage** | 5 — Spoken calibration (stages 0-4 done 2026-10-16; one branch per stage) |
+| **Next action** | `voice_prompts.json` and the speech-driven calibration flow (stage 5, tasks 1-3) |
 | **Blocked on** | — |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
 | **Last updated** | 2026-10-16 |
@@ -198,9 +198,9 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 3. Session check card after Stop: PASS / WARN / FAIL from the shared thresholds.
 
 **Testable goals (G4)**
-- [ ] **P1-P5:** disk-only reads, peak-preserving downsampling, < 50 ms per chunk load, gap and calibration marks match the journal, snapshot tests.
-- [ ] **E5:** review screen with a 10-min replayed session through the real UI.
-- [ ] **Demo:** replay the reference recording; the thigh-angle plot shows the 3 squats, and an injected 5 s AirPods gap appears in the timeline.
+- [x] **P1-P5:** disk-only reads, peak-preserving downsampling, < 50 ms per chunk load, gap and calibration marks match the journal, snapshot tests.
+- [x] **E5:** review screen through the real UI in the iOS simulator, with the longest available recording (5.2 min, replayed): 5 saved chunks read from disk and plotted.
+- [x] **Demo:** the reference recording with a 5 s AirPods gap cut in: the thigh-angle plot shows the 3 squats and the gap shows in the timeline (test `ReviewDemoTests`).
 
 ## Stage 5: Spoken calibration
 

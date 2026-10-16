@@ -5,6 +5,7 @@ import MotionStreamerCore
 /// - `MOTIONSTREAMER_REPLAY`: path to a `mac_stream.jsonl`; its phone stream replays in real time.
 /// - `MOTIONSTREAMER_AUTORESUME=1`: resume an interrupted session at launch without asking.
 /// - `MOTIONSTREAMER_AUTOSTART=1`: start recording at launch.
+/// - `MOTIONSTREAMER_OPEN_REVIEW=<s>`: open the review screen this many seconds after launch.
 enum ReplaySettings {
     static var environment: [String: String] { ProcessInfo.processInfo.environment }
 
@@ -15,4 +16,5 @@ enum ReplaySettings {
 
     static var autoResume: Bool { environment["MOTIONSTREAMER_AUTORESUME"] == "1" }
     static var autoStart: Bool { environment["MOTIONSTREAMER_AUTOSTART"] == "1" }
+    static var openReviewAfter: Double? { environment["MOTIONSTREAMER_OPEN_REVIEW"].flatMap(Double.init) }
 }
