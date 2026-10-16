@@ -11,7 +11,7 @@ when its gate passes on two consecutive runs; then the next stage starts.
 | | |
 |---|---|
 | **Current stage** | 2 — Watch recording + transfer (stages 0-1 done 2026-10-16; branches `feat/stage-0-…`, `feat/stage-1-…`) |
-| **Next action** | Watch chunk writer + `transferFile` with acks (stage 2, tasks 1-2) |
+| **Next action** | Stage 2 in progress on `feat/stage-2-watch-transfer`: link messages, outbox and chunk hooks written; next: phone inbox, Watch recorder, tests W1-W10, app wiring |
 | **Blocked on** | — |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
 | **Last updated** | 2026-10-16 |

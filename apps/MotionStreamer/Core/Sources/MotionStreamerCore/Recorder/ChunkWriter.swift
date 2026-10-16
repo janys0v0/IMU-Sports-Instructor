@@ -31,6 +31,10 @@ public final class ChunkWriter {
     public private(set) var lostRecords = 0
     /// Called with every write or sync error (the watchdog turns it into an alert).
     public var onWriteError: ((Error) -> Void)?
+    /// Bytes written at the start of every chunk (the binary high-rate header), given the chunk number.
+    public var chunkHeader: ((Int) -> Data)?
+    /// Called with the journal entry of every closed chunk (the Watch queues it for transfer).
+    public var onChunkClosed: (([String: Any]) -> Void)?
 
     private let store: FileStore
     private let clock: Clock
@@ -112,7 +116,8 @@ public final class ChunkWriter {
         if let u = c.firstUnix { fields["unix_first"] = u }
         if let u = c.lastUnix { fields["unix_last"] = u }
         if recovered { fields["recovered"] = true }
-        try journal.write("chunk_closed", fields)
+        let entry = try journal.write("chunk_closed", fields)
+        onChunkClosed?(entry)
     }
 
     private func openChunk() throws {
@@ -120,6 +125,10 @@ public final class ChunkWriter {
         try store.create(path)
         let now = clock.uptime
         current = Current(path: path, number: nextNumber, openedAt: now, lastSync: now)
+        if let header = chunkHeader?(nextNumber) {
+            try store.append(header, to: path)
+            current!.bytes += header.count
+        }
         nextNumber += 1
     }
 
