@@ -11,7 +11,7 @@ when its gate passes on two consecutive runs; then the next stage starts.
 | | |
 |---|---|
 | **Current stage** | 9 — Endurance + device tests (stages 0-8 done; stage 6's gate waits for device test T6) |
-| **Next action** | Endurance tests L1-L3, then the device round (stage 0b check first) |
+| **Next action** | Device round: stage 0b check (= T6) first, runbook in [`test-plan.md`](test-plan.md) §4; L1-L3 done |
 | **Blocked on** | Devices: stage 0b check (= T6) closes stage 6's gate and the keep-alive decision · People: V9 listen-through |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
 | **Last updated** | 2026-10-16 |
@@ -283,7 +283,7 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 
 **Testable goals (G9)**
 - [x] **L1, L3:** 60 and 120 min sessions on disk (one chunk per minute, no open-file leak, memory flat); 120 random faults with every fault logged and zero silent loss.
-- [ ] **L2:** 60 min real-time replay in the iOS simulator: no crash, memory flat (running 2026-10-16).
+- [x] **L2:** 60 min real-time replay in the iOS simulator: no crash, memory flat (85-90 MB after warm-up), 60 chunks closed, ingest PASS (coverage 0.998).
 - [x] test-plan §3 exit criteria met, except V9 (people).
 - [ ] **T1-T19, T21** pass on devices; results logged in `EXPERIMENT_LOG.md`.
 - [ ] **Demo:** the full 60-min tennis rehearsal (T7) ingests as **PASS** on the Mac the same day.
