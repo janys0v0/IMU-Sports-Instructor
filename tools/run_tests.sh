@@ -12,8 +12,13 @@ export MSC_EXPORT_DIR="${MSC_EXPORT_DIR:-${TMPDIR:-/tmp}/motionstreamer-export}"
 
 if [ "${1:-}" != "--python-only" ]; then
     echo "== swift test (apps/MotionStreamer/Core)"
-    swift test --package-path apps/MotionStreamer/Core 2>&1 | grep -E "error|failed|Executed .* tests" | tail -5
-    test "${PIPESTATUS[0]}" -eq 0
+    log="$(mktemp)"
+    status=0
+    swift test --package-path apps/MotionStreamer/Core > "$log" 2>&1 || status=$?
+    grep -E ": error: " "$log" || true          # every failing assertion, in full
+    grep -E "Executed .* tests" "$log" | tail -1
+    rm -f "$log"
+    test "$status" -eq 0
 fi
 
 if [ "${1:-}" != "--swift-only" ]; then

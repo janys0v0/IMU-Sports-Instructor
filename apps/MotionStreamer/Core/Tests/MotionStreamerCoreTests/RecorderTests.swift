@@ -349,3 +349,34 @@ final class QualityTests: XCTestCase {
         XCTAssertEqual(records[0], .accel([1.5, 0.25, -1, 16]))
     }
 }
+
+final class RecorderEdgeTests: XCTestCase {
+    func test_edgeCases() throws {
+        // No sessions folder yet: nothing to recover.
+        XCTAssertEqual(SessionRecorder.unclosedSessions(store: MemoryFileStore()), [])
+        let h = try RecorderHarness()
+        h.recorder.journalEvent("calibrate", ["hold_s": 3.3])
+        XCTAssertEqual(h.entries("event").last?["name"] as? String, "calibrate")
+        // A sync failure during a tick (not an append) is reported too.
+        h.run(seconds: 1)
+        h.store.failNextSync = .ioError("fsync")
+        h.clock.advance(1.5)
+        h.recorder.tick()
+        XCTAssertEqual(h.errors.count, 1)
+        // A folder without a journal isn't a session; Stop twice is harmless.
+        try h.store.createDirectory("sessions/stray")
+        XCTAssertEqual(SessionRecorder.unclosedSessions(store: h.store), [h.recorder.sessionID])
+        try h.recorder.stop()
+        try h.recorder.stop()
+        XCTAssertEqual(h.entries("session_close").count, 1)
+        // Resuming a session whose phone folder is gone starts at chunk 0, segment 2.
+        let store = MemoryFileStore()
+        let clock = ManualClock()
+        let r = try SessionRecorder.start(store: store, clock: clock, sessionID: "x", metadata: [:])
+        r.record(Data("{}".utf8))
+        for name in try store.list("sessions/x/phone") { try store.remove("sessions/x/phone/\(name)") }
+        let resumed = try SessionRecorder.resume(store: store, clock: clock, sessionID: "x")
+        XCTAssertEqual(resumed.segment, 2)
+        XCTAssertEqual(resumed.phone.nextNumber, 0)
+    }
+}

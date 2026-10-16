@@ -116,11 +116,10 @@ push. Merge when the stage's gate passes twice in a row.
 app is locked in a pocket and kept awake in the background? Also confirm the research findings on
 our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 
-**Tasks**
-1. Throwaway branch `spike/background-check`; nothing is merged.
-2. Phone app: background location at 3 km accuracy + phone motion + AirPods motion, counts logged to a file. Speak a short phrase through the AirPods every 30 s.
-3. Watch app: workout + `CMBatchedSensorManager` (800 / 200 Hz), counts logged.
-4. Launch from the Home screen (**Xcode detached**), lock the phone, pocket it, walk for 20 min.
+**Tasks** (no throwaway build needed: the real app does all of this since stage 8)
+1. Install the current build; launch from the Home screen (**Xcode detached**); keep-alive setting "Location".
+2. Go/No-Go → Start → calibrate from the Watch (the spoken script) → lock the phone, pocket it, walk 20 min → Stop.
+3. Copy the session to the Mac and run `python -m pipeline.analysis.device_check <session>` (test-plan §4 runbook).
 
 **Testable goals**
 - [ ] Phone and AirPods: ≥ 95 % of expected samples while locked.
@@ -283,8 +282,9 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 3. Device tests T1-T19 and T21 (test-plan §4), on a court where needed.
 
 **Testable goals (G9)**
-- [ ] **L1-L3:** 60 and 120 min sessions with flat memory; 120 random faults with zero silent loss.
-- [ ] test-plan §3 exit criteria all met.
+- [x] **L1, L3:** 60 and 120 min sessions on disk (one chunk per minute, no open-file leak, memory flat); 120 random faults with every fault logged and zero silent loss.
+- [ ] **L2:** 60 min real-time replay in the iOS simulator: no crash, memory flat (running 2026-10-16).
+- [x] test-plan §3 exit criteria met, except V9 (people).
 - [ ] **T1-T19, T21** pass on devices; results logged in `EXPERIMENT_LOG.md`.
 - [ ] **Demo:** the full 60-min tennis rehearsal (T7) ingests as **PASS** on the Mac the same day.
 

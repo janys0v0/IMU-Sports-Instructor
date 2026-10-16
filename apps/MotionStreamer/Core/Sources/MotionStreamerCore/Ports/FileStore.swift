@@ -40,6 +40,9 @@ public final class LocalFileStore: FileStore {
         self.root = root
     }
 
+    /// Files currently held open (endurance test L1: no leaks).
+    public var openHandleCount: Int { handles.count }
+
     private func url(_ path: String) -> URL { root.appendingPathComponent(path) }
 
     public func createDirectory(_ path: String) throws {

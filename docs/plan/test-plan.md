@@ -210,9 +210,31 @@ The Watch app's high-rate stream (`CMBatchedSensorManager`) also needs real hard
 - V1 lint clean, and V9 listen-through signed off by both team members.
 - S4 / I7 contract fixtures: Swift and Python agree on every fixture.
 
+## 3a. Where the exit criteria stand (2026-10-16)
+
+| Criterion | Result |
+|---|---|
+| L1-L6 green twice | ✅ `tools/check.sh` (Swift + Python) |
+| Coverage: core ≥ 85 %, recorder/journal/recovery ≥ 95 % | ✅ 91.5 % and 98.8 % (`tools/coverage.sh`) |
+| J3 (1,000 crashes), L3 (fault storm): zero silent loss | ✅ |
+| S4 / I7 contract fixtures agree | ✅ |
+| V1 lint clean | ✅ |
+| V9 listen-through signed off by both of you | ⏳ people (`data/voice/voice_sample.m4a`) |
+
 ## 4. Device tests (L7)
 
 Run only after L1-L6 pass, on the current build (free Apple ID builds expire after 7 days).
+
+**How to run a device round**
+1. Rebuild and install on the iPhone (Xcode, `MotionStreamer` scheme; the Watch app comes with it).
+   Then **quit Xcode's debugger** (Product → Stop) and launch from the Home screen.
+2. **Stage 0b first = T6:** Go/No-Go → Start → calibrate from the Watch → lock the phone, pocket it,
+   walk 20 min → Stop → keep the Watch near the phone until "High-rate: all sent".
+3. Copy the session (Finder → iPhone → Files → MotionStreamer → `sessions/<id>`) to
+   `data/recordings/field/`, then: `.venv/bin/python -m pipeline.analysis.device_check data/recordings/field/<id>`.
+   It prints PASS/FAIL for each T6 condition and the battery used.
+4. Record the result and the keep-alive decision in `EXPERIMENT_LOG.md` and [`decisions.md`](decisions.md#open).
+5. The other tests (T1-T19, T21) follow the table; ingest each session with `pipeline.ingest.ingest_field`.
 **Launch from the Home screen with Xcode detached** for anything involving the background.
 When: **0b** = early device check, **9** = stage 9 device round, **F** = after the first field session.
 

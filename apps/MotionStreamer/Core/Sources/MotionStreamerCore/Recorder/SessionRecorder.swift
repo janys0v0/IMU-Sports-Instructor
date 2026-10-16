@@ -87,7 +87,7 @@ public final class SessionRecorder {
     public func tick() {
         do { try phone.tick() } catch { phone.onWriteError?(error) }
         let now = clock.uptime
-        if now - lastHealth >= Self.healthInterval {
+        if now - lastHealth >= Self.healthInterval - 1e-6 {
             lastHealth = now
             _ = try? journal.write("health", healthProvider?() ?? [:])
         }
