@@ -23,6 +23,7 @@ date; don't leave the old version in other docs. Other docs link here instead of
 | 2026-10-15 | **Microphone: phone's built-in mic only**, never `.allowBluetooth` | Using the AirPods mic switches them to call mode | design §7 |
 | 2026-10-15 | **Extra sensors** (barometer, magnetometer, audio level, optional UWB) as new packet types | Proposal hypothesis; old packets unchanged | design §9 |
 | 2026-10-15 | **Repo:** private GitHub repo `IMU-Sports-Instructor`; recordings and model files out of git; MobilePoser / IMUCoCo pinned + patched; Conventional Commits; no AI co-author lines | Clean, small, consistent history | [`CONTRIBUTING.md`](../../CONTRIBUTING.md) |
+| 2026-10-16 | **One format for branches, commits and PRs** (shared type/scope vocabulary, PR sections, squash merge), checked by `tools/check_format.py` | Consistent, searchable history | [`CONTRIBUTING.md`](../../CONTRIBUTING.md#commit-branch-and-pr-format) |
 | 2026-10-16 | **Human testing:** one early device check (stage 0b); all other device tests in stage 9 | Research answered most device questions | [`dev-plan.md`](dev-plan.md), [`device-research.md`](../research/device-research.md) |
 
 ## Open

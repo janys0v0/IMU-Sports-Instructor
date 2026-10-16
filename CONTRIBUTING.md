@@ -1,7 +1,8 @@
 # Contributing
 
 How we work. Short version: **read the plan → implement on a branch → check → push, and update
-the plan.** Commits use Conventional Commit messages; branches are squash-merged into `main`.
+the plan.** Branches, commits and pull requests share one [format](#commit-branch-and-pr-format);
+pull requests are squash-merged into `main`.
 
 ## One-time setup
 
@@ -9,6 +10,7 @@ the plan.** Commits use Conventional Commit messages; branches are squash-merged
 python3 -m venv .venv-tools
 .venv-tools/bin/pip install -r requirements-dev.txt
 .venv-tools/bin/pre-commit install
+git config commit.template .gitmessage   # prefilled commit message
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # ML environment
 tools/setup_third_party.sh
 ```
@@ -37,7 +39,7 @@ Every work session, by a person or by Claude, follows the same three steps.
 1. `git switch main && git pull`, then open [`docs/plan/dev-plan.md`](docs/plan/dev-plan.md#status) **Status**.
 2. Take the **Next action**. If it isn't in the current stage's task list, stop and update the plan
    first: new work goes into a stage (or [`docs/plan/decisions.md`](docs/plan/decisions.md) if it's a decision).
-3. Branch: `feat/stage-N-<name>` (or `fix/…`, `docs/…`, `test/…`, `exp/…`, `chore/…`).
+3. Branch: `feat/stage-N-<desc>` for stage work, otherwise `<type>/<desc>` ([format](#commit-branch-and-pr-format)).
 
 ### ② Implement
 1. Write the stage's tests first (IDs from [`docs/plan/test-plan.md`](docs/plan/test-plan.md)); watch them fail.
@@ -59,33 +61,32 @@ Every work session, by a person or by Claude, follows the same three steps.
 `main` is protected by a local hook (`no-commit-to-branch`); GitHub's server-side protection isn't
 available for private repos on the free plan.
 
-## Commit messages
+## Commit, branch and PR format
 
-[Conventional Commits](https://www.conventionalcommits.org/), checked on every commit:
+One vocabulary for every name, so a branch, its commits and its pull request read the same way.
+`tools/check_format.py` is the only place the rules are encoded.
 
-```
-<type>(<optional scope>): <what changed, imperative, ≤ 72 chars>
-
-<optional body: why, and anything a reviewer must know>
-```
-
-| Type | For |
+| Word | Values |
 |---|---|
-| `feat` | New behaviour (app, pipeline) |
-| `fix` | Bug fix |
-| `docs` | Docs only |
-| `test` | Tests only |
-| `refactor` | Same behaviour, cleaner code |
-| `perf` | Faster or lighter |
-| `build` / `ci` | Build setup, XcodeGen, GitHub Actions |
-| `chore` | Tooling, dependencies |
-| `exp` | Experiment scripts and their logged results |
-| `data` | Annotations, data-format specs (never the data itself) |
+| **type** | `feat` new behaviour · `fix` bug fix · `refactor` same behaviour, cleaner · `perf` faster or lighter · `test` tests only · `docs` docs only · `exp` experiment · `data` annotations or formats · `build` build setup · `ci` GitHub Actions · `chore` tooling or dependencies |
+| **scope** (optional) | `app` `watch` `recorder` `ingest` `preprocessing` `pose` `live` `analysis` `experiments` `design` `plan` `tools` `deps` `third-party` |
+| **desc** | lowercase, imperative, no final period |
 
-Scopes we use: `app`, `watch`, `recorder`, `ingest`, `live`, `experiments`, `design`.
-Examples: `feat(recorder): rotate chunk files every 60 s` · `fix(app): reset calibration timer on Stop`.
+| Thing | Format | Example |
+|---|---|---|
+| Branch | `<type>/<kebab-desc>`, ≤ 40 chars; stage work starts with `stage-N-` | `feat/stage-1-phone-recorder` · `fix/calibration-timer` |
+| Throwaway branch | `spike/<kebab-desc>`; never merged, no pull request | `spike/background-check` |
+| Commit subject | `<type>(<scope>): <desc>`, ≤ 72 chars | `feat(recorder): rotate chunk files every 60 s` |
+| Commit body (optional) | Blank line, then *why* in plain sentences, wrapped at 72 | `Power-off lost buffered data; fsync limits loss to 1 s.` |
+| PR title | Same as a commit subject, **same type as its branch** | `feat(recorder): save sessions as 60 s chunks with a journal` |
+| PR description | Sections **Why · What changed · How it was checked · Plan** (the template) | — |
+| Commit on `main` | Squash merge: PR title → subject, PR description → body | one commit per PR |
 
-No AI co-author lines or "Generated with" footers in commits or pull requests.
+Never: AI co-author lines, "Generated with" footers, or commits directly on `main`.
+
+**Enforced by:** the `commit-msg` and branch-name hooks on every commit; GitHub Actions on every
+pull request (branch, title, description, and that the title's type matches the branch's).
+`git commit` opens `.gitmessage` as a prefilled template.
 
 ## Checks on every commit
 
@@ -103,7 +104,7 @@ No AI co-author lines or "Generated with" footers in commits or pull requests.
 | doc links | Every local link and `#heading` in Markdown must exist |
 | private keys | Blocks committed keys |
 | branch | Blocks commits directly on `main` |
-| message | Conventional Commit format |
+| branch / message | Branch name and commit message follow the format above |
 
 If a hook changes files, review the change, `git add` it and commit again.
 GitHub Actions runs the same checks on every pull request (Swift checks run locally only).

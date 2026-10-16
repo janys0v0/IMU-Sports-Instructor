@@ -71,10 +71,17 @@ repos:
         language: fail
         files: (^data/|\.(mp4|mov|npz|npy|pt|pth|ckpt|pkl|zip|h5|jsonl|bin)$)
 
-  # Commit messages: Conventional Commits
-  - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v3.6.0
+  # Branch names and commit messages: project format (tools/check_format.py, CONTRIBUTING.md)
+  - repo: local
     hooks:
-      - id: conventional-pre-commit
+      - id: branch-name-format
+        name: branch name format
+        entry: python3 tools/check_format.py --branch
+        language: system
+        always_run: true
+        pass_filenames: false
+      - id: commit-msg-format
+        name: commit message format
+        entry: python3 tools/check_format.py
+        language: system
         stages: [commit-msg]
-        args: [feat, fix, docs, test, refactor, perf, build, ci, chore, exp, data]
