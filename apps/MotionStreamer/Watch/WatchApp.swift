@@ -26,7 +26,7 @@ final class WatchAppDelegate: NSObject, WKApplicationDelegate {
 
     /// Called when the iPhone app launches this app with `HKHealthStore.startWatchApp`.
     func handle(_ workoutConfiguration: HKWorkoutConfiguration) {
-        WatchStreamer.shared.start()
+        WatchStreamer.shared.launchedByPhone()
     }
 }
 

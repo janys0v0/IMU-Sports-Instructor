@@ -32,6 +32,7 @@ final class WatchStreamer: NSObject, ObservableObject {
     private let clock = SystemClock()
     private var tickTimer: Timer?
     private var highRateTasks: [Task<Void, Never>] = []
+    private var launchFallback: DispatchWorkItem?
     private let batched = CMBatchedSensorManager()
     private let speech = WatchSpeech()
     private let altimeter = CMAltimeter()
@@ -80,8 +81,20 @@ final class WatchStreamer: NSObject, ObservableObject {
         healthStore.requestAuthorization(toShare: [workoutType], read: []) { _, _ in }
     }
 
+    /// `startWatchApp` wakes the app before the phone's start command (which carries the session ID)
+    /// arrives; starting at once would open a separate "-W" session. Wait for it, then start alone.
+    func launchedByPhone() {
+        guard !isRunning, launchFallback == nil else { return }
+        let fallback = DispatchWorkItem { [weak self] in self?.start() }
+        launchFallback = fallback
+        setStatus("Waiting for the iPhone")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10, execute: fallback)
+    }
+
     /// Starts recording. `sessionID` comes from the iPhone; without one the Watch makes its own.
     func start(sessionID: String? = nil, loc: String? = nil, mirror: Bool = false) {
+        launchFallback?.cancel()
+        launchFallback = nil
         guard !isRunning else { return }
         guard motion.isDeviceMotionAvailable else {
             setStatus("Device motion unavailable")
@@ -465,6 +478,8 @@ extension WatchStreamer: WCSessionDelegate {
         let loc = message["loc"] as? String
         switch message["cmd"] as? String {
         case "start":
+            // An application context keeps the last start; ignore it when it's from an older session.
+            if let at = message["at"] as? Double, Date().timeIntervalSince1970 - at > 60 { return }
             let mirror = message["mirror"] as? Bool ?? false
             DispatchQueue.main.async { self.start(sessionID: session, loc: loc, mirror: mirror) }
         case "stop": DispatchQueue.main.async { self.stop() }
