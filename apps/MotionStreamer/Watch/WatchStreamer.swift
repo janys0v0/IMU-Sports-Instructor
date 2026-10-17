@@ -111,7 +111,12 @@ final class WatchStreamer: NSObject, ObservableObject {
             guard let self, let data, error == nil else { return }
             self.handle(data)
         }
-        startHighRate()
+        // The batched sensors refuse (CMError 109) until the workout runs; the delegate starts them then.
+        if workout?.state == .running {
+            startHighRate()
+        } else {
+            DispatchQueue.main.async { self.highRateStatus = "Waiting for workout" }
+        }
         startExtraSensors()
         tickTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             self?.queue.addOperation {
@@ -385,6 +390,11 @@ extension WatchStreamer: HKWorkoutSessionDelegate {
         _ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState,
         from fromState: HKWorkoutSessionState, date: Date
     ) {
+        if toState == .running, workoutSession === workout {
+            DispatchQueue.main.async {
+                if self.isRunning, self.highRateTasks.isEmpty { self.startHighRate() }
+            }
+        }
         // Ended without our Stop (crown press, watchOS): tell the iPhone, which relaunches us (test W7).
         guard toState == .ended, workoutSession === workout else { return }
         queue.addOperation { self.recorder?.workoutEnded("workout ended (\(fromState.rawValue) → ended)") }
