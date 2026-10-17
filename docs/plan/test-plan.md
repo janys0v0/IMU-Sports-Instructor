@@ -228,6 +228,9 @@ Run only after L1-L6 pass, on the current build (free Apple ID builds expire aft
 **How to run a device round**
 1. Rebuild and install on the iPhone (Xcode, `MotionStreamer` scheme; the Watch app comes with it).
    Then **quit Xcode's debugger** (Product → Stop) and launch from the Home screen.
+   First time with a Watch: Developer Mode on (Watch Settings → Privacy & Security), wait until Xcode's
+   Devices window shows it connected, then run the `MotionStreamerWatch` scheme on it once. Until then the
+   iPhone's Watch app says "could not be installed" (the signing profile lacks the Watch).
 2. **Stage 0b first = T6:** Go/No-Go → Start → calibrate from the Watch → lock the phone, pocket it,
    walk 20 min → Stop → keep the Watch near the phone until "High-rate: all sent".
 3. Copy the session (Finder → iPhone → Files → MotionStreamer → `sessions/<id>`) to
@@ -245,7 +248,7 @@ When: **0b** = early device check, **9** = stage 9 device round, **F** = after t
 | T3 | Take the AirPods out for 30 s | Gap bracketed by disconnect / connect events | 9 |
 | T4 | Hard power-off of the phone mid-session | ≤ 1 s lost; open chunk recovered | 9 |
 | T5 | Phone locked in pocket mode, 20 min | No gap | 9 |
-| T6 | Phone locked in a pocket with the chosen keep-alive (design §5), 20 min, plus speech every 30 s and the Watch high-rate stream | Phone and AirPods ≥ 95 % while locked; AirPods rate unchanged around speech; Watch ≈ 800 + 200 samples/s; battery % noted | **0b**, again in 9 |
+| T6 | Phone locked in a pocket with the chosen keep-alive (design §5), 20 min, plus speech every 2 min (shortest reminder setting) and the Watch high-rate stream | Phone and AirPods ≥ 95 % while locked; AirPods rate unchanged around speech; Watch ≈ 800 + 200 samples/s; battery % noted | **0b**, again in 9 |
 | T7 | Full 60 min tennis rehearsal | Ingest PASS; phone and Watch > 99 %, AirPods > 95 %; battery, heat and accelerometer saturation noted | 9 |
 | T8 | Flip 1 byte in a copied chunk | Ingest FAILs that chunk | 9 |
 | T9 | After T1 and T3, open the review screen | Gaps shown with their causes | 9 |
