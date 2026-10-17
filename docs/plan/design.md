@@ -267,7 +267,12 @@ more often. `pipeline/preprocessing/calibration.py` must handle many calibration
   of call mode. The iPhone app needs the `audio` background mode.
 - **Audibility check at Go/No-Go:** "Can you hear me? Tap the watch if you can." No tap in 10 s →
   raise the volume or switch output.
-- **Watch actions during a session** are one large button each: Calibrate, Trial, Repeat, Acknowledge.
+- **One control system:** the iPhone owns the session. Start, Stop, Calibrate, Trial, Repeat and OK
+  are commands to the iPhone from either device (Start from the Watch runs the same Go/No-Go with the
+  last plan). The iPhone sends its state to the Watch on every change and every 3 s; both screens
+  draw their buttons from it (`ControlState.buttons`), one large button each. With no state for
+  10 s the Watch shows "iPhone not reachable" and offers **Record on Watch only**; a later iPhone
+  Start makes the Watch join that session.
 
 ## 8. Problems in the field: detect, fix, alert
 

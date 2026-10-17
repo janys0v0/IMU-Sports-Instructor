@@ -1,4 +1,5 @@
 import HealthKit
+import MotionStreamerCore
 import SwiftUI
 import WatchKit
 
@@ -34,42 +35,81 @@ struct WatchContentView: View {
     @EnvironmentObject private var streamer: WatchStreamer
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 6) {
-                Label(
-                    streamer.phoneReachable ? "iPhone connected" : "iPhone not reachable",
-                    systemImage: streamer.phoneReachable ? "iphone" : "iphone.slash"
-                )
-                .foregroundStyle(streamer.phoneReachable ? .green : .orange)
-                Text(streamer.status).font(.footnote)
-                if streamer.isRunning {
-                    Text(String(format: "%.1f Hz", streamer.measuredHz))
-                    Text("Samples: \(streamer.samplesRecorded)")
-                    Text("High-rate: \(streamer.highRateStatus)").font(.footnote)
-                }
-                if streamer.isRunning {
-                    Button("Trial") { streamer.send(command: "trial") }
-                        .tint(.orange)
-                        .font(.title3.bold())
-                    Button("Calibrate") { streamer.send(command: "calibrate") }
-                        .tint(.blue)
-                    HStack {
-                        Button("Repeat") { streamer.send(command: "repeat") }
-                        Button("OK") { streamer.send(command: "acknowledge") }
+        // Re-checked every second so the screen notices when the iPhone stops answering.
+        TimelineView(.periodic(from: .now, by: 1)) { context in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 6) {
+                    if streamer.phoneInControl(nowUnix: context.date.timeIntervalSince1970),
+                        let control = streamer.control
+                    {
+                        sessionControls(control)
+                    } else {
+                        watchOnlyControls
                     }
+                    recordingInfo
                 }
-                Button(streamer.isRunning ? "Stop" : "Start") {
-                    streamer.isRunning ? streamer.stop() : streamer.start()
-                }
-                .tint(streamer.isRunning ? .red : .green)
-                if streamer.chunksSaved > 0 {
-                    Text("Chunks on iPhone: \(streamer.chunksAcked) / \(streamer.chunksSaved)").font(.footnote)
-                    Button("Resend session") { streamer.resendSession() }
-                }
-                Text("Normally started from the iPhone app.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
             }
+        }
+    }
+
+    /// The same buttons as the iPhone, from the state it sends; each tap is a command to the iPhone.
+    @ViewBuilder
+    private func sessionControls(_ control: ControlState) -> some View {
+        Label(phaseText(control), systemImage: "iphone").foregroundStyle(.green)
+        if let alert = control.alert { Text(alert).font(.footnote).foregroundStyle(.red) }
+        if let message = control.message { Text(message).font(.footnote) }
+        if control.phase == .recording, control.trialsKept + control.trialsRedo > 0 {
+            Text("Trials: \(control.trialsKept) kept, \(control.trialsRedo) redo").font(.footnote)
+        }
+        ForEach(control.buttons, id: \.self) { command in
+            Button(control.label(command)) { streamer.send(command: command.rawValue) }
+                .tint(tint(command))
+                .font(command == .trial ? .title3.bold() : .body)
+        }
+    }
+
+    /// Without the iPhone the Watch can still record alone; the iPhone joins it when it comes back.
+    @ViewBuilder
+    private var watchOnlyControls: some View {
+        Label("iPhone not reachable", systemImage: "iphone.slash").foregroundStyle(.orange)
+        Text(streamer.status).font(.footnote)
+        Button(streamer.isRunning ? "Stop Watch recording" : "Record on Watch only") {
+            streamer.isRunning ? streamer.stop() : streamer.start()
+        }
+        .tint(streamer.isRunning ? .red : .gray)
+    }
+
+    @ViewBuilder
+    private var recordingInfo: some View {
+        if streamer.isRunning {
+            Text(String(format: "Watch %.1f Hz · %d samples", streamer.measuredHz, streamer.samplesRecorded))
+                .font(.footnote)
+            Text("High-rate: \(streamer.highRateStatus)").font(.footnote)
+        }
+        if streamer.chunksSaved > 0 {
+            Text("Chunks on iPhone: \(streamer.chunksAcked) / \(streamer.chunksSaved)").font(.footnote)
+            Button("Resend session") { streamer.resendSession() }
+        }
+    }
+
+    private func phaseText(_ control: ControlState) -> String {
+        switch control.phase {
+        case .idle: return "Ready"
+        case .starting: return "Checking devices"
+        case .recording:
+            let minutes = control.startedUnix.map { Int((Date().timeIntervalSince1970 - $0) / 60) }
+            return minutes.map { "Recording · \($0) min" } ?? "Recording"
+        case .stopping: return "Stopping"
+        }
+    }
+
+    private func tint(_ command: SessionCommand) -> Color {
+        switch command {
+        case .start: return .green
+        case .stop: return .red
+        case .trial: return .orange
+        case .calibrate: return .blue
+        case .repeatPrompt, .acknowledge: return .gray
         }
     }
 }

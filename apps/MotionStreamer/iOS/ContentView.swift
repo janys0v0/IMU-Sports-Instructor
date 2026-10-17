@@ -172,17 +172,19 @@ struct ContentView: View {
             if controller.isRecording {
                 Text("\(controller.sessionID) · \(formatDuration(controller.elapsed))")
                     .font(.footnote.monospaced())
+                // The same session buttons as the Watch (ControlState.buttons); Start / Stop is above.
+                let control = controller.controlState
                 HStack {
-                    Button("Calibrate") {
-                        controller.startCalibration()
-                        pocketMode = true
-                        controller.setPocketMode(true)
-                    }
-                    .buttonStyle(.bordered)
-                    .disabled(controller.calibrationStatus != nil)
-                    Spacer()
-                    Button("Trial") { controller.markTrial() }
+                    ForEach(control.buttons.filter { $0 != .start && $0 != .stop }, id: \.self) { command in
+                        Button(control.label(command)) {
+                            controller.perform(command)
+                            if command == .calibrate {
+                                pocketMode = true
+                                controller.setPocketMode(true)
+                            }
+                        }
                         .buttonStyle(.bordered)
+                    }
                     Spacer()
                     Button("Pocket mode") {
                         pocketMode = true

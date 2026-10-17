@@ -148,6 +148,15 @@ final class StreamController: NSObject, ObservableObject {
     private var startUptime = 0.0
     private var phoneRefFrame = ""
     private var active = false
+    /// One control system (design §7): the Watch's buttons are commands to this controller, and
+    /// the Watch shows the state broadcast from here.
+    private var controlMessage: String?
+    private var startingFromWatch = false
+    private var lastControlSent: ControlState?
+    private var lastControlSentUnix = 0.0
+    private var controlTimer: Timer?
+    /// Planned minutes and required devices from the last Go / No-Go, reused for a Start from the Watch.
+    private var lastPlan: (minutes: Double, required: Set<String>) = (60, ["phone", "watch", "airpods"])
 
     override init() {
         macHost = defaults.string(forKey: "macHost") ?? ""
@@ -173,6 +182,9 @@ final class StreamController: NSObject, ObservableObject {
         UIDevice.current.isBatteryMonitoringEnabled = true
         observeLifecycle()
         findInterruptedSession()
+        controlTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            self?.broadcastControl()
+        }
         setUpWatchTransfer()
     }
 
@@ -238,6 +250,7 @@ final class StreamController: NSObject, ObservableObject {
 
     private func begin(resuming resumeID: String?) {
         guard !isRecording else { return }
+        controlMessage = nil
         // Record-only mode: no Mac IP means no UDP; the phone still saves everything.
         let host = macHost.trimmingCharacters(in: .whitespaces)
         var sender: UDPSender?
@@ -399,6 +412,7 @@ final class StreamController: NSObject, ObservableObject {
 
     func stop() {
         guard isRecording else { return }
+        controlMessage = nil
         motion.stopDeviceMotionUpdates()
         headphones.stopDeviceMotionUpdates()
         statsTimer?.invalidate()
@@ -444,7 +458,7 @@ final class StreamController: NSObject, ObservableObject {
     /// Returns why it didn't start, or nil when it did (shown on the Watch).
     @discardableResult
     func startCalibration() -> String? {
-        guard isRecording else { return "Press Start on the iPhone first" }
+        guard isRecording else { return "Press Start first" }
         guard !flow.isRunning else { return "Already calibrating" }
         flow.landmark = landmark
         flow.requireAirPods = airPodsConnected
@@ -796,6 +810,64 @@ final class StreamController: NSObject, ObservableObject {
 
     // MARK: - Watch control
 
+    /// A session button pressed on the phone: the same path as the Watch's buttons.
+    func perform(_ command: SessionCommand) {
+        _ = handleCommand(command.rawValue)
+    }
+
+    /// Start pressed on the Watch: the same Go / No-Go as the phone's Start screen, with the last
+    /// plan; Start only if every blocking check passes, otherwise the Watch shows why.
+    private func startFromWatch() {
+        startingFromWatch = true
+        preflight(plannedMinutes: lastPlan.minutes, required: lastPlan.required, heardVoice: nil) { [weak self] go in
+            guard let self else { return }
+            self.startingFromWatch = false
+            self.lastGoNoGo = go
+            if go.canStart {
+                self.start()
+                self.controlMessage = "Recording"
+            } else {
+                let failed = go.failures.filter(\.blocking).map { $0.id.replacingOccurrences(of: "_", with: " ") }
+                self.controlMessage = "No-Go: " + failed.joined(separator: ", ")
+            }
+            self.broadcastControl(force: true)
+        }
+    }
+
+    /// The state both screens show (main thread).
+    var controlState: ControlState {
+        var s = ControlState()
+        s.phase = isRecording ? .recording : (startingFromWatch ? .starting : .idle)
+        s.sessionID = isRecording ? sessionID : nil
+        s.startedUnix = isRecording ? Date().timeIntervalSince1970 - elapsed : nil
+        s.calibrating = flow.isRunning
+        s.openTrial = trials.openTrial?.number
+        s.trialsKept = trials.trials.filter(\.keep).count
+        s.trialsRedo = trials.trials.count - s.trialsKept
+        let alerts = alertCenter.active.values.filter { !$0.acknowledged }
+        let top = alerts.first { $0.level == .red } ?? alerts.first
+        s.alert = top.map { $0.detail ?? $0.id.replacingOccurrences(of: "_", with: " ") }
+        s.message = controlMessage
+        s.sentUnix = Date().timeIntervalSince1970
+        return s
+    }
+
+    /// Sends the state to the Watch when it changes, and every 3 s so the Watch can tell the
+    /// iPhone is still there (main thread).
+    private func broadcastControl(force: Bool = false) {
+        let session = WCSession.default
+        guard WCSession.isSupported(), session.activationState == .activated, session.isReachable else { return }
+        var state = controlState
+        var comparable = state
+        comparable.sentUnix = 0
+        let now = state.sentUnix
+        guard force || comparable != lastControlSent || now - lastControlSentUnix >= 3 else { return }
+        lastControlSent = comparable
+        lastControlSentUnix = now
+        state.sentUnix = now
+        session.sendMessage(state.wcMessage(), replyHandler: nil, errorHandler: nil)
+    }
+
     private func launchWatch() {
         let config = HKWorkoutConfiguration()
         config.activityType = .other
@@ -955,6 +1027,7 @@ final class StreamController: NSObject, ObservableObject {
     func preflight(
         plannedMinutes: Double, required: Set<String>, heardVoice: Bool?, completion: @escaping (GoNoGo) -> Void
     ) {
+        lastPlan = (plannedMinutes, required)
         var phoneCount = 0
         var headCount = 0
         let probe = CMMotionManager()
@@ -1171,12 +1244,28 @@ extension StreamController: WCSessionDelegate {
     /// The Watch's buttons (design §7: every action during a session is one Watch tap).
     /// Returns the text the Watch shows.
     private func handleCommand(_ cmd: String?) -> String {
+        let result = runCommand(cmd)
+        controlMessage = result
+        broadcastControl(force: true)
+        return result
+    }
+
+    private func runCommand(_ cmd: String?) -> String {
         switch cmd {
+        case "start":
+            guard !isRecording else { return "Already recording" }
+            guard !startingFromWatch else { return "Running checks" }
+            startFromWatch()
+            return "Running checks"
+        case "stop":
+            guard isRecording else { return "Not recording" }
+            stop()
+            return "Stopped; the Watch sends the rest"
         case "calibrate": return startCalibration() ?? "Calibrating: follow the voice"
         case "trial":
-            guard isRecording else { return "Press Start on the iPhone first" }
+            guard isRecording else { return "Press Start first" }
             markTrial()
-            return "Trial marked"
+            return trialStatus ?? "Trial marked"
         case "repeat":
             repeatPrompt()
             return "Repeating"

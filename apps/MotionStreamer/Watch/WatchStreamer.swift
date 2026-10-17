@@ -19,6 +19,11 @@ final class WatchStreamer: NSObject, ObservableObject {
     @Published private(set) var chunksSaved = 0
     @Published private(set) var chunksAcked = 0
     @Published private(set) var highRateStatus = "Off"
+    /// The iPhone's session state (design §7: one control system; the iPhone owns the session).
+    @Published private(set) var control: ControlState?
+    @Published private(set) var controlReceivedUnix = 0.0
+    /// The session this Watch is recording (main thread).
+    private(set) var currentSessionID: String?
 
     /// Live preview batches kept while the iPhone is unreachable; the full data is on disk anyway.
     private let maxPendingBatches = 60
@@ -95,6 +100,12 @@ final class WatchStreamer: NSObject, ObservableObject {
     func start(sessionID: String? = nil, loc: String? = nil, mirror: Bool = false) {
         launchFallback?.cancel()
         launchFallback = nil
+        if isRunning, let sessionID, sessionID != currentSessionID {
+            // Recording alone ("Watch only") and the iPhone starts a session: join it.
+            stop()
+            DispatchQueue.main.async { self.start(sessionID: sessionID, loc: loc, mirror: mirror) }
+            return
+        }
         guard !isRunning else { return }
         guard motion.isDeviceMotionAvailable else {
             setStatus("Device motion unavailable")
@@ -105,6 +116,7 @@ final class WatchStreamer: NSObject, ObservableObject {
         let ref = preferredReferenceFrame()
         let osVersion = WKInterfaceDevice.current().systemVersion
         let id = sessionID ?? Self.newSessionID()
+        currentSessionID = id
         queue.addOperation {
             self.loc = loc ?? self.loc
             self.recorder = self.openRecorder(id: id, ref: ref.name, os: osVersion)
@@ -159,10 +171,16 @@ final class WatchStreamer: NSObject, ObservableObject {
         }
         workout?.end()
         workout = nil
+        currentSessionID = nil
         DispatchQueue.main.async {
             self.isRunning = false
             self.status = "Stopped; sending the rest to the iPhone"
         }
+    }
+
+    /// True while fresh state arrives from the iPhone: its buttons are shown, not "Watch only".
+    func phoneInControl(nowUnix: Double = Date().timeIntervalSince1970) -> Bool {
+        control != nil && nowUnix - controlReceivedUnix < ControlState.staleAfter
     }
 
     /// The Watch's session buttons (design §7): one tap each, handled on the iPhone.
@@ -474,6 +492,14 @@ extension WatchStreamer: WCSessionDelegate {
     }
 
     private func handleCommand(_ message: [String: Any]) {
+        if let state = ControlState(message: message) {
+            let now = Date().timeIntervalSince1970
+            DispatchQueue.main.async {
+                self.control = state
+                self.controlReceivedUnix = now
+            }
+            return
+        }
         let session = message["session"] as? String
         let loc = message["loc"] as? String
         switch message["cmd"] as? String {
