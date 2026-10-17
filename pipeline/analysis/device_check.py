@@ -7,7 +7,7 @@ Runs the ingest, then checks T6's pass conditions (docs/plan/test-plan.md §4):
     phone and AirPods >= 95 % of expected samples (the phone was locked in a pocket),
     AirPods rate around each spoken phrase within 10 % of their normal rate,
     Watch high-rate stream close to 800 + 200 samples per second,
-and reports the battery used per device. Writes device_check.json next to the report.
+and the ingest itself passes; reports the battery used per device. Writes device_check.json next to the report.
 """
 
 import argparse
@@ -56,8 +56,14 @@ def airpods_rate_around_speech(packets, window_s=3.0):
     }
 
 
-def high_rate_check(session: Path):
-    chunks = sorted((session / "watch_hf").glob("*.bin"))
+def high_rate_check(session: Path, journal):
+    """Rates from the high-rate chunks the phone journalled (files the ingest rejects are left out)."""
+    names = {
+        Path(e["file"]).name
+        for e in journal
+        if e.get("j") == "chunk_received" and e.get("kind") == "hf"
+    }
+    chunks = sorted(p for p in (session / "watch_hf").glob("*.bin") if p.name in names)
     if not chunks:
         return None
     t = {"accel": [], "motion": []}
@@ -100,12 +106,12 @@ def check(session: Path, phone_only=False) -> dict:
     if speech:
         ok = speech["worst_after_speech_hz"] >= (1 - SPEECH_RATE_TOLERANCE) * speech["normal_hz"]
         results["airpods_during_speech"] = speech | {"pass": bool(ok)}
-    rates = high_rate_check(session)
+    rates = high_rate_check(session, journal)
     if rates:
         ok = all(rates[k] >= 0.95 * HIGH_RATE[k] for k in HIGH_RATE)
         results["watch_high_rate_hz"] = rates | {"pass": bool(ok)}
     results["battery_used"] = battery_used(journal)
-    results["ingest_status"] = report["status"]
+    results["ingest"] = {"status": report["status"], "pass": report["status"] == "PASS"}
     results["T6"] = (
         "PASS"
         if all(v.get("pass", True) for v in results.values() if isinstance(v, dict))

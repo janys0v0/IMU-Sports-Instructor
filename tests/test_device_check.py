@@ -50,6 +50,16 @@ def test_t6_passes_on_a_clean_locked_session(tmp_path):
     assert results["airpods_during_speech"]["pass"]
     assert results["watch_high_rate_hz"]["accel"] > 790
     assert results["battery_used"]["watch"] == {"percent": 10.0, "minutes": 20.0}
+    assert results["T6"] == "PASS"
+
+
+def test_t6_fails_when_the_ingest_fails(tmp_path):
+    # Watch files under another session ID are not in this journal: the ingest refuses them.
+    session = make_session(tmp_path)
+    (session / "watch_hf" / "000001.bin").write_bytes(b"stray")
+    results = check(session)
+    assert results["ingest"] == {"status": "FAIL", "pass": False}
+    assert results["T6"] == "FAIL"
 
 
 def test_t6_fails_when_airpods_stop_during_speech(tmp_path):
