@@ -156,10 +156,19 @@ final class WatchStreamer: NSObject, ObservableObject {
     func send(command: String) {
         guard WCSession.default.activationState == .activated, WCSession.default.isReachable else {
             WKInterfaceDevice.current().play(.failure)
+            setStatus("iPhone not reachable: open the app on the iPhone")
             return
         }
-        WCSession.default.sendMessage(["cmd": command], replyHandler: nil, errorHandler: nil)
         WKInterfaceDevice.current().play(.click)
+        WCSession.default.sendMessage(
+            ["cmd": command],
+            replyHandler: { [weak self] reply in
+                self?.setStatus(reply["result"] as? String ?? "iPhone replied")
+            },
+            errorHandler: { [weak self] error in
+                WKInterfaceDevice.current().play(.failure)
+                self?.setStatus("iPhone didn't get it: \(error.localizedDescription)")
+            })
     }
 
     /// The Watch's "Resend session" button: every chunk again (duplicates are harmless).

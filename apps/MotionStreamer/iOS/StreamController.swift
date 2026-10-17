@@ -441,8 +441,11 @@ final class StreamController: NSObject, ObservableObject {
     }
 
     /// The spoken calibration (design §7), started from the Watch or the phone.
-    func startCalibration() {
-        guard isRecording, !flow.isRunning else { return }
+    /// Returns why it didn't start, or nil when it did (shown on the Watch).
+    @discardableResult
+    func startCalibration() -> String? {
+        guard isRecording else { return "Press Start on the iPhone first" }
+        guard !flow.isRunning else { return "Already calibrating" }
         flow.landmark = landmark
         flow.requireAirPods = airPodsConnected
         flow.requireWatch = watchReachable
@@ -458,6 +461,7 @@ final class StreamController: NSObject, ObservableObject {
                 self.calibrationTimer = nil
             }
         }
+        return nil
     }
 
     /// The Watch's Repeat button.
@@ -1153,17 +1157,34 @@ extension StreamController: WCSessionDelegate {
 
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         if let hello = message["hello"] as? Data { handleHello(hello) }
-        // The Watch's buttons (design §7: every action during a session is one Watch tap).
-        DispatchQueue.main.async {
-            switch message["cmd"] as? String {
-            case "calibrate": self.startCalibration()
-            case "trial": self.markTrial()
-            case "repeat": self.repeatPrompt()
-            case "acknowledge":
-                self.alertCenter.acknowledge()
-                self.audibility.tapReceived()
-            default: break
-            }
+        DispatchQueue.main.async { _ = self.handleCommand(message["cmd"] as? String) }
+    }
+
+    /// Watch buttons send with a reply handler, so the Watch can show what happened.
+    func session(
+        _ session: WCSession, didReceiveMessage message: [String: Any],
+        replyHandler: @escaping ([String: Any]) -> Void
+    ) {
+        DispatchQueue.main.async { replyHandler(["result": self.handleCommand(message["cmd"] as? String)]) }
+    }
+
+    /// The Watch's buttons (design §7: every action during a session is one Watch tap).
+    /// Returns the text the Watch shows.
+    private func handleCommand(_ cmd: String?) -> String {
+        switch cmd {
+        case "calibrate": return startCalibration() ?? "Calibrating: follow the voice"
+        case "trial":
+            guard isRecording else { return "Press Start on the iPhone first" }
+            markTrial()
+            return "Trial marked"
+        case "repeat":
+            repeatPrompt()
+            return "Repeating"
+        case "acknowledge":
+            alertCenter.acknowledge()
+            audibility.tapReceived()
+            return "OK"
+        default: return "Unknown command"
         }
     }
 }
