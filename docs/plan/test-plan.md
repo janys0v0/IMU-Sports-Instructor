@@ -231,8 +231,9 @@ Run only after L1-L6 pass, on the current build (free Apple ID builds expire aft
    First time with a Watch: Developer Mode on (Watch Settings → Privacy & Security), wait until Xcode's
    Devices window shows it connected, then run the `MotionStreamerWatch` scheme on it once. Until then the
    iPhone's Watch app says "could not be installed" (the signing profile lacks the Watch).
-2. **Stage 0b first = T6:** Go/No-Go → Start → calibrate from the Watch → lock the phone, pocket it,
-   walk 20 min → Stop → keep the Watch near the phone until "High-rate: all sent".
+2. **Stage 0b first = T6:** Go/No-Go → Start → calibrate from the Watch → **press the side button**
+   to lock the phone (the app keeps the screen on and pocket mode only blanks it), pocket it, walk or
+   sit 20 min → Stop → keep the Watch near the phone until every chunk is on the iPhone. Unplugged.
 3. Copy the session (Finder → iPhone → Files → MotionStreamer → `sessions/<id>`) to
    `data/recordings/field/`, then: `.venv/bin/python -m pipeline.analysis.device_check data/recordings/field/<id>`.
    It prints PASS/FAIL for each T6 condition and the battery used.

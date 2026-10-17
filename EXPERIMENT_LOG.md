@@ -180,3 +180,17 @@ Checked which published models could run on head + one wrist + thigh data:
 - Orientation drift where devices return to the reference pose: head 9.7 vs 4.5 deg/min, thigh 7.5
   vs 6.6 deg/min (MobilePoser vs IMUCoCo). Forearm not measurable: the Watch never returns to its
   calibration pose (E03 open question).
+
+## 2026-10-17
+
+### Device check T6, first runs (stage 0b)
+
+- **Smoke test `20261017-170818-P01` (2 min):** found three bugs, all fixed: the Watch's high-rate
+  stream started before its workout (CMError 109), the Watch opened its own `-W` session, and the
+  Watch's buttons failed silently.
+- **Sitting run `20261017-173115-P01` (22 min, phone in pocket):** ingest PASS; phone 100 %, AirPods
+  99.99 % (one 0.12 s gap), AirPods 50 Hz unchanged around 47 spoken phrases, Watch high-rate
+  797 / 199 Hz, Watch clock fit 16 ms RMS. **Not a valid T6:** the app never went to the background
+  (no `app_background` event), so the phone was never locked, and it was charging (battery 90 → 95 %).
+  `device_check.py` now fails T6 unless the app is in the background ≥ 80 % of the run.
+- **Next:** rerun T6 unplugged, locked with the side button.

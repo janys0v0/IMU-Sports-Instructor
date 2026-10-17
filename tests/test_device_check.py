@@ -19,11 +19,13 @@ def airpods_minutes(n_minutes, t0=100.0, drop_after_speech=False, speech_at=()):
     return packets
 
 
-def make_session(tmp_path, drop_after_speech=False):
+def make_session(tmp_path, drop_after_speech=False, locked=True):
     fs = FieldSession(tmp_path)
     speech = [130.0, 160.0, 190.0]
     phone = [imu("phone", 5 * k, 100 + 5 * k / 33, rate=33) for k in range(0, 3 * 33 * 60 // 5)]
     events = [{"type": "event", "name": "prompt", "start": s, "t_phone": s} for s in speech]
+    if locked:
+        events.append({"type": "event", "name": "app_background", "t_phone": 101.0})
     fs.phone_chunk(
         phone + airpods_minutes(3, drop_after_speech=drop_after_speech, speech_at=speech) + events
     )
@@ -59,6 +61,13 @@ def test_t6_fails_when_the_ingest_fails(tmp_path):
     (session / "watch_hf" / "000001.bin").write_bytes(b"stray")
     results = check(session)
     assert results["ingest"] == {"status": "FAIL", "pass": False}
+    assert results["T6"] == "FAIL"
+
+
+def test_t6_fails_when_the_phone_was_never_locked(tmp_path):
+    # The app stays in the foreground (screen kept on, pocket mode): not the locked case T6 tests.
+    results = check(make_session(tmp_path, locked=False))
+    assert results["phone_locked"] == {"fraction": 0.0, "pass": False}
     assert results["T6"] == "FAIL"
 
 

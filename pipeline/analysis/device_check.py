@@ -4,6 +4,7 @@ Usage (repo root):
     .venv/bin/python -m pipeline.analysis.device_check data/recordings/field/<session>
 
 Runs the ingest, then checks T6's pass conditions (docs/plan/test-plan.md §4):
+    the phone was locked (app in the background) for >= 80 % of the recording,
     phone and AirPods >= 95 % of expected samples (the phone was locked in a pocket),
     AirPods rate around each spoken phrase within 10 % of their normal rate,
     Watch high-rate stream close to 800 + 200 samples per second,
@@ -21,8 +22,38 @@ from pipeline.ingest.high_rate import read_file as read_high_rate
 from pipeline.ingest.ingest_field import ingest, read_jsonl
 
 MIN_COVERAGE = 0.95
+MIN_LOCKED_FRACTION = 0.8
 SPEECH_RATE_TOLERANCE = 0.10
 HIGH_RATE = {"accel": 800, "motion": 200}
+
+
+def locked_fraction(packets):
+    """Share of the recording the app spent in the background (phone locked), from the app's
+    app_background / app_foreground events. Pocket mode keeps the app in the foreground."""
+    t = [
+        s[0]
+        for p in packets
+        if p.get("type") == "imu" and p.get("device") == "phone"
+        for s in p["s"]
+    ]
+    if len(t) < 2:
+        return 0.0
+    start, end = min(t), max(t)
+    changes = sorted(
+        (p["t_phone"], p["name"] == "app_background")
+        for p in packets
+        if p.get("type") == "event" and p.get("name") in ("app_background", "app_foreground")
+    )
+    background, since = 0.0, None
+    for at, entering in changes:
+        if entering and since is None:
+            since = at
+        elif not entering and since is not None:
+            background += max(0.0, min(at, end) - max(since, start))
+            since = None
+    if since is not None:
+        background += max(0.0, end - max(since, start))
+    return round(background / (end - start), 3)
 
 
 def airpods_rate_around_speech(packets, window_s=3.0):
@@ -102,6 +133,8 @@ def check(session: Path, phone_only=False) -> dict:
         if streams:
             coverage = min(s["coverage"] for s in streams)
             results[f"{name}_coverage"] = {"value": coverage, "pass": coverage >= MIN_COVERAGE}
+    locked = locked_fraction(packets)
+    results["phone_locked"] = {"fraction": locked, "pass": locked >= MIN_LOCKED_FRACTION}
     speech = airpods_rate_around_speech(packets)
     if speech:
         ok = speech["worst_after_speech_hz"] >= (1 - SPEECH_RATE_TOLERANCE) * speech["normal_hz"]
