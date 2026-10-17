@@ -193,4 +193,9 @@ Checked which published models could run on head + one wrist + thigh data:
   797 / 199 Hz, Watch clock fit 16 ms RMS. **Not a valid T6:** the app never went to the background
   (no `app_background` event), so the phone was never locked, and it was charging (battery 90 → 95 %).
   `device_check.py` now fails T6 unless the app is in the background ≥ 80 % of the run.
-- **Next:** rerun T6 unplugged, locked with the side button.
+- **Second 20-min run `20261017-180838-P01` (unplugged):** same stream results, phone battery 5 %
+  in 20 min (~15 %/h). Again no `app_background` event: the phone was not locked.
+- **Lock test `20261017-193310-P01` (7 min):** locking is logged (`app_background` at 2:01,
+  `app_foreground` at 6:46). During the 285 s locked: phone 33.5 Hz and AirPods 50 Hz, same as
+  unlocked, longest gap 0.03 s. **The location keep-alive holds a locked phone for at least
+  4.75 min**; the 20-min locked run is still needed for T6.
