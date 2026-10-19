@@ -33,6 +33,16 @@ what a camera sees, per joint and per activity? A first number before OpenCap
 .venv/bin/python -m experiments.E04_video_validation.run field/20261019-000116-P01
 ```
 
+Side-by-side video (camera with Vision's skeleton, then the IMU mesh for each Watch
+calibration), after `run.py`:
+
+```bash
+.venv/bin/python -m experiments.E04_video_validation.make_video field/20261019-000116-P01
+```
+
+It crops the camera to the subject (the annotation's `mask_left`, which also hides bystanders)
+and writes `results/<session>/videos/side_by_side.mp4` (not committed).
+
 Put the video in `data/recordings/field/<session>/video/` (never committed). The first run
 writes `alignment.json` and `vision_pose.json` next to it (Vision takes about 1 s per frame);
 `--realign` redoes both. Results: `results/<session>/` (`metrics.json`, `summary.md`, `angles.png`).

@@ -39,6 +39,7 @@ experiments/
     ├── vision_pose.swift             3D body pose per video frame
     ├── angles.py                     joint angles from both joint sets, agreement metrics
     ├── run.py
+    ├── make_video.py                 camera + skeleton next to the IMU meshes
     └── results/<session>/
 ```
 

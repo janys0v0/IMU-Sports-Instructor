@@ -3,8 +3,9 @@
 // Usage (repo root):
 //   swift experiments/E04_video_validation/vision_pose.swift VIDEO OUT.json [--stride 2]
 //
-// Writes {"video", "fps", "stride", "frames": [{"t", "height", "joints": {name: [x, y, z]}}]}.
-// Positions are in metres relative to the body root, in Vision's model space. Frames without a
+// Writes {"video", "fps", "stride", "frames": [{"t", "height", "joints": {name: [x, y, z]},
+// "image": {name: [x, y]}}]}. Joint positions are in metres relative to the body root, in
+// Vision's model space; image points are normalised (0-1, origin top-left). Frames without a
 // detected person are left out. A mirrored video (Photo Booth) is handled later by swapping
 // left and right names in Python: joint angles do not change under a reflection.
 
@@ -46,12 +47,15 @@ while let sample = output.copyNextSampleBuffer() {
     try VNImageRequestHandler(cvPixelBuffer: pixels, orientation: .up).perform([request])
     guard let body = request.results?.first else { continue }
     var joints: [String: [Double]] = [:]
+    var image: [String: [Double]] = [:]
     for name in body.availableJointNames {
         guard let point = try? body.recognizedPoint(name) else { continue }
         let p = point.position.columns.3
         joints[name.rawValue.rawValue] = [Double(p.x), Double(p.y), Double(p.z)]
+        // Where the joint is in the frame (normalised, origin top-left), for drawing the skeleton.
+        if let q = try? body.pointInImage(name) { image[name.rawValue.rawValue] = [Double(q.x), 1 - Double(q.y)] }
     }
-    frames.append(["t": t, "height": Double(body.bodyHeight), "joints": joints])
+    frames.append(["t": t, "height": Double(body.bodyHeight), "joints": joints, "image": image])
     detected += 1
     if index % 300 == 0 { print(String(format: "%.0f s: %d frames with a body", t, detected)) }
 }
