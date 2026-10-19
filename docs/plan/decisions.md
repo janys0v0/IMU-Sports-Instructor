@@ -26,6 +26,7 @@ date; don't leave the old version in other docs. Other docs link here instead of
 | 2026-10-16 | **One format for branches, commits and PRs** (shared type/scope vocabulary, PR sections, squash merge), checked by `tools/check_format.py` | Consistent, searchable history | [`CONTRIBUTING.md`](../../CONTRIBUTING.md#commit-branch-and-pr-format) |
 | 2026-10-16 | **Human testing:** one early device check (stage 0b); all other device tests in stage 9 | Research answered most device questions | [`dev-plan.md`](dev-plan.md), [`device-research.md`](../research/device-research.md) |
 | 2026-10-17 | **One control system:** the iPhone owns the session; Start, Stop, Calibrate, Trial, Repeat and OK do the same from either device, and the Watch shows the iPhone's state and buttons. "Watch only" recording only when the iPhone is unreachable; the iPhone joins it when back | Starting each device separately opened two sessions on the first device run | design §7 |
+| 2026-10-19 | **First accuracy check against single-camera video** (Apple Vision 3D pose, E04); OpenCap stays deferred | Available now with no setup or download; gives joint-angle agreement on our own motions. Limits: one camera, Vision's own error | [`dev-plan.md`](dev-plan.md) stage 11 |
 
 ## Open
 

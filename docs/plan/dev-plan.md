@@ -11,10 +11,10 @@ when its gate passes on two consecutive runs; then the next stage starts.
 | | |
 |---|---|
 | **Current stage** | 9 — Endurance + device tests (stages 0-8 done; stage 6's gate waits for device test T6) |
-| **Next action** | Device round: stage 0b check (= T6) first, runbook in [`test-plan.md`](test-plan.md) §4; L1-L3 done |
+| **Next action** | Device round: stage 0b check (= T6) first, runbook in [`test-plan.md`](test-plan.md) §4; L1-L3 done. Stage 11 (E04) first run done: arm angles need a better Watch calibration (palms-down arms-out pose) and a cleaner recording |
 | **Blocked on** | Devices: stage 0b check (= T6) closes stage 6's gate and the keep-alive decision · People: V9 listen-through |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
-| **Last updated** | 2026-10-16 |
+| **Last updated** | 2026-10-19 |
 
 ## Overview
 
@@ -32,6 +32,7 @@ when its gate passes on two consecutive runs; then the next stage starts.
 | 8 | Trial button + extra sensors | ◐ Trial marker on the phone | G8 | 2 | Mac + simulators |
 | 9 | Endurance + device tests | 35 real recordings to replay | G9 | 3-4 | Simulators + devices |
 | 10 | Calibration interval | — | G10 | 2 (two court days) | Devices |
+| 11 | Accuracy against video (E04, single camera) | MobilePoser offline runner (E01) | G11 | 1-2 | Mac + one camera |
 
 ◐ = partly built (details below). **Total: about 22-29 working days (4-6 weeks).** Estimates
 assume one person coding with Claude; device stages depend on court and weather.
@@ -300,5 +301,25 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 - [ ] T20 run on 2 days and logged.
 - [ ] Interval = time until any device exceeds 10°, rounded down to whole minutes; set as the reminder default.
 - [ ] **Demo:** a drift-over-time plot per device, with the chosen interval marked.
+
+## Stage 11: Accuracy against video (E04)
+
+**Goal:** a first, honest number for how well the IMU pose matches what a camera sees, before
+OpenCap ([`opencap.md`](../deferred/opencap.md)). Can run alongside stages 9-10.
+
+**Tasks**
+1. Record a session with a camera filming the whole body (the recording checklist in
+   [`E04 README`](../../experiments/E04_video_validation/README.md)).
+2. Align video and IMU: on-screen motion vs Watch and phone motion (plus audio), ±0.1 s.
+3. 3D pose from the video with Apple Vision (built into macOS, no download); joint angles from
+   both: elbow and knee flexion, shoulder elevation, left and right.
+4. Per-angle RMSE, bias and correlation, per activity window.
+
+**Testable goals (G11)**
+- [x] Angle and alignment code covered by tests (`tests/test_e04.py`).
+- [x] `run.py` writes `metrics.json`, `summary.md` and an angle plot for a recorded session.
+- [x] **Demo:** results for one session in `EXPERIMENT_LOG.md`, with limits stated (single
+      camera, Vision's own error; angles only, not positions). Knees agree (RMSE ~19°), arms do
+      not (30-40°): the Watch calibration is the next thing to fix (see the log, 2026-10-19).
 
 **After stage 10: first real field session.**

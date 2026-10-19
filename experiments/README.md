@@ -15,7 +15,8 @@ experiments/
 │   ├── stream_quality.py             per-device rate, missing samples, gaps, delay (raw packets)
 │   └── render.py                     mesh videos (frame-count checked), side-by-side tiles
 ├── annotations/                  hand-made activity labels per session (data only)
-│   └── 20261008-153213-P01.json      reference routine: jumping jacks, swings, squats, head turns
+│   ├── 20261008-153213-P01.json      reference routine: jumping jacks, swings, squats, head turns
+│   └── 20261019-000116-P01.json      filmed routine for E04 (video mirrored, bystander masked)
 ├── E00_mobileposer_reproduction/  published MobilePoser on the IMUPoser dataset (setup notes, results)
 ├── E01_mobileposer_device_ablation/
 │   ├── README.md                     question, method, how to run, results
@@ -28,9 +29,16 @@ experiments/
 │   ├── make_videos.py                side-by-side videos from saved outputs
 │   ├── plot_agreement.py             model-sensor agreement + trajectories figure
 │   └── results/<session>/
-└── E03_stream_quality/
-    ├── README.md
-    ├── run.py                        data consistency + trajectories figure
+├── E03_stream_quality/
+│   ├── README.md
+│   ├── run.py                        data consistency + trajectories figure
+│   └── results/<session>/
+└── E04_video_validation/         IMU joint angles vs single-camera video (Apple Vision 3D)
+    ├── README.md                     question, recording checklist, limits
+    ├── align.py                      video <-> IMU offset from on-screen vs sensor motion
+    ├── vision_pose.swift             3D body pose per video frame
+    ├── angles.py                     joint angles from both joint sets, agreement metrics
+    ├── run.py
     └── results/<session>/
 ```
 

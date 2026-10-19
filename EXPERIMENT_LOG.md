@@ -13,6 +13,7 @@ method and full results.
 | E01 | How much does each device (phone, Watch, AirPods) contribute to MobilePoser? | [`experiments/E01_mobileposer_device_ablation/`](experiments/E01_mobileposer_device_ablation/README.md) | Done 2026-10-08 |
 | E02 | MobilePoser vs IMUCoCo on the same inputs | [`experiments/E02_imucoco_comparison/`](experiments/E02_imucoco_comparison/README.md) | Done 2026-10-08 |
 | E03 | Data consistency of each sensor stream (rate, missingness, delay) vs motion | [`experiments/E03_stream_quality/`](experiments/E03_stream_quality/README.md) | Done 2026-10-14 |
+| E04 | How closely do IMU joint angles match a single-camera video? | [`experiments/E04_video_validation/`](experiments/E04_video_validation/README.md) | First run 2026-10-19 |
 
 ## Reference recordings
 
@@ -212,3 +213,31 @@ Checked which published models could run on head + one wrist + thigh data:
   iPhone → When Last Connected to This iPhone* before every session (runbook).
 - Battery unchanged (75 %): the phone was probably charging; no drain figure.
 - **T6:** FAIL on AirPods only. Rerun with the AirPods setting changed to close it.
+
+## 2026-10-19
+
+### E04: IMU joint angles vs single-camera video, `20261019-000116-P01`
+
+- **Recording:** 2 min 17 s indoors, Mac camera (Photo Booth, mirrored, 30 fps, 150 s), Watch
+  right wrist, phone right pocket, AirPods. Routine: calibration, knee lifts, jumping jacks,
+  walking, 3 squats, ready position, shadow strokes. No trials, hops or claps; activity windows
+  set by hand from the video (`experiments/annotations/20261019-000116-P01.json`).
+- **Command:** `.venv/bin/python -m experiments.E04_video_validation.run field/20261019-000116-P01`
+- **Alignment:** −0.85 s from the file's creation time; Watch motion r 0.67 and phone motion
+  r 0.63 agree within 0.02 s (a bystander at the frame's left edge had to be masked). Knee peaks
+  line up within a frame in the plot.
+- **Video pose:** Apple Vision 3D, 2202 of 2256 frames (15 fps). It reads the arms-out pose as
+  ~67° (expected ~90°) and a straight standing knee as ~27°: its own bias is 15-25°.
+- **Results (IMU − video, Watch calibrated standing as in E01-E03):** knees agree best, RMSE
+  ~19° and r 0.67 (right) / 0.71 (left); the 3 squats reach ~100° in both. Arms are poor: elbow
+  RMSE 34° (r 0.24), shoulder elevation 30° (r −0.31). The model barely raises the arms in
+  jumping jacks (video 50-120°, IMU < 40°) and bends the elbows ~50° in the ready position where
+  the video shows ~115°.
+- **Watch calibrated in the arms-out pose** (new option `load_session(wrist_pose="arms_out")`,
+  the models' T-pose reference): fixes the arms-out window (shoulder 56° → 13° RMSE) but makes
+  elbows worse elsewhere (overall 41°, walking 21° → 55°). Neither calibration gives usable arm
+  angles. Likely causes: forearm twist is not set by either pose (the shortened prompt no longer
+  says "palms down"), and one wrist sensor cannot fix the upper arm.
+- **Next:** record again with the E04 checklist (whole body, nobody else in frame, claps and
+  trials); test the arms-out calibration with palms down; add Vision's own error on known poses
+  (standing, arms out) as a baseline before reading arm numbers.
