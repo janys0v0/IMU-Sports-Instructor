@@ -224,6 +224,8 @@ The Watch app's high-rate stream (`CMBatchedSensorManager`) also needs real hard
 ## 4. Device tests (L7)
 
 Run only after L1-L6 pass, on the current build (free Apple ID builds expire after 7 days).
+Before every device session: phone unplugged, and AirPods setting *Connect to This iPhone → When
+Last Connected to This iPhone* (otherwise a Mac or iPad can take the AirPods mid-session).
 
 **How to run a device round**
 1. Rebuild and install on the iPhone (Xcode, `MotionStreamer` scheme; the Watch app comes with it).

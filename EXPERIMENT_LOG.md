@@ -199,3 +199,16 @@ Checked which published models could run on head + one wrist + thigh data:
   `app_foreground` at 6:46). During the 285 s locked: phone 33.5 Hz and AirPods 50 Hz, same as
   unlocked, longest gap 0.03 s. **The location keep-alive holds a locked phone for at least
   4.75 min**; the 20-min locked run is still needed for T6.
+
+## 2026-10-18
+
+### Device check T6, 31-min locked run `20261018-221445-P01`
+
+- **Locked keep-alive works:** the app was in the background for 99 % of the run (30.7 min). Phone
+  100 % at 33.5 Hz (longest gap 0.03 s), Watch 60 Hz 100 %, Watch high-rate 797 / 199 Hz.
+- **AirPods lost at 15.7 min:** the audio route moved to another Apple device (automatic switching)
+  and head motion stopped for the remaining 914 s (coverage 50.8 %). The app raised a red alert at
+  once and every 30 s after, but cannot take the AirPods back. Fix: AirPods setting *Connect to This
+  iPhone → When Last Connected to This iPhone* before every session (runbook).
+- Battery unchanged (75 %): the phone was probably charging; no drain figure.
+- **T6:** FAIL on AirPods only. Rerun with the AirPods setting changed to close it.
