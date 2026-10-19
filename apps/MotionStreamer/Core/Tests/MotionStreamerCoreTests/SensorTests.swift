@@ -23,6 +23,21 @@ final class SensorTests: XCTestCase {
         XCTAssertEqual(stats.longestGapMs, 6000)
     }
 
+    func test_X5_everySensorPacketCarriesTheSession() throws {
+        // Without it the Mac viewer took them for another session (found on device 2026-10-19).
+        let writer = SensorPacketWriter(session: "20261019-115058-P01")
+        let packets = [
+            writer.barometer(device: "phone", t: 1, pressureKPa: 101, relativeAltitudeM: 0, bootToUnix: 0),
+            writer.magnetometer(device: "phone", t: 1, field: [1, 2, 3], accuracy: 2, bootToUnix: 0),
+            writer.audioLevel(t: 1, rmsDB: -40, peakDB: -30, onset: false, bootToUnix: 0),
+            writer.distance(t: 1, meters: 1.5, bootToUnix: 0),
+        ]
+        for data in packets {
+            let p = try JSONSerialization.jsonObject(with: XCTUnwrap(data)) as! [String: Any]
+            XCTAssertEqual(p["session"] as? String, "20261019-115058-P01", "\(p["type"] ?? "")")
+        }
+    }
+
     func test_X2_magnetometerLoggedPerDeviceAndLowAccuracyWarns() throws {
         let writer = SensorPacketWriter()
         let phone =
@@ -63,7 +78,7 @@ final class SensorTests: XCTestCase {
         for data in packets {
             let p = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
             XCTAssertEqual(
-                Set(p.keys), ["v", "type", "device", "i", "t", "rms_db", "peak_db", "onset", "boot_to_unix"])
+                Set(p.keys), ["v", "session", "type", "device", "i", "t", "rms_db", "peak_db", "onset", "boot_to_unix"])
             XCTAssertFalse(p.values.contains { $0 is [Any] }, "no sample arrays: no raw audio")
             XCTAssertLessThan(data.count, 200)
         }

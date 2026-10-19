@@ -310,7 +310,7 @@ at most once per problem per minute; one Watch tap acknowledges (logged).
 
 | Scenario | Detect | Auto-fix | Alert |
 |---|---|---|---|
-| Low sample rate | 5 s rate < 80 % of the Go/No-Go rate | Shed load: stop UDP, pause plots | 🟡, 🔴 after 30 s, with the cause (heat / Low Power / CPU) |
+| Low sample rate (phone, AirPods) | 5 s rate < 80 % of the Go/No-Go rate; the Watch preview is excluded (it arrives in bursts) | Shed load: stop UDP, pause plots | 🟡, 🔴 after 30 s, with the cause (heat / Low Power / CPU) |
 | Low Power Mode | `isLowPowerModeEnabled` | — | Blocks Start; 🔴 mid-session |
 | Overheating | `thermalState` ≥ `.serious` | Shed load | 🟡 "Heads up: the phone is getting hot." |
 | Late or bursty delivery | Arrival gaps, sensor timestamps continuous | None needed | Logged |

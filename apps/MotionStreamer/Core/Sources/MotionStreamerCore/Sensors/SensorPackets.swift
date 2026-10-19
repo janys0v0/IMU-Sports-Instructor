@@ -4,7 +4,9 @@ import Foundation
 /// Every packet has a running index `i` per (type, device), so gaps are counted like motion.
 public final class SensorPacketWriter {
     private var counters: [String: Int] = [:]
-    public init() {}
+    /// Every packet carries it, like the motion packets, so the Mac files it under the right session.
+    public let session: String
+    public init(session: String = "") { self.session = session }
 
     private func next(_ key: String) -> Int {
         let i = counters[key, default: 0]
@@ -17,7 +19,8 @@ public final class SensorPacketWriter {
         -> Data?
     {
         PacketEncoder.packet([
-            "v": MotionFormat.version, "type": "baro", "device": device, "i": next("baro/\(device)"), "t": t,
+            "v": MotionFormat.version, "session": session, "type": "baro", "device": device,
+            "i": next("baro/\(device)"), "t": t,
             "pressure_kpa": pressureKPa, "rel_alt_m": relativeAltitudeM, "boot_to_unix": bootToUnix,
         ])
     }
@@ -25,7 +28,8 @@ public final class SensorPacketWriter {
     /// Calibrated magnetic field (µT, device frame) and its accuracy (-1 uncalibrated … 2 high).
     public func magnetometer(device: String, t: Double, field: [Double], accuracy: Int, bootToUnix: Double) -> Data? {
         PacketEncoder.packet([
-            "v": MotionFormat.version, "type": "mag", "device": device, "i": next("mag/\(device)"), "t": t,
+            "v": MotionFormat.version, "session": session, "type": "mag", "device": device, "i": next("mag/\(device)"),
+            "t": t,
             "field_ut": field, "accuracy": accuracy, "boot_to_unix": bootToUnix,
         ])
     }
@@ -34,7 +38,8 @@ public final class SensorPacketWriter {
     /// No audio samples are ever stored (test X3).
     public func audioLevel(t: Double, rmsDB: Double, peakDB: Double, onset: Bool, bootToUnix: Double) -> Data? {
         PacketEncoder.packet([
-            "v": MotionFormat.version, "type": "audio_level", "device": "phone", "i": next("audio"), "t": t,
+            "v": MotionFormat.version, "session": session, "type": "audio_level", "device": "phone", "i": next("audio"),
+            "t": t,
             "rms_db": (rmsDB * 10).rounded() / 10, "peak_db": (peakDB * 10).rounded() / 10, "onset": onset,
             "boot_to_unix": bootToUnix,
         ])
@@ -43,7 +48,8 @@ public final class SensorPacketWriter {
     /// Optional Watch ↔ phone distance (UWB, Nearby Interaction).
     public func distance(t: Double, meters: Double, bootToUnix: Double) -> Data? {
         PacketEncoder.packet([
-            "v": MotionFormat.version, "type": "uwb", "device": "phone", "i": next("uwb"), "t": t, "distance_m": meters,
+            "v": MotionFormat.version, "session": session, "type": "uwb", "device": "phone", "i": next("uwb"), "t": t,
+            "distance_m": meters,
             "boot_to_unix": bootToUnix,
         ])
     }

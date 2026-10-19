@@ -32,15 +32,31 @@ AUTO_RENDER = (
 )
 
 
+_render = None  # the render process; one at a time, each uses several cores
+
+
+def session_of(packet, current):
+    """The packet's session. Packets without one (sensor packets from older app builds) belong to
+    the current session; switching on them would end the real session ~20 times a second. Before
+    any session is known there is nothing to file them under: None, and callers skip them."""
+    return packet.get("session") or current
+
+
 def start_render(session_dir):
     """Start pipeline.pose.render_session in the background; it writes reconstruction.mp4 and render.log."""
+    global _render
     python = VENV_PYTHON
     if not python.exists():
         print(f"  not rendering: {python} not found")
         return
+    if _render is not None and _render.poll() is None:
+        print(
+            f"  not rendering now (another render is running); later: {python} -m pipeline.pose.render_session {session_dir}"
+        )
+        return
     log = open(session_dir / "render.log", "w")  # noqa: SIM115 - owned by the render process
     # Own process group, so Ctrl+C on the receiver does not stop a render in progress.
-    subprocess.Popen(
+    _render = subprocess.Popen(
         [str(python), "-W", "ignore", "-m", "pipeline.pose.render_session", str(session_dir)],
         cwd=ROOT,
         stdout=log,
@@ -267,6 +283,7 @@ def main():
     print(f"Saving to {args.out}\n")
 
     sessions = {}
+    current = None  # newest session ID, for packets that carry none
     received_by_addr = {}
     last_ack = {}
     last_print = time.monotonic()
@@ -284,7 +301,10 @@ def main():
                 except json.JSONDecodeError:
                     print(f"  bad packet from {addr}")
                     continue
-                session_id = packet.get("session") or "unknown"
+                session_id = session_of(packet, current)
+                if session_id is None:
+                    continue
+                current = session_id
                 if session_id not in sessions:
                     print(f"New session: {session_id} from {addr[0]}")
                     sessions[session_id] = Session(

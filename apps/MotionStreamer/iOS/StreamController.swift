@@ -346,7 +346,7 @@ final class StreamController: NSObject, ObservableObject {
             self.startUptime = now
             self.phoneRefFrame = ref.name
             self.dropDetector.reset()
-            self.sensors = SensorPacketWriter()
+            self.sensors = SensorPacketWriter(session: id)
             self.calibrationResets = []
             self.lastGoodCalibration = nil
             self.lastWatchBatch = nil

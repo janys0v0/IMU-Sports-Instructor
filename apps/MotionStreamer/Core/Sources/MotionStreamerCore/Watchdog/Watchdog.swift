@@ -89,7 +89,9 @@ public final class Watchdog {
         // Sampling quality
         let cause = input.thermal >= 2 ? "heat" : input.lowPower ? "Low Power Mode" : "CPU load"
         for (device, s) in input.streams.sorted(by: { $0.key < $1.key }) where s.required {
-            if let base = s.baselineHz, base > 0, (s.lastSampleAge ?? .infinity) <= 1,
+            // The Watch's live preview arrives in bursts over the link, so its rate here says nothing
+            // about phone CPU load; link problems are `watch_preview_paused`, its recording is on its disk.
+            if device != "watch", let base = s.baselineHz, base > 0, (s.lastSampleAge ?? .infinity) <= 1,
                 s.rate5s / base < Self.lowRateFraction
             {
                 problems["rate_dropping"] = (.yellow, "\(device) at \(Int(s.rate5s / base * 100)) % (\(cause))")

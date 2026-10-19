@@ -76,20 +76,7 @@ class Receiver(threading.Thread):
                 packet = json.loads(data)
             except json.JSONDecodeError:
                 continue
-            session_id = packet.get("session") or "unknown"
-            if self.session is None or self.session.id != session_id:
-                if self.session is not None:
-                    self.session.finish()
-                print(f"\nNew session: {session_id} from {addr[0]}")
-                self.session = Session(session_id, self.out_dir, ("phone",))
-                with self.lock:
-                    self.samples.clear()
-                    self.meta.clear()
-                    self.arrival.clear()
-            self.session.handle(packet, recv_unix)
-            packet["recv_mac_unix"] = recv_unix
-            self.session.file.write(json.dumps(packet) + "\n")
-            self._consume(packet)
+            self.handle_packet(packet, recv_unix, addr[0])
             received[addr] = received.get(addr, 0) + 1
             now = time.monotonic()
             if now - last_ack.get(addr, 0) >= 1:
@@ -98,6 +85,25 @@ class Receiver(threading.Thread):
                 )
                 last_ack[addr] = now
             self._maybe_finish()
+
+    def handle_packet(self, packet, recv_unix, sender=""):
+        """Save one packet and keep its samples; a new session ID starts a new session."""
+        session_id = receiver_module.session_of(packet, self.session and self.session.id)
+        if session_id is None:
+            return  # a sensor packet before any session: nothing to file it under
+        if self.session is None or self.session.id != session_id:
+            if self.session is not None:
+                self.session.finish()
+            print(f"\nNew session: {session_id} from {sender}")
+            self.session = Session(session_id, self.out_dir, ("phone",))
+            with self.lock:
+                self.samples.clear()
+                self.meta.clear()
+                self.arrival.clear()
+        self.session.handle(packet, recv_unix)
+        packet["recv_mac_unix"] = recv_unix
+        self.session.file.write(json.dumps(packet) + "\n")
+        self._consume(packet)
 
     def _consume(self, packet):
         kind = packet.get("type")
@@ -273,6 +279,7 @@ def main():
         help="don't render reconstruction.mp4 after each session",
     )
     args = parser.parse_args()
+    args.out = args.out.resolve()  # before the chdir into MobilePoser below
     receiver_module.AUTO_RENDER = not args.no_render
 
     import os

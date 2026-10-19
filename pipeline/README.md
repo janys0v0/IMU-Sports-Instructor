@@ -49,6 +49,8 @@ PY=.venv/bin/python
 ## Things to know
 
 - **One listener at a time:** the viewer and the receiver both use UDP port 5005.
+- **Start the viewer before Start on the phone,** or tap Calibrate again: the mesh moves only after
+  the viewer has seen a calibration.
 - **Calibrate standing completely still** with the phone screen facing the leg (`--screen leg`).
   A failed check (rotation > 0.2 rad/s) means you moved during the hold.
 - **Latency:** about 0.2 s, mostly MobilePoser's 5-frame look-ahead.

@@ -102,6 +102,18 @@ final class WatchdogTests: XCTestCase {
         XCTAssertTrue(h.actions.contains(.shedLoad))
     }
 
+    func test_A4b_watchPreviewInBurstsDoesNotPauseTheMacStream() {
+        // The Watch's live preview reaches the phone in bursts; a link blip is not phone CPU load
+        // and must not pause the stream to the Mac (found on device 2026-10-19).
+        let h = WatchdogHarness()
+        h.run(40) { input, k in
+            input.streams["watch"]!.rate5s = k % 2 == 0 ? 3 : 60
+            input.streams["watch"]!.lastSampleAge = 0.5
+        }
+        XCTAssertFalse(h.said("rate_dropping"))
+        XCTAssertFalse(h.actions.contains(.shedLoad))
+    }
+
     func test_A5_lowPowerBlocksStartAndIsRedMidSession() {
         var i = GoNoGo.Input()
         i.liveRates = ["phone": (33, 33), "watch": (60, 60), "airpods": (50, 50)]
