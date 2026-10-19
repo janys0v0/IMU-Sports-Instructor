@@ -200,33 +200,33 @@ skipped later.
 the phone shifts in the pocket); the Watch strap slides; the AirPods' heading is arbitrary and
 resets on reconnect. E02 measured ~5-10°/min of model orientation drift for head and thigh.
 
-**The routine** (~20 s, started from the Watch, every step spoken):
+**The routine** (~17 s, started from the Watch, every step spoken; prompts kept short so a returning player hears only the cue):
 
 ```
  Tap Calibrate on the Watch (or accept a reminder)
-   ▼ "Calibration. Face {landmark} and stand still."  "Starting in three, two, one."
+   ▼ "Calibrating. Face {landmark}."  "Three, two, one."
  ① Standing pose, arms down, facing the landmark ── hold 3 s ──▶ phone + AirPods
    ▼ "Good."
  ② Arms-out pose, arms straight out to the sides, palms down ── hold 3 s ──▶ Watch
    ▼ "Arms down."
- "Calibration complete. You can start."  or  "Calibration didn't work: {reason}. Let's try again."
+ "Calibration done."  or  "Calibration didn't work: {reason}. Let's try again."
 ```
 
 **Script** (`MotionStreamerCore/Resources/voice_prompts.json`, with every alert phrase; generate a listening copy with `tools/make_voice_sample.py`; `{landmark}` is set in Setup, e.g. "the net"):
 
 | # | Spoken (exactly) | Data |
 |---|---|---|
-| C1 | "Calibration. Face {landmark} and stand still." | `prompt` events with start/finish time (all prompts) |
-| C2 | "Starting in three, two, one." (one number per second) | |
-| C3 | "Stand up straight, feet hip-width apart, arms relaxed, looking ahead." | |
+| C1 | "Calibrating. Face {landmark}." | `prompt` events with start/finish time (all prompts) |
+| C2 | "Three, two, one." (one number per second) | |
+| C3 | "Stand tall, arms down." | |
 | C4 | "Hold still… now." | hold window starts 0.3 s after "now" finishes; `calibrate` event (`t_phone` + 0.3 = window start, `hold_s` 3.3) |
 | C5 | "You moved. Hold still." (once; the hold restarts) | |
 | C6 | "Good." | `cal_hold_end` |
-| C7 | "Now raise both arms out sideways, shoulder height, palms down." | |
-| C8 | "Raise your arms a little higher, level with your shoulders." (if not level after 6 s) | |
+| C7 | "Arms out, shoulder height." | |
+| C8 | "Arms a bit higher." (if not level after 6 s) | |
 | C9 | "Hold still… now." | as C4; `calibrate_arms` event |
 | C10 | "Arms down." | `cal_hold_end` |
-| C11 | "Calibration complete. You can start." | `calibrate_result: pass` |
+| C11 | "Calibration done." | `calibrate_result: pass` |
 | C12 | "Calibration didn't work: {reason}." then "Let's try again." (at most 2 retries, then "Please check the devices, then tap Calibrate.") | `calibrate_result: fail` |
 
 Reasons: "you moved" · "the phone isn't upright in your pocket" · "your arms weren't level" ·

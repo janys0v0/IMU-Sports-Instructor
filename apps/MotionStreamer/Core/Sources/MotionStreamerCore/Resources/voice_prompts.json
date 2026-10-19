@@ -1,17 +1,17 @@
 {
   "_comment": "Every spoken phrase (design §7, §8). Wording rules (test V1): at most 12 words once placeholders are filled, the same every time, no jargon. {landmark} is the Setup setting (at most 3 words).",
   "calibration": {
-    "C1": "Calibration. Face {landmark} and stand still.",
-    "C2": "Starting in three, two, one.",
-    "C3": "Stand up straight, feet hip-width apart, arms relaxed, looking ahead.",
+    "C1": "Calibrating. Face {landmark}.",
+    "C2": "Three, two, one.",
+    "C3": "Stand tall, arms down.",
     "C4": "Hold still… now.",
     "C5": "You moved. Hold still.",
     "C6": "Good.",
-    "C7": "Now raise both arms out sideways, shoulder height, palms down.",
-    "C8": "Raise your arms a little higher, level with your shoulders.",
+    "C7": "Arms out, shoulder height.",
+    "C8": "Arms a bit higher.",
     "C9": "Hold still… now.",
     "C10": "Arms down.",
-    "C11": "Calibration complete. You can start.",
+    "C11": "Calibration done.",
     "C12a": "Calibration didn't work: {reason}.",
     "C12b": "Let's try again.",
     "C12_final": "Please check the devices, then tap Calibrate."

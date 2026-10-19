@@ -15,7 +15,7 @@ final class CalibrationHarness {
     var phoneGravityY = -1.0
     var movesDuringHold = 0  // number of standing holds in which they move
     var armsNeverLevel = false
-    var armsLevelDelay = 0.0  // seconds after "raise both arms" before arms are level
+    var armsLevelDelay = 0.0  // seconds after the arms-out prompt (C7) before arms are level
     var watchSending = true
     var airpodsConnected = true
 
@@ -58,7 +58,8 @@ final class CalibrationHarness {
     }
 
     private func armsOut(_ t: Double) -> Bool {
-        guard let i = voice.phrases.lastIndex(where: { $0.text.hasPrefix("Now raise") }) else { return false }
+        let armsPrompt = VoiceScript.shared.calibration("C7")
+        guard let i = voice.phrases.lastIndex(where: { $0.text == armsPrompt }) else { return false }
         if voice.phrases[i...].contains(where: { $0.text == "Arms down." }) { return false }
         if armsNeverLevel { return false }
         return t >= (voice.phrases[i].finish ?? .infinity) + armsLevelDelay
