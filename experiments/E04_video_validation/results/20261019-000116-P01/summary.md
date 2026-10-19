@@ -5,29 +5,29 @@ IMU minus video, degrees. Left-side angles have no sensor on that limb.
 
 ## Watch calibrated in the standing pose
 
-Lag left after alignment (best angle correlation, ±1 s search): {'r_shoulder': -1.0, 'r_elbow': 0.2}. Mirror check (right-shoulder r, same vs other side): {'same_side': -0.312, 'other_side': -0.307}.
+Lag left after alignment (best angle correlation, ±1 s search): {'r_shoulder': 0.06, 'r_elbow': 0.16}. Mirror check (right-shoulder r, same vs other side): {'same_side': 0.13, 'other_side': 0.197}.
 
 | Angle | Frames | Bias | RMSE | MAE | r |
 |---|---|---|---|---|---|
-| Right elbow flexion (Watch arm) | 1083 | -9.9 | 33.6 | 25.3 | 0.239 |
-| Left elbow flexion (no sensor) | 1083 | -15.2 | 34.5 | 25.9 | 0.333 |
-| Right knee flexion (phone leg) | 1083 | -1.1 | 19.6 | 14.3 | 0.666 |
-| Left knee flexion (no sensor) | 1083 | -3.7 | 18.3 | 12.8 | 0.706 |
-| Right shoulder elevation (Watch arm) | 1083 | -13.5 | 29.9 | 20.3 | -0.312 |
-| Left shoulder elevation (no sensor) | 1083 | -14.2 | 30.1 | 21.6 | -0.317 |
+| Right elbow flexion (Watch arm) | 1083 | +2.6 | 34.3 | 25.1 | 0.481 |
+| Left elbow flexion (no sensor) | 1083 | -4.2 | 36.1 | 27.1 | 0.237 |
+| Right knee flexion (phone leg) | 1083 | -5.2 | 19.3 | 13.5 | 0.647 |
+| Left knee flexion (no sensor) | 1083 | -4.4 | 19.9 | 13.8 | 0.64 |
+| Right shoulder elevation (Watch arm) | 1083 | -8.1 | 27.1 | 18.5 | 0.13 |
+| Left shoulder elevation (no sensor) | 1083 | -16.5 | 27.1 | 18.3 | 0.097 |
 
 RMSE per activity (degrees):
 
 | Activity | r_elbow | l_elbow | r_knee | l_knee | r_shoulder | l_shoulder |
 |---|---|---|---|---|---|---|
-| standing_calibration | 8 | 10 | 15 | 12 | 41 | 44 |
-| arms_out_calibration | 9 | 14 | 13 | 12 | 56 | 52 |
-| knee_lifts | 21 | 20 | 27 | 15 | 9 | 17 |
-| jumping_jacks | 27 | 24 | 21 | 11 | 55 | 59 |
-| walking | 21 | 23 | 21 | 21 | 9 | 13 |
-| squats | 26 | 17 | 24 | 22 | 9 | 13 |
-| ready_position | 60 | 62 | 15 | 16 | 11 | 9 |
-| shadow_strokes | 39 | 45 | 14 | 15 | 33 | 31 |
+| standing_calibration | 14 | 11 | 14 | 11 | 36 | 32 |
+| arms_out_calibration | 32 | 37 | 3 | 4 | 50 | 46 |
+| knee_lifts | 28 | 23 | 19 | 17 | 8 | 12 |
+| jumping_jacks | 53 | 25 | 26 | 22 | 48 | 64 |
+| walking | 18 | 21 | 21 | 20 | 11 | 17 |
+| squats | 19 | 16 | 17 | 20 | 7 | 6 |
+| ready_position | 43 | 70 | 21 | 24 | 29 | 13 |
+| shadow_strokes | 43 | 40 | 17 | 18 | 25 | 23 |
 
 ## Watch calibrated in the arms-out pose
 

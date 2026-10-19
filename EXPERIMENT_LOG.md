@@ -241,3 +241,27 @@ Checked which published models could run on head + one wrist + thigh data:
 - **Next:** record again with the E04 checklist (whole body, nobody else in frame, claps and
   trials); test the arms-out calibration with palms down; add Vision's own error on known poses
   (standing, arms out) as a baseline before reading arm numbers.
+
+### E04 diagnosis: why the arms disagree, and the Watch hand-off fix
+
+- **Not the data, not the sample rate.** Coverage ≥ 99.8 %, one 0.1-0.2 s gap before
+  calibration; Watch 66 Hz, model input 30 Hz. Static poses were as wrong as fast ones
+  (ready position: video 127°, model 31° forearm-from-down), which sampling cannot explain.
+- **The Watch measured the forearm correctly.** Its orientation after the standing calibration,
+  without the model, matches the video forearm: r 0.80, RMSE 28° (ready position 126° vs 127°,
+  walking 25° vs 27°).
+- **The model was handed the wrong rest pose.** It reads a wrist bone's identity as the T-pose
+  (arm out), but the standing calibration made "arm hanging" the identity (the E02 finding).
+  Fix: `with_standing_rest()` in `calibration.py` starts the wrist bone as a hanging arm (90°
+  about the forward axis); used by `experiments/common/session.py`, `render_session.py` and
+  the live viewer.
+- **After the fix:** model forearm vs video r −0.39 → 0.67, RMSE 55° → 36°; ready position
+  128° vs 127°, standing 20° vs 20°. E04 angles (standing calibration): right elbow r 0.24 →
+  0.48, right shoulder r −0.31 → 0.13; the leftover lag dropped from the ±1 s search limit to
+  0.06-0.16 s. RMSE stays ~34° (elbow) and ~27° (shoulder).
+- **What remains is the model, not the sensor:** with one wrist sensor it cannot tell a raised
+  upper arm from a bent elbow. Arms out: forearm level, upper arm down, elbow bent 73°
+  (video 41°). Jumping jacks are the worst case (shoulder RMSE 48°).
+- **Arms-out Watch calibration** (option): still worse than the fixed standing calibration;
+  kept only for comparison.
+- E01-E03 results predate this fix (their arm numbers used the wrong rest pose).

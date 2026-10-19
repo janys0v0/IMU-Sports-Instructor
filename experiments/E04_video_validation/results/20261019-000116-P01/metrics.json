@@ -29,406 +29,406 @@
       "overall": {
         "r_elbow": {
           "n": 1083,
-          "bias_deg": -9.88,
-          "rmse_deg": 33.65,
-          "mae_deg": 25.31,
-          "r": 0.239
+          "bias_deg": 2.62,
+          "rmse_deg": 34.34,
+          "mae_deg": 25.14,
+          "r": 0.481
         },
         "l_elbow": {
           "n": 1083,
-          "bias_deg": -15.21,
-          "rmse_deg": 34.55,
-          "mae_deg": 25.88,
-          "r": 0.333
+          "bias_deg": -4.17,
+          "rmse_deg": 36.1,
+          "mae_deg": 27.08,
+          "r": 0.237
         },
         "r_knee": {
           "n": 1083,
-          "bias_deg": -1.1,
-          "rmse_deg": 19.64,
-          "mae_deg": 14.33,
-          "r": 0.666
+          "bias_deg": -5.21,
+          "rmse_deg": 19.3,
+          "mae_deg": 13.5,
+          "r": 0.647
         },
         "l_knee": {
           "n": 1083,
-          "bias_deg": -3.66,
-          "rmse_deg": 18.31,
-          "mae_deg": 12.79,
-          "r": 0.706
+          "bias_deg": -4.37,
+          "rmse_deg": 19.92,
+          "mae_deg": 13.81,
+          "r": 0.64
         },
         "r_shoulder": {
           "n": 1083,
-          "bias_deg": -13.52,
-          "rmse_deg": 29.9,
-          "mae_deg": 20.3,
-          "r": -0.312
+          "bias_deg": -8.08,
+          "rmse_deg": 27.07,
+          "mae_deg": 18.5,
+          "r": 0.13
         },
         "l_shoulder": {
           "n": 1083,
-          "bias_deg": -14.25,
-          "rmse_deg": 30.14,
-          "mae_deg": 21.56,
-          "r": -0.317
+          "bias_deg": -16.52,
+          "rmse_deg": 27.05,
+          "mae_deg": 18.28,
+          "r": 0.097
         }
       },
       "lag_check_s": {
-        "r_shoulder": -1.0,
-        "r_elbow": 0.2
+        "r_shoulder": 0.06,
+        "r_elbow": 0.16
       },
       "mirror_check_r": {
-        "same_side": -0.312,
-        "other_side": -0.307
+        "same_side": 0.13,
+        "other_side": 0.197
       },
       "per_activity": {
         "standing_calibration": {
           "r_elbow": {
             "n": 37,
-            "bias_deg": 0.52,
-            "rmse_deg": 8.12,
-            "mae_deg": 6.83,
-            "r": 0.474
+            "bias_deg": 10.68,
+            "rmse_deg": 14.31,
+            "mae_deg": 10.68,
+            "r": 0.968
           },
           "l_elbow": {
             "n": 37,
-            "bias_deg": -4.77,
-            "rmse_deg": 10.04,
-            "mae_deg": 7.39,
-            "r": 0.034
+            "bias_deg": 7.0,
+            "rmse_deg": 11.28,
+            "mae_deg": 7.12,
+            "r": 0.943
           },
           "r_knee": {
             "n": 37,
-            "bias_deg": -12.8,
-            "rmse_deg": 14.52,
-            "mae_deg": 13.25,
-            "r": -0.449
+            "bias_deg": -13.37,
+            "rmse_deg": 13.8,
+            "mae_deg": 13.37,
+            "r": -0.313
           },
           "l_knee": {
             "n": 37,
-            "bias_deg": -8.89,
-            "rmse_deg": 12.5,
-            "mae_deg": 11.15,
-            "r": -0.601
+            "bias_deg": -10.25,
+            "rmse_deg": 10.54,
+            "mae_deg": 10.25,
+            "r": 0.454
           },
           "r_shoulder": {
             "n": 37,
-            "bias_deg": -6.66,
-            "rmse_deg": 40.87,
-            "mae_deg": 37.22,
-            "r": -0.907
+            "bias_deg": -25.25,
+            "rmse_deg": 35.72,
+            "mae_deg": 25.25,
+            "r": -0.112
           },
           "l_shoulder": {
             "n": 37,
-            "bias_deg": 0.66,
-            "rmse_deg": 44.12,
-            "mae_deg": 41.66,
-            "r": -0.864
+            "bias_deg": -24.81,
+            "rmse_deg": 32.29,
+            "mae_deg": 24.81,
+            "r": 0.853
           }
         },
         "arms_out_calibration": {
           "r_elbow": {
             "n": 75,
-            "bias_deg": -7.16,
-            "rmse_deg": 8.79,
-            "mae_deg": 8.64,
-            "r": -0.862
+            "bias_deg": 30.99,
+            "rmse_deg": 31.94,
+            "mae_deg": 30.99,
+            "r": 0.943
           },
           "l_elbow": {
             "n": 75,
-            "bias_deg": -11.58,
-            "rmse_deg": 13.6,
-            "mae_deg": 13.49,
-            "r": -0.855
+            "bias_deg": 36.21,
+            "rmse_deg": 37.48,
+            "mae_deg": 36.21,
+            "r": 0.844
           },
           "r_knee": {
             "n": 75,
-            "bias_deg": -12.26,
-            "rmse_deg": 12.52,
-            "mae_deg": 12.26,
-            "r": 0.236
+            "bias_deg": -2.11,
+            "rmse_deg": 3.25,
+            "mae_deg": 2.45,
+            "r": 0.013
           },
           "l_knee": {
             "n": 75,
-            "bias_deg": -11.3,
-            "rmse_deg": 11.74,
-            "mae_deg": 11.3,
-            "r": 0.096
+            "bias_deg": -3.15,
+            "rmse_deg": 4.35,
+            "mae_deg": 3.63,
+            "r": 0.244
           },
           "r_shoulder": {
             "n": 75,
-            "bias_deg": -53.13,
-            "rmse_deg": 55.77,
-            "mae_deg": 54.83,
-            "r": -0.973
+            "bias_deg": -48.86,
+            "rmse_deg": 50.17,
+            "mae_deg": 48.94,
+            "r": 0.206
           },
           "l_shoulder": {
             "n": 75,
-            "bias_deg": -49.12,
-            "rmse_deg": 52.34,
-            "mae_deg": 51.63,
-            "r": -0.972
+            "bias_deg": -45.35,
+            "rmse_deg": 46.26,
+            "mae_deg": 45.35,
+            "r": 0.713
           }
         },
         "knee_lifts": {
           "r_elbow": {
             "n": 90,
-            "bias_deg": -1.3,
-            "rmse_deg": 20.93,
-            "mae_deg": 17.04,
-            "r": 0.69
+            "bias_deg": -16.47,
+            "rmse_deg": 28.38,
+            "mae_deg": 20.5,
+            "r": 0.554
           },
           "l_elbow": {
             "n": 90,
-            "bias_deg": -2.97,
-            "rmse_deg": 20.42,
-            "mae_deg": 16.24,
-            "r": 0.59
+            "bias_deg": -7.59,
+            "rmse_deg": 23.42,
+            "mae_deg": 17.18,
+            "r": 0.451
           },
           "r_knee": {
             "n": 90,
-            "bias_deg": 10.2,
-            "rmse_deg": 27.0,
-            "mae_deg": 20.72,
-            "r": -0.1
+            "bias_deg": -4.68,
+            "rmse_deg": 19.15,
+            "mae_deg": 12.77,
+            "r": 0.028
           },
           "l_knee": {
             "n": 90,
-            "bias_deg": -0.96,
-            "rmse_deg": 15.35,
-            "mae_deg": 10.41,
-            "r": 0.409
+            "bias_deg": -3.97,
+            "rmse_deg": 16.56,
+            "mae_deg": 10.6,
+            "r": 0.416
           },
           "r_shoulder": {
             "n": 90,
-            "bias_deg": -3.14,
-            "rmse_deg": 9.12,
-            "mae_deg": 7.51,
-            "r": 0.42
+            "bias_deg": -0.15,
+            "rmse_deg": 8.41,
+            "mae_deg": 5.82,
+            "r": 0.213
           },
           "l_shoulder": {
             "n": 90,
-            "bias_deg": -5.01,
-            "rmse_deg": 16.89,
-            "mae_deg": 12.34,
-            "r": -0.397
+            "bias_deg": -7.93,
+            "rmse_deg": 11.89,
+            "mae_deg": 8.85,
+            "r": 0.662
           }
         },
         "jumping_jacks": {
           "r_elbow": {
             "n": 73,
-            "bias_deg": -13.53,
-            "rmse_deg": 26.68,
-            "mae_deg": 20.42,
-            "r": 0.184
+            "bias_deg": 33.02,
+            "rmse_deg": 53.13,
+            "mae_deg": 38.98,
+            "r": 0.471
           },
           "l_elbow": {
             "n": 73,
-            "bias_deg": -10.89,
-            "rmse_deg": 23.64,
-            "mae_deg": 17.28,
-            "r": 0.245
+            "bias_deg": 17.68,
+            "rmse_deg": 25.38,
+            "mae_deg": 19.6,
+            "r": 0.849
           },
           "r_knee": {
             "n": 73,
-            "bias_deg": 18.16,
-            "rmse_deg": 21.25,
-            "mae_deg": 18.69,
-            "r": 0.292
+            "bias_deg": 20.49,
+            "rmse_deg": 26.4,
+            "mae_deg": 21.75,
+            "r": 0.031
           },
           "l_knee": {
             "n": 73,
-            "bias_deg": 5.61,
-            "rmse_deg": 10.82,
-            "mae_deg": 8.96,
-            "r": 0.237
+            "bias_deg": 17.15,
+            "rmse_deg": 21.95,
+            "mae_deg": 18.86,
+            "r": -0.039
           },
           "r_shoulder": {
             "n": 73,
-            "bias_deg": -42.51,
-            "rmse_deg": 54.76,
-            "mae_deg": 44.0,
-            "r": 0.066
+            "bias_deg": -38.59,
+            "rmse_deg": 47.71,
+            "mae_deg": 38.73,
+            "r": 0.609
           },
           "l_shoulder": {
             "n": 73,
-            "bias_deg": -48.44,
-            "rmse_deg": 59.47,
-            "mae_deg": 48.63,
-            "r": 0.152
+            "bias_deg": -54.25,
+            "rmse_deg": 63.61,
+            "mae_deg": 54.25,
+            "r": 0.611
           }
         },
         "walking": {
           "r_elbow": {
             "n": 125,
-            "bias_deg": 9.28,
-            "rmse_deg": 20.71,
-            "mae_deg": 18.26,
-            "r": 0.035
+            "bias_deg": -2.02,
+            "rmse_deg": 17.97,
+            "mae_deg": 13.69,
+            "r": 0.16
           },
           "l_elbow": {
             "n": 125,
-            "bias_deg": 3.92,
-            "rmse_deg": 22.73,
-            "mae_deg": 17.96,
-            "r": 0.029
+            "bias_deg": -4.14,
+            "rmse_deg": 21.22,
+            "mae_deg": 15.99,
+            "r": 0.074
           },
           "r_knee": {
             "n": 125,
-            "bias_deg": -2.3,
-            "rmse_deg": 20.76,
-            "mae_deg": 14.32,
-            "r": -0.018
+            "bias_deg": -6.94,
+            "rmse_deg": 21.49,
+            "mae_deg": 13.35,
+            "r": -0.04
           },
           "l_knee": {
             "n": 125,
-            "bias_deg": -6.58,
-            "rmse_deg": 21.24,
-            "mae_deg": 12.99,
-            "r": 0.011
+            "bias_deg": -5.26,
+            "rmse_deg": 19.93,
+            "mae_deg": 11.93,
+            "r": 0.08
           },
           "r_shoulder": {
             "n": 125,
-            "bias_deg": 1.47,
-            "rmse_deg": 9.1,
-            "mae_deg": 7.47,
-            "r": 0.222
+            "bias_deg": -6.2,
+            "rmse_deg": 10.88,
+            "mae_deg": 8.22,
+            "r": -0.069
           },
           "l_shoulder": {
             "n": 125,
-            "bias_deg": -8.44,
-            "rmse_deg": 13.3,
-            "mae_deg": 10.17,
-            "r": -0.073
+            "bias_deg": -13.64,
+            "rmse_deg": 16.79,
+            "mae_deg": 13.81,
+            "r": 0.107
           }
         },
         "squats": {
           "r_elbow": {
             "n": 118,
-            "bias_deg": 17.8,
-            "rmse_deg": 25.63,
-            "mae_deg": 21.65,
-            "r": -0.424
+            "bias_deg": 16.95,
+            "rmse_deg": 19.12,
+            "mae_deg": 16.95,
+            "r": 0.82
           },
           "l_elbow": {
             "n": 118,
-            "bias_deg": 7.57,
-            "rmse_deg": 16.61,
-            "mae_deg": 13.97,
-            "r": -0.127
+            "bias_deg": 14.08,
+            "rmse_deg": 16.26,
+            "mae_deg": 14.92,
+            "r": 0.678
           },
           "r_knee": {
             "n": 118,
-            "bias_deg": 16.46,
-            "rmse_deg": 23.88,
-            "mae_deg": 18.81,
-            "r": 0.898
+            "bias_deg": 7.38,
+            "rmse_deg": 16.66,
+            "mae_deg": 13.94,
+            "r": 0.905
           },
           "l_knee": {
             "n": 118,
-            "bias_deg": 12.9,
-            "rmse_deg": 21.82,
-            "mae_deg": 17.09,
-            "r": 0.925
+            "bias_deg": 12.39,
+            "rmse_deg": 20.13,
+            "mae_deg": 16.08,
+            "r": 0.928
           },
           "r_shoulder": {
             "n": 118,
-            "bias_deg": 4.7,
-            "rmse_deg": 9.08,
-            "mae_deg": 7.09,
-            "r": -0.244
+            "bias_deg": 5.57,
+            "rmse_deg": 6.67,
+            "mae_deg": 5.78,
+            "r": 0.399
           },
           "l_shoulder": {
             "n": 118,
-            "bias_deg": 9.11,
-            "rmse_deg": 13.0,
-            "mae_deg": 10.49,
-            "r": -0.18
+            "bias_deg": -2.7,
+            "rmse_deg": 6.32,
+            "mae_deg": 4.96,
+            "r": -0.387
           }
         },
         "ready_position": {
           "r_elbow": {
             "n": 120,
-            "bias_deg": -55.7,
-            "rmse_deg": 60.34,
-            "mae_deg": 56.82,
-            "r": -0.175
+            "bias_deg": -17.69,
+            "rmse_deg": 43.01,
+            "mae_deg": 35.36,
+            "r": -0.195
           },
           "l_elbow": {
             "n": 120,
-            "bias_deg": -60.61,
-            "rmse_deg": 62.06,
-            "mae_deg": 60.61,
-            "r": 0.003
+            "bias_deg": -66.95,
+            "rmse_deg": 69.59,
+            "mae_deg": 66.95,
+            "r": -0.165
           },
           "r_knee": {
             "n": 120,
-            "bias_deg": -2.55,
-            "rmse_deg": 14.82,
-            "mae_deg": 9.69,
-            "r": 0.647
+            "bias_deg": -15.02,
+            "rmse_deg": 21.22,
+            "mae_deg": 15.72,
+            "r": 0.624
           },
           "l_knee": {
             "n": 120,
-            "bias_deg": -7.68,
-            "rmse_deg": 16.39,
-            "mae_deg": 11.79,
-            "r": 0.686
+            "bias_deg": -17.54,
+            "rmse_deg": 24.38,
+            "mae_deg": 17.57,
+            "r": 0.565
           },
           "r_shoulder": {
             "n": 120,
-            "bias_deg": -5.33,
-            "rmse_deg": 11.43,
-            "mae_deg": 8.43,
-            "r": -0.201
+            "bias_deg": 24.96,
+            "rmse_deg": 29.35,
+            "mae_deg": 24.96,
+            "r": 0.19
           },
           "l_shoulder": {
             "n": 120,
-            "bias_deg": -4.46,
-            "rmse_deg": 8.55,
-            "mae_deg": 6.37,
-            "r": -0.207
+            "bias_deg": -9.0,
+            "rmse_deg": 12.73,
+            "mae_deg": 9.86,
+            "r": -0.156
           }
         },
         "shadow_strokes": {
           "r_elbow": {
             "n": 240,
-            "bias_deg": -24.51,
-            "rmse_deg": 39.06,
-            "mae_deg": 29.68,
-            "r": 0.236
+            "bias_deg": -6.11,
+            "rmse_deg": 43.21,
+            "mae_deg": 33.53,
+            "r": 0.28
           },
           "l_elbow": {
             "n": 240,
-            "bias_deg": -34.06,
-            "rmse_deg": 45.25,
-            "mae_deg": 37.02,
-            "r": 0.262
+            "bias_deg": -7.53,
+            "rmse_deg": 39.97,
+            "mae_deg": 31.45,
+            "r": 0.11
           },
           "r_knee": {
             "n": 240,
-            "bias_deg": -4.5,
-            "rmse_deg": 14.02,
-            "mae_deg": 10.8,
-            "r": 0.504
+            "bias_deg": -7.87,
+            "rmse_deg": 16.62,
+            "mae_deg": 12.8,
+            "r": 0.333
           },
           "l_knee": {
             "n": 240,
-            "bias_deg": -0.99,
-            "rmse_deg": 14.96,
-            "mae_deg": 12.11,
-            "r": 0.418
+            "bias_deg": -5.83,
+            "rmse_deg": 17.67,
+            "mae_deg": 13.9,
+            "r": 0.24
           },
           "r_shoulder": {
             "n": 240,
-            "bias_deg": -25.31,
-            "rmse_deg": 33.24,
-            "mae_deg": 25.91,
-            "r": -0.147
+            "bias_deg": -10.68,
+            "rmse_deg": 25.44,
+            "mae_deg": 18.6,
+            "r": 0.141
           },
           "l_shoulder": {
             "n": 240,
-            "bias_deg": -25.88,
-            "rmse_deg": 30.69,
-            "mae_deg": 25.88,
-            "r": 0.167
+            "bias_deg": -14.31,
+            "rmse_deg": 23.08,
+            "mae_deg": 18.88,
+            "r": 0.087
           }
         }
       }

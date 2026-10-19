@@ -11,7 +11,7 @@ when its gate passes on two consecutive runs; then the next stage starts.
 | | |
 |---|---|
 | **Current stage** | 9 — Endurance + device tests (stages 0-8 done; stage 6's gate waits for device test T6) |
-| **Next action** | Device round: stage 0b check (= T6) first, runbook in [`test-plan.md`](test-plan.md) §4; L1-L3 done. Stage 11 (E04) first run done: arm angles need a better Watch calibration (palms-down arms-out pose) and a cleaner recording |
+| **Next action** | Device round: stage 0b check (= T6) first, runbook in [`test-plan.md`](test-plan.md) §4; L1-L3 done. Stage 11 (E04) done for one session; Watch hand-off fixed. Next: a cleaner filmed recording (E04 checklist) |
 | **Blocked on** | Devices: stage 0b check (= T6) closes stage 6's gate and the keep-alive decision · People: V9 listen-through |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
 | **Last updated** | 2026-10-19 |
@@ -60,7 +60,7 @@ The app already records all three devices and has been used for 35 sessions. The
 | Mac receiver: per-stream coverage, `summary.json`, PASS/FAIL | `pipeline/live/receiver.py` | ◐ live UDP only, no checksums | 3 |
 | Exact missing samples (by index), gaps > 100 ms, delay, clock mapping | `experiments/common/stream_quality.py` (E03) | ✅ | 3 (reused in ingest), S2 baseline |
 | Recording loader, 30 Hz resampling with gap marks | `pipeline/preprocessing/motion_io.py`, `pipeline/preprocessing/resample.py` | ✅ | 3 (merged stream must load here) |
-| Standing calibration + checks on the Mac | `pipeline/preprocessing/calibration.py` | ◐ one calibration only, no arms-out pose | 5 |
+| Standing calibration + checks on the Mac | `pipeline/preprocessing/calibration.py` | ◐ wrists start as a hanging arm (E04); arms-out pose optional | 5 |
 | Replay a recording over UDP; synthetic packets | `pipeline/live/send_recording.py`, `pipeline/live/fake_phone.py` | ✅ | 0 (basis for replay fakes) |
 
 ## Human testing: what blocks and what waits
@@ -319,7 +319,8 @@ OpenCap ([`opencap.md`](../deferred/opencap.md)). Can run alongside stages 9-10.
 - [x] Angle and alignment code covered by tests (`tests/test_e04.py`).
 - [x] `run.py` writes `metrics.json`, `summary.md` and an angle plot for a recorded session.
 - [x] **Demo:** results for one session in `EXPERIMENT_LOG.md`, with limits stated (single
-      camera, Vision's own error; angles only, not positions). Knees agree (RMSE ~19°), arms do
-      not (30-40°): the Watch calibration is the next thing to fix (see the log, 2026-10-19).
+      camera, Vision's own error; angles only, not positions). Knees agree (RMSE ~19°). The Watch
+      hand-off is fixed (model forearm r −0.39 → 0.67); arm angles stay ~30° off because one
+      wrist sensor cannot fix the upper arm (see the log, 2026-10-19).
 
 **After stage 10: first real field session.**

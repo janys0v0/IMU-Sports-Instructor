@@ -55,6 +55,13 @@ writes `alignment.json` and `vision_pose.json` next to it (Vision takes about 1 
   their angles test the model's inference, not a measurement.
 - Angles only: positions and translation are not compared.
 
+## Findings so far
+
+- The Watch measures the forearm well (sensor alone vs video: r 0.80). The model was given the
+  wrong rest pose for it until 2026-10-19 (`with_standing_rest`); fixed.
+- Remaining arm error (~30°) is the model: one wrist sensor cannot separate upper-arm raise
+  from elbow bend.
+
 ## Results
 
 See the newest entry for E04 in [`EXPERIMENT_LOG.md`](../../EXPERIMENT_LOG.md) and
