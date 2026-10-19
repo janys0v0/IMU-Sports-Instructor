@@ -38,6 +38,7 @@ final class WatchStreamer: NSObject, ObservableObject {
     private var tickTimer: Timer?
     private var highRateTasks: [Task<Void, Never>] = []
     private var launchFallback: DispatchWorkItem?
+    private var transferTimer: Timer?
     private let batched = CMBatchedSensorManager()
     private let speech = WatchSpeech()
     private let altimeter = CMAltimeter()
@@ -78,7 +79,7 @@ final class WatchStreamer: NSObject, ObservableObject {
                 return
             }
             self?.queue.addOperation {
-                self?.recorder?.outbox.handle(message)
+                self?.recorder?.handle(message)
                 self?.publishTransfer()
             }
         }
@@ -168,6 +169,21 @@ final class WatchStreamer: NSObject, ObservableObject {
             self.flush()
             try? self.recorder?.stop()
             self.publishTransfer()
+        }
+        // After Stop: keep resending unacked chunks and the summary until the phone has them all.
+        transferTimer?.invalidate()
+        var stopped: WatchRecorder?
+        queue.addOperation { stopped = self.recorder }  // the session just stopped, not a later one
+        transferTimer = Timer.scheduledTimer(withTimeInterval: WatchRecorder.summaryResendInterval, repeats: true) {
+            [weak self] timer in
+            self?.queue.addOperation {
+                guard let r = stopped, !r.transfersDone else {
+                    DispatchQueue.main.async { timer.invalidate() }
+                    return
+                }
+                r.retryTransfers()
+                self?.publishTransfer()
+            }
         }
         workout?.end()
         workout = nil
@@ -461,7 +477,7 @@ extension WatchStreamer: WCSessionDelegate {
         if reachable {
             queue.addOperation {
                 self.flush()
-                self.recorder?.outbox.tick()
+                self.recorder?.retryTransfers()
             }
         }
     }

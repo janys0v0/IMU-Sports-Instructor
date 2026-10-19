@@ -136,7 +136,41 @@ public final class WatchRecorder {
         for writer in [motion, highRate] {
             do { try writer.tick() } catch { writer.onWriteError?(error) }
         }
+        retryTransfers()
+    }
+
+    /// Seconds between resends of the Stop summary until the phone acks it.
+    public static let summaryResendInterval: Double = 10
+    /// The file name the phone uses to ack the summary.
+    public static let summaryAckFile = "summary"
+    public private(set) var summaryAcked = false
+    private var summary: LinkMessage?
+    private var summaryLastSent = -Double.infinity
+
+    /// Resends overdue chunks and, after Stop, the summary until it is acked. Keep calling it after
+    /// Stop (and when the phone becomes reachable) until `transfersDone`.
+    public func retryTransfers() {
         outbox.tick()
+        if let summary, !summaryAcked, clock.uptime - summaryLastSent >= Self.summaryResendInterval {
+            sendSummary(summary)
+        }
+    }
+
+    /// True once every chunk and the summary are acked.
+    public var transfersDone: Bool { isClosed && summaryAcked && outbox.unacked.isEmpty }
+
+    /// Acks and resend requests from the phone.
+    public func handle(_ message: LinkMessage) {
+        if message.kind == .ack, message.session == sessionID, message.file == Self.summaryAckFile {
+            summaryAcked = true
+            return
+        }
+        outbox.handle(message)
+    }
+
+    private func sendSummary(_ message: LinkMessage) {
+        summaryLastSent = clock.uptime
+        link.sendMessage(message.encoded)
     }
 
     /// Closes both streams, then sends the high-rate chunks, a journal snapshot and the summary.
@@ -148,11 +182,11 @@ public final class WatchRecorder {
         isClosed = true
         outbox.releaseHighRate()
         sendJournalSnapshot()
-        link.sendMessage(
-            LinkMessage(
-                kind: .summary, session: sessionID, chunks60Hz: outbox.count(kind: "60hz"),
-                chunksHighRate: outbox.count(kind: "hf")
-            ).encoded)
+        let message = LinkMessage(
+            kind: .summary, session: sessionID, chunks60Hz: outbox.count(kind: "60hz"),
+            chunksHighRate: outbox.count(kind: "hf"))
+        summary = message
+        sendSummary(message)
     }
 
     /// A copy of the Watch journal goes to the phone so the Mac sees the Watch's side of the session.

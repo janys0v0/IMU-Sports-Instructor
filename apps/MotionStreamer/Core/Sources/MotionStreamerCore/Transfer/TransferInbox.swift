@@ -77,7 +77,11 @@ public final class TransferInbox {
     /// Handles the Watch's Stop summary.
     public func handle(_ message: LinkMessage) {
         guard message.kind == .summary else { return }
-        expected[message.session] = (message.chunks60Hz ?? 0, message.chunksHighRate ?? 0)
+        let counts = (message.chunks60Hz ?? 0, message.chunksHighRate ?? 0)
+        // The Watch resends the summary until this ack arrives (test W11).
+        link.sendMessage(LinkMessage(kind: .ack, session: message.session, file: WatchRecorder.summaryAckFile).encoded)
+        if let known = expected[message.session], known == counts { return }
+        expected[message.session] = counts
         journal(message.session).flatMap {
             try? $0.write(
                 "watch_summary",

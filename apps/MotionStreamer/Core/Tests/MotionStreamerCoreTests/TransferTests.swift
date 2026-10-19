@@ -33,7 +33,7 @@ final class TransferHarness {
         }
         watchLink.onMessage = { [unowned self] data in
             guard !dropAcks, let m = LinkMessage.decode(data) else { return }
-            watch.outbox.handle(m)
+            watch.handle(m)
         }
     }
 
@@ -90,6 +90,41 @@ final class TransferHarness {
 }
 
 final class TransferTests: XCTestCase {
+    /// W11: the Stop summary (chunk counts) reaches the phone even when the phone was unreachable
+    /// at Stop (field session 20261018-210809-P01 never got it, so the ingest stayed PENDING).
+    func test_W11_summaryIsResentUntilThePhoneAcksIt() throws {
+        let h = try TransferHarness()
+        h.run(seconds: 5)
+        h.watchLink.isReachable = false
+        try h.watch.stop()
+        XCTAssertNil(h.inbox.expected[h.session])
+        h.watchLink.isReachable = true
+        h.clock.advance(WatchRecorder.summaryResendInterval)
+        h.watch.retryTransfers()
+        XCTAssertNotNil(h.inbox.expected[h.session])
+        XCTAssertTrue(h.watch.summaryAcked)
+        let sentBefore = h.watchLink.sentMessages.count
+        for _ in 0..<3 {
+            h.clock.advance(WatchRecorder.summaryResendInterval)
+            h.watch.retryTransfers()
+        }
+        XCTAssertEqual(h.watchLink.sentMessages.count, sentBefore, "no resends after the ack")
+        XCTAssertEqual(h.phoneJournal("watch_summary").count, 1)
+    }
+
+    func test_W11_repeatedSummaryIsJournalledOnce() throws {
+        let h = try TransferHarness()
+        h.run(seconds: 5)
+        h.dropAcks = true
+        try h.watch.stop()
+        for _ in 0..<3 {
+            h.clock.advance(WatchRecorder.summaryResendInterval)
+            h.watch.retryTransfers()
+        }
+        XCTAssertEqual(h.phoneJournal("watch_summary").count, 1)
+        XCTAssertFalse(h.watch.summaryAcked)
+    }
+
     func test_W1_watchKeepsEverythingWhilePhoneIsUnreachable() throws {
         let h = try TransferHarness()
         h.phoneLink.isReachable = false
