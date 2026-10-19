@@ -61,3 +61,40 @@ final class SessionControlTests: XCTestCase {
         XCTAssertTrue(s.isStale(nowUnix: 1000 + ControlState.staleAfter + 1))
     }
 }
+
+/// The devices a session is held to are the ones chosen at Go / No-Go (found on device 2026-10-19:
+/// AirPods that connected on their own alarmed for 5 min in a phone + Watch session).
+final class DevicePlanTests: XCTestCase {
+    func test_unplannedAirPodsAreNotRequiredEvenWhenConnected() {
+        XCTAssertEqual(DevicePlan.required(planned: ["phone", "watch"], watchStarted: true), ["phone", "watch"])
+    }
+
+    func test_plannedAirPodsAreRequiredBeforeTheirFirstSample() {
+        XCTAssertTrue(
+            DevicePlan.required(planned: ["phone", "watch", "airpods"], watchStarted: true).contains("airpods"))
+    }
+
+    func test_watchCountsOnlyOnceItStreams() {
+        XCTAssertEqual(DevicePlan.required(planned: ["phone", "watch"], watchStarted: false), ["phone"])
+    }
+
+    func test_phoneIsAlwaysRequired() {
+        XCTAssertEqual(DevicePlan.required(planned: [], watchStarted: true), ["phone"])
+    }
+}
+
+/// Both screens show the Watch → iPhone transfer in the same words (found on device 2026-10-19:
+/// the Watch showed one combined count including its journal, the iPhone two separate ones).
+final class TransferProgressTests: XCTestCase {
+    func test_sameTextOnBothScreens() {
+        let p = TransferProgress(main: 12, mainTotal: 12, highRate: 11, highRateTotal: 11)
+        XCTAssertEqual(p.text, "On iPhone: 60 Hz 12/12 · high-rate 11/11 ✓")
+        XCTAssertTrue(p.isComplete)
+    }
+
+    func test_unknownTotalsBeforeStop() {
+        let p = TransferProgress(main: 3, mainTotal: nil, highRate: 0, highRateTotal: nil)
+        XCTAssertEqual(p.text, "On iPhone: 60 Hz 3/… · high-rate 0/…")
+        XCTAssertFalse(p.isComplete)
+    }
+}

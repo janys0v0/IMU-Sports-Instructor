@@ -247,6 +247,22 @@ def check_high_rate(session: Path, journal: list, verified: dict, phone_only: bo
     return result
 
 
+def planned_devices(events):
+    """Devices chosen at Go/No-Go: its `required` list, or (older app builds) the devices with a
+    `<device>_live` check. None when the session has no Go/No-Go: every stream counts."""
+    gonogo = next((e for e in events if e.get("name") == "gonogo"), None)
+    if gonogo is None:
+        return None
+    if "required" in gonogo:
+        return set(gonogo["required"]) | {"phone"}
+    live = {
+        c["id"][: -len("_live")]
+        for c in gonogo.get("checks", [])
+        if c.get("id", "").endswith("_live")
+    }
+    return (live | {"phone"}) if live else None
+
+
 def ingest(session: Path, phone_only: bool = False) -> dict:
     journal_path = session / "journal.jsonl"
     if not journal_path.exists():
@@ -256,6 +272,7 @@ def ingest(session: Path, phone_only: bool = False) -> dict:
     packets = load_packets(session, verified)
     events = [p for p in packets if p.get("type") == "event"]
     gap_s = thresholds()["gap_s"]
+    plan = planned_devices(events)
 
     fit = clock_fit([p for p in packets if p.get("type") == "sync"])
     windows = session_windows(packets, fit)
@@ -275,13 +292,16 @@ def ingest(session: Path, phone_only: bool = False) -> dict:
             "device": device,
             "segment": segment,
             "verdict": stream_verdict(stats, device),
+            # A device outside the Go/No-Go plan is measured and shown but cannot fail the session.
+            "planned": plan is None or device in plan,
             **stats.as_dict(),
             "gaps": gaps_with_causes(items, events, gap_s, window, to_phone),
         }
     high_rate = check_high_rate(session, journal, verified, phone_only)
     file_status = "FAIL" if problems else "PASS"
     hf_status = "PASS" if high_rate["status"] == "SKIPPED" else high_rate["status"]
-    status = worst([file_status] + [s["verdict"] for s in streams.values()] + [hf_status])
+    verdicts = [s["verdict"] for s in streams.values() if s["planned"]]
+    status = worst([file_status] + verdicts + [hf_status])
     report = {
         "session": session.name,
         "status": status,
@@ -314,7 +334,8 @@ def main(argv=None) -> int:
     for p in report["file_problems"]:
         print(f"  ✗ {p['file']}: {p['problem']}")
     for name, s in report["streams"].items():
-        print(f"  {name}: {s['verdict']} coverage {s['coverage']:.3f}, {len(s['gaps'])} gaps")
+        note = "" if s["planned"] else " (not in the Go/No-Go plan: ignored)"
+        print(f"  {name}: {s['verdict']} coverage {s['coverage']:.3f}, {len(s['gaps'])} gaps{note}")
     print(f"  watch_hf: {report['watch_hf']['status']}")
     return 0 if report["status"] in ("PASS", "WARN", "PENDING") else 1
 

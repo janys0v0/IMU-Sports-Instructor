@@ -86,8 +86,8 @@ struct WatchContentView: View {
                 .font(.footnote)
             Text("High-rate: \(streamer.highRateStatus)").font(.footnote)
         }
-        if streamer.chunksSaved > 0 {
-            Text("Chunks on iPhone: \(streamer.chunksAcked) / \(streamer.chunksSaved)").font(.footnote)
+        if let transfer = streamer.transfer, (transfer.mainTotal ?? 0) > 0 {
+            Text(transfer.text).font(.footnote)
             Button("Resend session") { streamer.resendSession() }
         }
     }

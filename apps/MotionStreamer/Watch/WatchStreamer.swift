@@ -16,8 +16,8 @@ final class WatchStreamer: NSObject, ObservableObject {
     @Published private(set) var samplesRecorded = 0
     @Published private(set) var measuredHz = 0.0
     @Published private(set) var status = "Idle"
-    @Published private(set) var chunksSaved = 0
-    @Published private(set) var chunksAcked = 0
+    /// The same transfer text the iPhone shows (TransferProgress).
+    @Published private(set) var transfer: TransferProgress?
     @Published private(set) var highRateStatus = "Off"
     /// The iPhone's session state (design §7: one control system; the iPhone owns the session).
     @Published private(set) var control: ControlState?
@@ -250,12 +250,8 @@ final class WatchStreamer: NSObject, ObservableObject {
     }
 
     private func publishTransfer() {
-        let saved = (recorder?.outbox.items.count) ?? 0
-        let acked = (recorder?.outbox.acked.count) ?? 0
-        DispatchQueue.main.async {
-            self.chunksSaved = saved
-            self.chunksAcked = acked
-        }
+        let progress = recorder.map { TransferProgress(outbox: $0.outbox) }
+        DispatchQueue.main.async { self.transfer = progress }
     }
 
     // MARK: - Motion (on queue)

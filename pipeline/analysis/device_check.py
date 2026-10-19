@@ -131,13 +131,18 @@ def check(session: Path, phone_only=False) -> dict:
     journal, _ = read_jsonl(session / "journal.jsonl")
     results = {}
     for name in ("phone", "airpods"):
-        streams = [s for s in report["streams"].values() if s["device"] == name]
+        streams = [
+            s for s in report["streams"].values() if s["device"] == name and s.get("planned", True)
+        ]
         if streams:
             coverage = min(s["coverage"] for s in streams)
             results[f"{name}_coverage"] = {"value": coverage, "pass": coverage >= MIN_COVERAGE}
     locked = locked_fraction(packets)
     results["phone_locked"] = {"fraction": locked, "pass": locked >= MIN_LOCKED_FRACTION}
-    speech = airpods_rate_around_speech(packets)
+    airpods_planned = any(
+        s["device"] == "airpods" and s.get("planned", True) for s in report["streams"].values()
+    )
+    speech = airpods_rate_around_speech(packets) if airpods_planned else None
     if speech:
         ok = speech["worst_after_speech_hz"] >= (1 - SPEECH_RATE_TOLERANCE) * speech["normal_hz"]
         results["airpods_during_speech"] = speech | {"pass": bool(ok)}

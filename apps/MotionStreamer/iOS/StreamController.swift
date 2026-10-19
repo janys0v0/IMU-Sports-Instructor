@@ -157,6 +157,8 @@ final class StreamController: NSObject, ObservableObject {
     private var controlTimer: Timer?
     /// Planned minutes and required devices from the last Go / No-Go, reused for a Start from the Watch.
     private var lastPlan: (minutes: Double, required: Set<String>) = (60, ["phone", "watch", "airpods"])
+    /// The devices this session is held to, from its Go / No-Go (ioQueue).
+    private var sessionPlan: Set<String> = DevicePlan.all
 
     override init() {
         macHost = defaults.string(forKey: "macHost") ?? ""
@@ -220,10 +222,7 @@ final class StreamController: NSObject, ObservableObject {
 
     private func publishTransfer(_ session: String) {
         updateCourtExit(session)
-        let main = inbox.progress(session: session, kind: "60hz")
-        let hf = inbox.progress(session: session, kind: "hf")
-        let text =
-            "\(main.received) / \(main.total.map(String.init) ?? "…") chunks · high-rate \(hf.received) / \(hf.total.map(String.init) ?? "…")"
+        let text = TransferProgress(inbox: inbox, session: session).text
         DispatchQueue.main.async { self.watchTransfer = text }
     }
 
@@ -350,6 +349,7 @@ final class StreamController: NSObject, ObservableObject {
             self.calibrationResets = []
             self.lastGoodCalibration = nil
             self.lastWatchBatch = nil
+            self.sessionPlan = self.lastPlan.required
             self.watchStopped = false
             self.highRateFailed = false
             self.active = true
@@ -358,7 +358,7 @@ final class StreamController: NSObject, ObservableObject {
                 self.logEvent(
                     "gonogo",
                     extra: [
-                        "can_start": g.canStart,
+                        "can_start": g.canStart, "required": self.lastPlan.required.sorted(),
                         "checks": g.checks.map { ["id": $0.id, "ok": $0.ok, "detail": $0.detail] },
                     ])
             }
@@ -543,7 +543,8 @@ final class StreamController: NSObject, ObservableObject {
 
     private func checkKeepAlive() {
         guard isRecording else { return }
-        let last = ioQueue.sync { recent["airpods"]?.last?.arrival }
+        let (planned, last) = ioQueue.sync { (sessionPlan.contains("airpods"), recent["airpods"]?.last?.arrival) }
+        guard planned else { return }  // AirPods outside the plan never trigger advice
         apply(keepAlivePolicy.check(airPodsConnected: airPodsConnected, lastAirPodsSample: last))
     }
 
@@ -641,9 +642,8 @@ final class StreamController: NSObject, ObservableObject {
             let now = uptime()
             let phone = (recent["phone"] ?? []).map(\.sample)
             let hops = SyncGesture.detected(phone, from: start - 2, to: start + 8)
-            var required: Set<String> = ["phone"]
-            if lastWatchBatch.map({ now - $0 < 30 }) ?? false { required.insert("watch") }
-            if headIndex > 0 { required.insert("airpods") }
+            let required = DevicePlan.required(
+                planned: sessionPlan, watchStarted: lastWatchBatch.map { now - $0 < 30 } ?? false)
             var input = TrialCheck.Input(
                 trial: number, start: start, end: end, items: items, requiredDevices: required,
                 syncGestureDetected: hops)
@@ -1109,11 +1109,12 @@ final class StreamController: NSObject, ObservableObject {
                     rate5s: Double(samples.count) / 5, baselineHz: snap.nominalHz > 0 ? snap.nominalHz : nil,
                     recent: samples.map(\.sample))
             }
+            let required = DevicePlan.required(
+                planned: sessionPlan, watchStarted: ioWatchReachable || lastWatchBatch != nil)
             input.streams = [
                 "phone": stream("phone", phoneCounter.snapshot(now: now), required: true),
-                "watch": stream(
-                    "watch", watchCounter.snapshot(now: now), required: ioWatchReachable || lastWatchBatch != nil),
-                "airpods": stream("airpods", headCounter.snapshot(now: now), required: headIndex > 0),
+                "watch": stream("watch", watchCounter.snapshot(now: now), required: required.contains("watch")),
+                "airpods": stream("airpods", headCounter.snapshot(now: now), required: required.contains("airpods")),
             ]
             input.watchBatchAge = lastWatchBatch.map { now - $0 }
             input.watchReachable = ioWatchReachable

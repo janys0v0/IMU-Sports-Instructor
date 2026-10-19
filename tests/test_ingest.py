@@ -325,3 +325,50 @@ def test_watch_stream_window_uses_the_clock_fit(tmp_path):
     watch = report["streams"]["watch/segment1"]
     assert watch["coverage"] == pytest.approx(0.5, abs=0.02)
     assert watch["verdict"] == "FAIL"
+
+
+def airpods_for_first_minute(fs, chunk):
+    first = not fs.numbers["phone"]
+    return chunk + (
+        [
+            imu("phone", 5 * k, 100 + 5 * k / 50, rate=50, loc="head") | {"device": "airpods"}
+            for k in range(600)
+        ]
+        if first
+        else []
+    )
+
+
+def test_unplanned_airpods_are_reported_but_do_not_fail_the_session(tmp_path):
+    # Field session 20261019-180737-P01: Go/No-Go planned phone + Watch; the AirPods connected on
+    # their own and dropped out, and the ingest failed the session on them.
+    fs = FieldSession(tmp_path)
+    gonogo = {"type": "event", "name": "gonogo", "t_phone": 99.0, "required": ["phone", "watch"]}
+    for k, chunk in enumerate(minutes_of("phone", 3)):
+        fs.phone_chunk(airpods_for_first_minute(fs, chunk) + ([gonogo] if k == 0 else []))
+    report = ingest(fs.close(), phone_only=True)
+    head = report["streams"]["airpods/segment1"]
+    assert head["planned"] is False
+    assert head["verdict"] == "FAIL"  # still measured and shown
+    assert report["status"] == "PASS"
+
+
+def test_plan_is_read_from_older_gonogo_events_without_a_required_list(tmp_path):
+    fs = FieldSession(tmp_path)
+    checks = [{"id": "phone_live", "ok": True}, {"id": "watch_live", "ok": True}]
+    gonogo = {"type": "event", "name": "gonogo", "t_phone": 99.0, "checks": checks}
+    for k, chunk in enumerate(minutes_of("phone", 3)):
+        fs.phone_chunk(airpods_for_first_minute(fs, chunk) + ([gonogo] if k == 0 else []))
+    report = ingest(fs.close(), phone_only=True)
+    assert report["streams"]["airpods/segment1"]["planned"] is False
+    assert report["status"] == "PASS"
+
+
+def test_planned_airpods_that_stop_still_fail(tmp_path):
+    fs = FieldSession(tmp_path)
+    gonogo = {"type": "event", "name": "gonogo", "t_phone": 99.0, "required": ["airpods", "phone"]}
+    for k, chunk in enumerate(minutes_of("phone", 3)):
+        fs.phone_chunk(airpods_for_first_minute(fs, chunk) + ([gonogo] if k == 0 else []))
+    report = ingest(fs.close(), phone_only=True)
+    assert report["streams"]["airpods/segment1"]["planned"] is True
+    assert report["status"] == "FAIL"

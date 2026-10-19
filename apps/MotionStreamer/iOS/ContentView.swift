@@ -206,7 +206,7 @@ struct ContentView: View {
             LabeledContent("Watch model", value: controller.watchInfo)
             streamRow("iPhone stream", controller.phone)
             streamRow("Watch stream", controller.watch)
-            LabeledContent("Watch chunks", value: controller.watchTransfer)
+            LabeledContent("Watch", value: controller.watchTransfer)
             LabeledContent("AirPods", value: controller.airPodsConnected ? "Connected" : "Not connected")
             streamRow("AirPods stream", controller.head)
         }

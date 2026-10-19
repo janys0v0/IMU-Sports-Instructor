@@ -286,6 +286,10 @@ court, and **never leave the court with an incomplete trial.**
 | ③ Trial check | After each trial | Required streams complete in `[start − 2 s, end + 2 s]` | ✅ Keep or 🔁 Redo |
 | ④ Court-exit check | Before Stop | Every trial ✅; 60 Hz Watch chunks on the phone; high-rate chunks closed on the Watch | "Safe to leave" or "Redo trials 3, 5" |
 
+**Devices held to account = the Go/No-Go plan** (`DevicePlan`, recorded as `required` in the `gonogo`
+event). A device outside the plan never alarms, fails a trial or fails the ingest, even if it connects
+on its own; it is still recorded and shown. The Watch counts once it streams.
+
 - **Required streams** default to phone + Watch (60 Hz and high-rate) + AirPods. Recording
   without one needs an explicit override, which is logged.
 - The court-exit check doesn't wait for the high-rate transfer: the Watch journal showing every

@@ -70,3 +70,18 @@ public struct ControlState: Codable, Equatable {
         self = state
     }
 }
+
+/// The devices a session is held to (design §8): the ones chosen at Go / No-Go. A device outside
+/// the plan never alarms or fails a trial, even if it connects on its own; a planned one counts
+/// from Start, so planned AirPods that never connect are reported. The phone always counts, and
+/// the Watch only once it streams (it starts a few seconds after Start).
+public enum DevicePlan {
+    public static let all: Set<String> = ["phone", "watch", "airpods"]
+
+    public static func required(planned: Set<String>, watchStarted: Bool) -> Set<String> {
+        var r = planned.intersection(all)
+        r.insert("phone")
+        if !watchStarted { r.remove("watch") }
+        return r
+    }
+}
