@@ -9,6 +9,7 @@ import pytest
 from scipy.spatial.transform import Rotation
 
 from pipeline.preprocessing.calibration import (
+    arms_window,
     bone_orientation,
     calibrate,
     calibrate_all,
@@ -85,3 +86,18 @@ def test_C7_phone_check_agrees_with_mac_calibration():
     mac = Rotation.from_quat(stream.quat[sel]).mean()
     phone = Rotation.from_quat(phone_check["attitude"])
     assert np.degrees((mac.inv() * phone).magnitude()) < 0.5
+
+
+def test_watch_uses_the_arms_out_hold_that_follows_the_standing_hold():
+    # E04 (20261019-000116-P01): calibrating the Watch while standing told the model the arm was
+    # out to the side when it hung; the model's forearm reference is the arms-out (T) pose.
+    events = [
+        {"name": "calibrate", "t_phone": 49.2, "hold_s": 3.3},
+        {"name": "calibrate_arms", "t_phone": 56.2, "hold_s": 3.3},
+        {"name": "calibrate", "t_phone": 200.0, "hold_s": 3.3},
+    ]
+    assert arms_window(events, (49.5, 52.5), segment_end=200.0) == pytest.approx((56.5, 59.5))
+    # No arms-out hold before the next calibration: none (the caller falls back to standing).
+    assert arms_window(events, (200.3, 203.3), segment_end=400.0) is None
+    # An arms-out hold from a later calibration is not borrowed.
+    assert arms_window(events, (49.5, 52.5), segment_end=55.0) is None

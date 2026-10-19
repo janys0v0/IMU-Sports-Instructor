@@ -13,7 +13,7 @@ import numpy as np
 
 from pipeline.live.live_viewer import calibrate_shared
 from pipeline.pose.render_session import MIN_DEVICE_COVERAGE, segments
-from pipeline.preprocessing.calibration import AIRPODS_FORWARD, calibrate, to_body
+from pipeline.preprocessing.calibration import AIRPODS_FORWARD, arms_window, calibrate, to_body
 from pipeline.preprocessing.motion_io import SLOTS, load_recording
 from pipeline.preprocessing.resample import MODEL_FPS, resample
 
@@ -64,8 +64,12 @@ class Session:
         return sorted(set.intersection(*(set(s.devices) for s in self.segments)))
 
 
-def load_session(session, rate=MODEL_FPS) -> Session:
-    """Calibrated device inputs resampled at `rate` Hz (MobilePoser: 30, IMUCoCo: 60)."""
+def load_session(session, rate=MODEL_FPS, wrist_pose="standing") -> Session:
+    """Calibrated device inputs resampled at `rate` Hz (MobilePoser: 30, IMUCoCo: 60).
+
+    wrist_pose: the hold the Watch is calibrated in. "standing" (default, as E01-E03) or
+    "arms_out" (the arms-out hold after each standing hold, the models' T-pose reference; E04
+    compares both)."""
     folder = paths.session_dir(session)
     rec = load_recording(folder)
     phone_loc = next(loc for loc, s in rec.streams.items() if s.device == "phone")
@@ -88,7 +92,10 @@ def load_session(session, rate=MODEL_FPS) -> Session:
             if loc == phone_loc or loc not in SLOTS:
                 continue
             shift = phone.boot_to_unix - stream.boot_to_unix if stream.device == "watch" else 0.0
-            window = (hold[0] + shift, hold[1] + shift)
+            pose_hold = hold
+            if loc.endswith("_wrist") and wrist_pose == "arms_out":
+                pose_hold = arms_window(rec.events, hold, t1) or hold
+            window = (pose_hold[0] + shift, pose_hold[1] + shift)
             try:
                 if loc == "head":
                     cal = calibrate(stream, window, forward_device=AIRPODS_FORWARD)

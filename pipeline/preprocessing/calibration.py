@@ -172,6 +172,20 @@ def calibration_windows(recording, name="calibrate", hold_s=CAL_HOLD_S):
     return sorted(windows)
 
 
+def arms_window(events, standing_hold, segment_end, hold_s=CAL_HOLD_S):
+    """The arms-out hold (phone clock) that follows a standing hold, before `segment_end`.
+
+    Wrist sensors are calibrated here, not in the standing pose: the pose models' forearm
+    reference (identity) is the T-pose, arm straight out to the side (E04). None when the
+    calibration had no arms-out step; callers then fall back to the standing hold."""
+    for e in events:
+        if e.get("name") == "calibrate_arms" and "t_phone" in e:
+            start = e["t_phone"] + 0.3
+            if standing_hold[1] <= start < segment_end:
+                return (start, e["t_phone"] + e.get("hold_s", hold_s))
+    return None
+
+
 def calibrate_all(stream: DeviceStream, windows, **kwargs) -> list:
     """One Calibration per window that has data and passes its checks; others are skipped."""
     cals = []
