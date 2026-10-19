@@ -44,7 +44,9 @@ def locked_fraction(packets):
         for p in packets
         if p.get("type") == "event" and p.get("name") in ("app_background", "app_foreground")
     )
-    background, since = 0.0, None
+    # A first event of app_foreground means the app was already in the background at Start
+    # (e.g. started from the Watch with the phone locked).
+    background, since = 0.0, (start if changes and not changes[0][1] else None)
     for at, entering in changes:
         if entering and since is None:
             since = at

@@ -286,3 +286,42 @@ def test_gaps_are_explained_by_nearby_events(tmp_path):
 
 def test_key_recordings_still_listed():
     assert len(KEY_SESSIONS) == 4
+
+
+def test_stream_that_stops_early_fails_over_the_whole_session(tmp_path):
+    # Field session 20261018-210809-P01: AirPods motion stopped after 37 s of a 25 min run, but
+    # coverage over the stream's own span read 100 %.
+    fs = FieldSession(tmp_path)
+    for chunk in minutes_of("phone", 3):
+        airpods = (
+            [
+                imu("phone", 5 * k, 100 + 5 * k / 50, rate=50, loc="head") | {"device": "airpods"}
+                for k in range(600)
+            ]
+            if not fs.numbers["phone"]
+            else []
+        )
+        fs.phone_chunk(chunk + airpods)
+    report = ingest(fs.close(), phone_only=True)
+    phone, head = report["streams"]["phone/segment1"], report["streams"]["airpods/segment1"]
+    assert phone["verdict"] == "PASS"
+    assert head["coverage"] == pytest.approx(1 / 3, abs=0.02)
+    assert head["verdict"] == "FAIL"
+    assert head["gaps"][-1]["length_s"] == pytest.approx(120, abs=1)
+
+
+def test_watch_stream_window_uses_the_clock_fit(tmp_path):
+    # The Watch clock runs 5000 s ahead; its stream stops after 1 of 2 minutes.
+    fs = FieldSession(tmp_path)
+    syncs = [
+        {"type": "sync", "t_phone_send": t, "t_phone_recv": t + 0.01, "t_watch": t + 5000.005}
+        for t in np.arange(100, 220, 5.0)
+    ]
+    phone = minutes_of("phone", 2)
+    fs.phone_chunk(phone[0] + syncs)
+    fs.phone_chunk(phone[1])
+    fs.watch_chunk(minutes_of("watch", 1, t0=5100.0)[0])
+    report = ingest(fs.close(), phone_only=True)
+    watch = report["streams"]["watch/segment1"]
+    assert watch["coverage"] == pytest.approx(0.5, abs=0.02)
+    assert watch["verdict"] == "FAIL"

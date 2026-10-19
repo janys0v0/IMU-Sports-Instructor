@@ -126,12 +126,17 @@ def stream_items(packets: list) -> dict:
     return items
 
 
-def gaps_with_causes(items: list, events: list, gap_s: float) -> list:
+def gaps_with_causes(items: list, events: list, gap_s: float, window=None, to_phone=None) -> list:
+    """Gaps longer than gap_s, including a late start or early stop inside `window` (the
+    stream's own clock); `to_phone` maps those times to the phone clock to find causes."""
+    to_phone = to_phone or (lambda x: x)
     unique = sorted({i: t for i, t in items}.items())
     t = np.array([x[1] for x in unique])
+    if window is not None:
+        t = np.concatenate([[min(window[0], t[0])], t, [max(window[1], t[-1])]])
     out = []
     for k in np.nonzero(np.diff(t) > gap_s)[0]:
-        start, end = float(t[k]), float(t[k + 1])
+        start, end = to_phone(float(t[k])), to_phone(float(t[k + 1]))
         causes = sorted(
             {
                 e["name"]
@@ -164,7 +169,39 @@ def clock_fit(syncs: list) -> dict:
         "offset_s": round(float(intercept), 6),
         "drift_ppm": round(float(slope * 1e6), 3),
         "residual_ms_rms": round(float(np.sqrt(np.mean(residual**2)) * 1000), 3),
+        "t0_phone": round(float(mid[0]), 6),
     }
+
+
+def session_windows(packets: list, fit: dict) -> dict:
+    """(device, segment) -> (t0, t1) the stream should cover, on that device's clock: the span
+    of the phone's own stream, which runs from Start to Stop. The Watch's is mapped through the
+    clock fit; without a fit the Watch keeps its own span."""
+    spans = {}
+    for (device, segment), items in stream_items(packets).items():
+        if device == "phone":
+            times = [t for _, t in items]
+            spans[segment] = (min(times), max(times))
+    windows = {}
+    for device, segment in stream_items(packets):
+        span = spans.get(segment)
+        if span is None:
+            continue
+        if device == "watch":
+            if "offset_s" not in fit:
+                continue
+            span = tuple(watch_time(t, fit) for t in span)
+        windows[(device, segment)] = span
+    return windows
+
+
+def watch_time(t_phone: float, fit: dict) -> float:
+    return t_phone + fit["offset_s"] + fit["drift_ppm"] * 1e-6 * (t_phone - fit["t0_phone"])
+
+
+def phone_time(t_watch: float, fit: dict) -> float:
+    rate = 1 + fit["drift_ppm"] * 1e-6
+    return (t_watch - fit["offset_s"] + fit["drift_ppm"] * 1e-6 * fit["t0_phone"]) / rate
 
 
 def extra_sensors(packets: list) -> dict:
@@ -220,15 +257,26 @@ def ingest(session: Path, phone_only: bool = False) -> dict:
     events = [p for p in packets if p.get("type") == "event"]
     gap_s = thresholds()["gap_s"]
 
+    fit = clock_fit([p for p in packets if p.get("type") == "sync"])
+    windows = session_windows(packets, fit)
     streams = {}
     for (device, segment), items in sorted(stream_items(packets).items()):
-        stats = stream_stats(items)
+        window = windows.get((device, segment))
+        stats = stream_stats(items, window=window)
+        if window is not None and stats.samples:
+            # A late start or early stop is a gap too (the shared S4 rules count inner gaps only).
+            times = sorted(t for _, t in items if window[0] <= t <= window[1])
+            edge_ms = max(times[0] - window[0], window[1] - times[-1]) * 1000
+            if edge_ms > gap_s * 1000:
+                stats.gaps_over_threshold += 1
+            stats.longest_gap_ms = round(max(stats.longest_gap_ms, edge_ms), 1)
+        to_phone = (lambda t: phone_time(t, fit)) if device == "watch" and window else None
         streams[f"{device}/segment{segment}"] = {
             "device": device,
             "segment": segment,
             "verdict": stream_verdict(stats, device),
             **stats.as_dict(),
-            "gaps": gaps_with_causes(items, events, gap_s),
+            "gaps": gaps_with_causes(items, events, gap_s, window, to_phone),
         }
     high_rate = check_high_rate(session, journal, verified, phone_only)
     file_status = "FAIL" if problems else "PASS"
@@ -244,7 +292,7 @@ def ingest(session: Path, phone_only: bool = False) -> dict:
         "chunks_verified": len(verified),
         "streams": streams,
         "watch_hf": high_rate,
-        "clock_fit": clock_fit([p for p in packets if p.get("type") == "sync"]),
+        "clock_fit": fit,
         "extra_sensors": extra_sensors(packets),
     }
     with open(session / "stream.jsonl", "w") as f:
