@@ -37,7 +37,7 @@ STOP_MARGIN_S = 1.0  # drop the last second before Stop (hand reaching for the p
 
 def calibrate_shared(stream, window, R_MI):
     # Same as live_viewer.calibrate_shared; imported lazily there to avoid pulling in the viewer.
-    from live_viewer import calibrate_shared as shared
+    from pipeline.live.live_viewer import calibrate_shared as shared
 
     return shared(stream, window, R_MI)
 
