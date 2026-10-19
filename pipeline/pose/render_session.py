@@ -21,7 +21,12 @@ from pathlib import Path
 import numpy as np
 
 from pipeline.pose.replay import MOBILEPOSER_DIR, model_input
-from pipeline.preprocessing.calibration import AIRPODS_FORWARD, calibrate, to_body
+from pipeline.preprocessing.calibration import (
+    AIRPODS_FORWARD,
+    calibrate,
+    to_body,
+    with_standing_rest,
+)
 from pipeline.preprocessing.motion_io import SLOTS, load_recording
 from pipeline.preprocessing.resample import MODEL_FPS, resample
 
@@ -70,7 +75,9 @@ def segment_input(rec, phone_loc, hold, t0, t1, screen):
                     stream, (hold[0] + shift, hold[1] + shift), forward_device=AIRPODS_FORWARD
                 )
             elif stream.ref_frame == phone.ref_frame:
-                cal = calibrate_shared(stream, (hold[0] + shift, hold[1] + shift), cal_p.R_MI)
+                cal = with_standing_rest(
+                    calibrate_shared(stream, (hold[0] + shift, hold[1] + shift), cal_p.R_MI), loc
+                )
             else:
                 continue
         except ValueError:

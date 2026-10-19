@@ -9,11 +9,13 @@ import pytest
 from scipy.spatial.transform import Rotation
 
 from pipeline.preprocessing.calibration import (
+    Calibration,
     arms_window,
     bone_orientation,
     calibrate,
     calibrate_all,
     calibration_windows,
+    with_standing_rest,
 )
 from pipeline.preprocessing.motion_io import DeviceStream, load_recording
 from tests.conftest import recording_dir
@@ -101,3 +103,29 @@ def test_watch_uses_the_arms_out_hold_that_follows_the_standing_hold():
     assert arms_window(events, (200.3, 203.3), segment_end=400.0) is None
     # An arms-out hold from a later calibration is not borrowed.
     assert arms_window(events, (49.5, 52.5), segment_end=55.0) is None
+
+
+def test_standing_wrist_calibration_hands_the_model_a_hanging_arm():
+    # E04: the model reads a wrist bone's identity as the T-pose (arm out to the side). After a
+    # standing calibration the arm hangs, so the bone must start as "arm down", not identity.
+    for loc, t_pose_dir in (("right_wrist", [-1.0, 0, 0]), ("left_wrist", [1.0, 0, 0])):
+        cal = with_standing_rest(
+            Calibration(
+                R_MI=np.eye(3),
+                device2bone=np.eye(3),
+                acc_offset=np.zeros(3),
+                window=(0, 1),
+                pocket_screen="",
+            ),
+            loc,
+        )
+        forearm = cal.device2bone @ np.array(t_pose_dir)  # the model's forearm axis, at calibration
+        assert forearm == pytest.approx([0, -1, 0], abs=1e-9)
+    head = Calibration(
+        R_MI=np.eye(3),
+        device2bone=np.eye(3),
+        acc_offset=np.zeros(3),
+        window=(0, 1),
+        pocket_screen="",
+    )
+    assert with_standing_rest(head, "head").device2bone == pytest.approx(np.eye(3))

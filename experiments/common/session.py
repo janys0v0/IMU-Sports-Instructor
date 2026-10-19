@@ -13,7 +13,13 @@ import numpy as np
 
 from pipeline.live.live_viewer import calibrate_shared
 from pipeline.pose.render_session import MIN_DEVICE_COVERAGE, segments
-from pipeline.preprocessing.calibration import AIRPODS_FORWARD, arms_window, calibrate, to_body
+from pipeline.preprocessing.calibration import (
+    AIRPODS_FORWARD,
+    arms_window,
+    calibrate,
+    to_body,
+    with_standing_rest,
+)
 from pipeline.preprocessing.motion_io import SLOTS, load_recording
 from pipeline.preprocessing.resample import MODEL_FPS, resample
 
@@ -101,6 +107,8 @@ def load_session(session, rate=MODEL_FPS, wrist_pose="standing") -> Session:
                     cal = calibrate(stream, window, forward_device=AIRPODS_FORWARD)
                 elif stream.ref_frame == phone.ref_frame:
                     cal = calibrate_shared(stream, window, cal_p.R_MI)
+                    if pose_hold == hold:  # calibrated standing: the arm hangs
+                        cal = with_standing_rest(cal, loc)
                 else:
                     continue
             except ValueError:

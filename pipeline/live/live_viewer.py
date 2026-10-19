@@ -31,7 +31,13 @@ import pipeline.live.receiver as receiver_module
 from pipeline.live.receiver import Session, local_ip
 from pipeline.paths import RECORDINGS
 from pipeline.pose.replay import MOBILEPOSER_DIR, model_input
-from pipeline.preprocessing.calibration import AIRPODS_FORWARD, Calibration, G, calibrate
+from pipeline.preprocessing.calibration import (
+    AIRPODS_FORWARD,
+    Calibration,
+    G,
+    calibrate,
+    with_standing_rest,
+)
 from pipeline.preprocessing.motion_io import SLOTS, DeviceStream
 
 FPS = 30.0
@@ -427,7 +433,9 @@ def run_calibration(receiver, phone_loc, window, args):
             if loc == "head":
                 cal = calibrate(stream, device_window, forward_device=AIRPODS_FORWARD)
             elif stream.ref_frame == phone.ref_frame:
-                cal = calibrate_shared(stream, device_window, cals[phone_loc].R_MI)
+                cal = with_standing_rest(
+                    calibrate_shared(stream, device_window, cals[phone_loc].R_MI), loc
+                )
             else:
                 report.append(f"{loc} skipped (reference frame {stream.ref_frame} != phone's)")
                 continue

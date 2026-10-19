@@ -18,7 +18,7 @@ Apple's userAcceleration is minus the physical acceleration (its accelerometer
 reports the gravity vector, not specific force), hence the -9.81.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -38,6 +38,24 @@ class Calibration:
     window: tuple  # (t0, t1) device clock
     pocket_screen: str
     checks: dict = field(default_factory=dict)
+
+
+# The pose models' bone frames (SMPL: y up, x to the body's left, z forward) read a bone's
+# identity as the T-pose, arm straight out to the side. After a standing calibration the arm
+# hangs instead: start the wrist bone there, a 90° turn about the forward axis (E04).
+STANDING_REST = {
+    "right_wrist": Rotation.from_euler("z", 90, degrees=True).as_matrix(),
+    "left_wrist": Rotation.from_euler("z", -90, degrees=True).as_matrix(),
+}
+
+
+def with_standing_rest(cal: Calibration, loc: str) -> Calibration:
+    """The calibration with the bone's standing rest pose built in (wrists only), so to_body
+    returns the model's bone orientation: arm down at calibration, not out to the side."""
+    rest = STANDING_REST.get(loc)
+    if rest is None:
+        return cal
+    return replace(cal, device2bone=cal.device2bone @ rest)
 
 
 def event_window(recording, hold_s=CAL_HOLD_S):
