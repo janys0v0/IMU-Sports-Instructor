@@ -265,3 +265,14 @@ Checked which published models could run on head + one wrist + thigh data:
 - **Arms-out Watch calibration** (option): still worse than the fixed standing calibration;
   kept only for comparison.
 - E01-E03 results predate this fix (their arm numbers used the wrong rest pose).
+
+## 2026-10-25
+
+### E05: our IMUs vs commercial IMUs (10/19 sessions)
+
+- Logger exports from the shared Drive folder `es224/20261019_test_run`: three `msense_*` sensors at
+  200 Hz plus the logging phone's IMU; placement not recorded, inferred from motion.
+- **Watch ≈ msense_D0E5** (same forearm): rotation-speed r 0.95–0.97, per-axis 0.88–0.97, RMSE
+  67–79 °/s at peaks of ~700 °/s. **iPhone ≈ msense_2A33** in Tom's session (r 0.89); weak in
+  Janys's (0.63). Details: [`experiments/E05_commercial_imu/`](experiments/E05_commercial_imu/README.md).
+- No OpenCap results yet (10/24 has raw videos and an `opensim.log` only): no ground-truth comparison.

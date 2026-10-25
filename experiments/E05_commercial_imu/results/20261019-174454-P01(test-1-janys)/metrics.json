@@ -1,0 +1,180 @@
+{
+  "session": "20261019-174454-P01(test-1-janys)",
+  "commercial": "generic_20261019T1751_20261019T1753_imu.csv",
+  "overlap_s": 110.9,
+  "match": {
+    "msense_1D03": "watch",
+    "msense_2A33": "phone",
+    "msense_D0E5": "watch"
+  },
+  "pairs": {
+    "msense_1D03": {
+      "phone": {
+        "lag_s": 0.24,
+        "gyro_mag_corr": 0.561,
+        "overlap_s": 110.7,
+        "gyro_rmse_deg_s": 167.0,
+        "gyro_axis_corr": [
+          0.049,
+          0.515,
+          0.336
+        ],
+        "gyro_peak_deg_s": [
+          391.0,
+          532.0
+        ],
+        "acc_mag_corr": 0.67,
+        "acc_mag_rmse_m_s2": 3.47,
+        "rotation_deg": 159.8
+      },
+      "airpods": {
+        "lag_s": 0.22,
+        "gyro_mag_corr": 0.508,
+        "overlap_s": 110.7,
+        "gyro_rmse_deg_s": 150.0,
+        "gyro_axis_corr": [
+          0.143,
+          0.098,
+          0.613
+        ],
+        "gyro_peak_deg_s": [
+          243.0,
+          532.0
+        ],
+        "acc_mag_corr": 0.762,
+        "acc_mag_rmse_m_s2": 2.88,
+        "rotation_deg": 62.7
+      },
+      "watch": {
+        "lag_s": 0.16,
+        "gyro_mag_corr": 0.835,
+        "overlap_s": 110.8,
+        "gyro_rmse_deg_s": 175.4,
+        "gyro_axis_corr": [
+          0.53,
+          0.705,
+          0.722
+        ],
+        "gyro_peak_deg_s": [
+          694.0,
+          531.0
+        ],
+        "acc_mag_corr": 0.662,
+        "acc_mag_rmse_m_s2": 7.17,
+        "rotation_deg": 77.5
+      }
+    },
+    "msense_2A33": {
+      "phone": {
+        "lag_s": 0.26,
+        "gyro_mag_corr": 0.628,
+        "overlap_s": 110.7,
+        "gyro_rmse_deg_s": 142.5,
+        "gyro_axis_corr": [
+          0.139,
+          0.555,
+          0.141
+        ],
+        "gyro_peak_deg_s": [
+          391.0,
+          548.0
+        ],
+        "acc_mag_corr": 0.523,
+        "acc_mag_rmse_m_s2": 4.5,
+        "rotation_deg": 61.7
+      },
+      "airpods": {
+        "lag_s": 0.26,
+        "gyro_mag_corr": 0.402,
+        "overlap_s": 110.7,
+        "gyro_rmse_deg_s": 120.7,
+        "gyro_axis_corr": [
+          0.023,
+          0.241,
+          0.57
+        ],
+        "gyro_peak_deg_s": [
+          243.0,
+          548.0
+        ],
+        "acc_mag_corr": 0.527,
+        "acc_mag_rmse_m_s2": 4.35,
+        "rotation_deg": 153.5
+      },
+      "watch": {
+        "lag_s": 0.22,
+        "gyro_mag_corr": 0.553,
+        "overlap_s": 110.7,
+        "gyro_rmse_deg_s": 244.2,
+        "gyro_axis_corr": [
+          0.262,
+          0.252,
+          0.124
+        ],
+        "gyro_peak_deg_s": [
+          694.0,
+          548.0
+        ],
+        "acc_mag_corr": 0.239,
+        "acc_mag_rmse_m_s2": 9.34,
+        "rotation_deg": 131.6
+      }
+    },
+    "msense_D0E5": {
+      "phone": {
+        "lag_s": 0.22,
+        "gyro_mag_corr": 0.555,
+        "overlap_s": 110.7,
+        "gyro_rmse_deg_s": 214.5,
+        "gyro_axis_corr": [
+          0.148,
+          0.368,
+          0.379
+        ],
+        "gyro_peak_deg_s": [
+          391.0,
+          602.0
+        ],
+        "acc_mag_corr": 0.384,
+        "acc_mag_rmse_m_s2": 7.96,
+        "rotation_deg": 59.9
+      },
+      "airpods": {
+        "lag_s": 0.22,
+        "gyro_mag_corr": 0.482,
+        "overlap_s": 110.7,
+        "gyro_rmse_deg_s": 204.1,
+        "gyro_axis_corr": [
+          0.143,
+          0.065,
+          0.566
+        ],
+        "gyro_peak_deg_s": [
+          243.0,
+          602.0
+        ],
+        "acc_mag_corr": 0.359,
+        "acc_mag_rmse_m_s2": 8.04,
+        "rotation_deg": 179.3
+      },
+      "watch": {
+        "lag_s": 0.16,
+        "gyro_mag_corr": 0.967,
+        "overlap_s": 110.8,
+        "gyro_rmse_deg_s": 78.7,
+        "gyro_axis_corr": [
+          0.894,
+          0.948,
+          0.968
+        ],
+        "gyro_peak_deg_s": [
+          694.0,
+          601.0
+        ],
+        "acc_mag_corr": 0.933,
+        "acc_mag_rmse_m_s2": 3.18,
+        "rotation_deg": 127.2
+      }
+    }
+  }
+}

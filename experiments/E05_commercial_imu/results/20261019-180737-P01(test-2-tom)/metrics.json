@@ -1,0 +1,237 @@
+{
+  "session": "20261019-180737-P01(test-2-tom)",
+  "commercial": "generic_20261019T1810_20261019T1818_imu.csv",
+  "overlap_s": 209.0,
+  "match": {
+    "msense_1D03": "watch",
+    "msense_2A33": "phone",
+    "msense_D0E5": "watch",
+    "phone_internal": "phone"
+  },
+  "pairs": {
+    "msense_1D03": {
+      "phone": {
+        "lag_s": -0.68,
+        "gyro_mag_corr": 0.661,
+        "overlap_s": 207.4,
+        "gyro_rmse_deg_s": 112.2,
+        "gyro_axis_corr": [
+          0.446,
+          0.487,
+          0.151
+        ],
+        "gyro_peak_deg_s": [
+          263.0,
+          497.0
+        ],
+        "acc_mag_corr": 0.27,
+        "acc_mag_rmse_m_s2": 4.17,
+        "rotation_deg": 122.9
+      },
+      "airpods": {
+        "lag_s": -4.6,
+        "gyro_mag_corr": -0.041,
+        "overlap_s": 201.0,
+        "gyro_rmse_deg_s": 125.1,
+        "gyro_axis_corr": [
+          0.04,
+          0.02,
+          0.03
+        ],
+        "gyro_peak_deg_s": [
+          130.0,
+          500.0
+        ],
+        "acc_mag_corr": -0.008,
+        "acc_mag_rmse_m_s2": 4.2,
+        "rotation_deg": 172.5
+      },
+      "watch": {
+        "lag_s": -0.66,
+        "gyro_mag_corr": 0.853,
+        "overlap_s": 207.4,
+        "gyro_rmse_deg_s": 133.1,
+        "gyro_axis_corr": [
+          0.518,
+          0.768,
+          0.506
+        ],
+        "gyro_peak_deg_s": [
+          708.0,
+          497.0
+        ],
+        "acc_mag_corr": 0.658,
+        "acc_mag_rmse_m_s2": 6.44,
+        "rotation_deg": 177.0
+      }
+    },
+    "msense_2A33": {
+      "phone": {
+        "lag_s": -0.6,
+        "gyro_mag_corr": 0.886,
+        "overlap_s": 207.4,
+        "gyro_rmse_deg_s": 47.6,
+        "gyro_axis_corr": [
+          0.786,
+          0.783,
+          0.758
+        ],
+        "gyro_peak_deg_s": [
+          263.0,
+          261.0
+        ],
+        "acc_mag_corr": 0.627,
+        "acc_mag_rmse_m_s2": 2.33,
+        "rotation_deg": 159.3
+      },
+      "airpods": {
+        "lag_s": -3.62,
+        "gyro_mag_corr": -0.013,
+        "overlap_s": 202.0,
+        "gyro_rmse_deg_s": 79.9,
+        "gyro_axis_corr": [
+          0.039,
+          0.025,
+          0.01
+        ],
+        "gyro_peak_deg_s": [
+          130.0,
+          263.0
+        ],
+        "acc_mag_corr": -0.011,
+        "acc_mag_rmse_m_s2": 2.95,
+        "rotation_deg": 162.8
+      },
+      "watch": {
+        "lag_s": -0.58,
+        "gyro_mag_corr": 0.605,
+        "overlap_s": 207.4,
+        "gyro_rmse_deg_s": 162.2,
+        "gyro_axis_corr": [
+          0.053,
+          0.463,
+          0.268
+        ],
+        "gyro_peak_deg_s": [
+          708.0,
+          261.0
+        ],
+        "acc_mag_corr": 0.142,
+        "acc_mag_rmse_m_s2": 8.42,
+        "rotation_deg": 148.1
+      }
+    },
+    "msense_D0E5": {
+      "phone": {
+        "lag_s": -0.72,
+        "gyro_mag_corr": 0.619,
+        "overlap_s": 207.4,
+        "gyro_rmse_deg_s": 152.2,
+        "gyro_axis_corr": [
+          0.41,
+          0.411,
+          0.029
+        ],
+        "gyro_peak_deg_s": [
+          263.0,
+          674.0
+        ],
+        "acc_mag_corr": 0.219,
+        "acc_mag_rmse_m_s2": 7.37,
+        "rotation_deg": 127.2
+      },
+      "airpods": {
+        "lag_s": -4.58,
+        "gyro_mag_corr": -0.049,
+        "overlap_s": 201.1,
+        "gyro_rmse_deg_s": 165.8,
+        "gyro_axis_corr": [
+          0.031,
+          0.028,
+          0.023
+        ],
+        "gyro_peak_deg_s": [
+          130.0,
+          680.0
+        ],
+        "acc_mag_corr": 0.002,
+        "acc_mag_rmse_m_s2": 7.65,
+        "rotation_deg": 107.0
+      },
+      "watch": {
+        "lag_s": -0.7,
+        "gyro_mag_corr": 0.955,
+        "overlap_s": 207.4,
+        "gyro_rmse_deg_s": 66.6,
+        "gyro_axis_corr": [
+          0.884,
+          0.932,
+          0.934
+        ],
+        "gyro_peak_deg_s": [
+          708.0,
+          674.0
+        ],
+        "acc_mag_corr": 0.854,
+        "acc_mag_rmse_m_s2": 4.31,
+        "rotation_deg": 43.6
+      }
+    },
+    "phone_internal": {
+      "phone": {
+        "lag_s": 0.88,
+        "gyro_mag_corr": 0.746,
+        "overlap_s": 207.6,
+        "gyro_rmse_deg_s": 75.0,
+        "gyro_axis_corr": [
+          0.524,
+          0.549,
+          0.317
+        ],
+        "gyro_peak_deg_s": [
+          263.0,
+          296.0
+        ],
+        "acc_mag_corr": 0.648,
+        "acc_mag_rmse_m_s2": 2.13,
+        "rotation_deg": 118.0
+      },
+      "airpods": {
+        "lag_s": -4.32,
+        "gyro_mag_corr": 0.027,
+        "overlap_s": 199.9,
+        "gyro_rmse_deg_s": 84.6,
+        "gyro_axis_corr": [
+          0.02,
+          0.033,
+          0.056
+        ],
+        "gyro_peak_deg_s": [
+          130.0,
+          295.0
+        ],
+        "acc_mag_corr": -0.006,
+        "acc_mag_rmse_m_s2": 2.67,
+        "rotation_deg": 50.8
+      },
+      "watch": {
+        "lag_s": 0.92,
+        "gyro_mag_corr": 0.543,
+        "overlap_s": 207.6,
+        "gyro_rmse_deg_s": 162.3,
+        "gyro_axis_corr": [
+          0.116,
+          0.457,
+          0.257
+        ],
+        "gyro_peak_deg_s": [
+          708.0,
+          296.0
+        ],
+        "acc_mag_corr": 0.08,
+        "acc_mag_rmse_m_s2": 8.53,
+        "rotation_deg": 137.6
+      }
+    }
+  }
+}

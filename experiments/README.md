@@ -33,13 +33,17 @@ experiments/
 │   ├── README.md
 │   ├── run.py                        data consistency + trajectories figure
 │   └── results/<session>/
-└── E04_video_validation/         IMU joint angles vs single-camera video (Apple Vision 3D)
-    ├── README.md                     question, recording checklist, limits
-    ├── align.py                      video <-> IMU offset from on-screen vs sensor motion
-    ├── vision_pose.swift             3D body pose per video frame
-    ├── angles.py                     joint angles from both joint sets, agreement metrics
+├── E04_video_validation/         IMU joint angles vs single-camera video (Apple Vision 3D)
+│   ├── README.md                     question, recording checklist, limits
+│   ├── align.py                      video <-> IMU offset from on-screen vs sensor motion
+│   ├── vision_pose.swift             3D body pose per video frame
+│   ├── angles.py                     joint angles from both joint sets, agreement metrics
+│   ├── run.py
+│   ├── make_video.py                 camera + skeleton next to the IMU meshes
+│   └── results/<session>/
+└── E05_commercial_imu/          our phone / Watch / AirPods vs commercial IMUs (placement, agreement)
+    ├── README.md
     ├── run.py
-    ├── make_video.py                 camera + skeleton next to the IMU meshes
     └── results/<session>/
 ```
 
