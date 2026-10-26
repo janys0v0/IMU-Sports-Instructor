@@ -32,6 +32,26 @@ FS = 50.0  # common grid, Hz
 MAX_LAG_S = 5.0
 G = 9.80665
 OURS = {"phone": "iPhone (thigh pocket)", "watch": "Watch (wrist)", "airpods": "AirPods (head)"}
+# Where each commercial sensor was worn (from the people who ran the trials, 2026-10-25), and the
+# device of ours at the same place (None: no device of ours there). Sensor IDs were matched to
+# these places by motion: the wrist sensor moves like the Watch, the waist one like the phone.
+PLACEMENTS = {
+    "test-1-janys": {
+        "msense_D0E5": ("right wrist, with the Watch", "watch"),
+        "msense_2A33": ("waist, tied to a belt loop", None),
+        "msense_1D03": ("not stated", None),
+    },
+    "test-2-tom": {
+        "msense_D0E5": ("right wrist, with the Watch", "watch"),
+        "msense_2A33": ("waist, in the right pocket with the phone", "phone"),
+        "msense_1D03": ("not stated", None),
+        "phone_internal": ("the logging phone (not stated)", None),
+    },
+}
+
+
+def placements(session_name):
+    return next((v for k, v in PLACEMENTS.items() if k in session_name), {})
 
 
 def commercial_streams(csv, tz):
@@ -167,6 +187,7 @@ def main():
         results[sid] = {dev: compare(a, b, max_lag) for dev, a in ours.items()}
     # Placement: the device of ours each commercial sensor moves most like.
     match = {sid: max(r, key=lambda dev: r[dev]["gyro_mag_corr"]) for sid, r in results.items()}
+    worn = placements(args.session.name)
 
     out = Path(__file__).parent / "results" / args.session.name
     out.mkdir(parents=True, exist_ok=True)
@@ -178,6 +199,7 @@ def main():
         "session": args.session.name,
         "commercial": args.commercial.name,
         "overlap_s": round(t1 - t0, 1),
+        "worn": {sid: {"where": w, "same_place_as": d} for sid, (w, d) in worn.items()},
     }
     (out / "metrics.json").write_text(
         json.dumps({**meta, "match": match, "pairs": clean}, indent=2) + "\n"
@@ -197,6 +219,16 @@ def main():
             + " | ".join(f"{r[d]['gyro_mag_corr']:.2f}" for d in ours)
             + f" | {match[sid]} |"
         )
+    if worn:
+        lines += [
+            "",
+            "Where each sensor was worn (reported) and the device of ours at the same place:",
+            "",
+        ]
+        lines += ["| commercial | worn | same place as | motion match |", "|---|---|---|---|"]
+        for sid in results:
+            where, same = worn.get(sid, ("not stated", None))
+            lines.append(f"| {sid} | {where} | {same or '—'} | {match[sid]} |")
     lines += ["", "Matched pairs, after the fixed rotation between the two sensors' axes:", ""]
     lines += [
         "| commercial → ours | lag s | gyro RMSE °/s | axis corr | p99 rotation speed °/s (ours / theirs) | acc magnitude corr | acc RMSE m/s² |",

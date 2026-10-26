@@ -5,8 +5,10 @@ same trials?
 
 **Data:** the two 10/19 sessions and the logger exports from the shared Drive folder
 `es224/20261019_test_run` (copied to `data/external/20261019_test_run/`, not in git): three
-`msense_*` sensors at 200 Hz and the logging phone's own IMU (`phone_internal`, ~118 Hz). The
-folder does not say where each sensor was worn, so placement is inferred (below). No OpenCap
+`msense_*` sensors at 200 Hz and the logging phone's own IMU (`phone_internal`, ~118 Hz). Placements (reported 2026-10-25): in both sessions a
+sensor sat on the right wrist with the Watch; the waist sensor was tied to a belt loop (Janys) or in
+the right pocket with the phone (Tom); the phone was in the right pocket; only Janys wore AirPods.
+Which `msense` ID was where was matched by motion; `msense_1D03`'s place was not stated. No OpenCap
 results exist yet (only raw phone videos and an `opensim.log` for 10/24), so there is no
 ground-truth comparison here.
 
@@ -33,17 +35,19 @@ ground-truth comparison here.
 | | msense_2A33 ↔ iPhone | 0.63 | 0.14, 0.56, 0.14 | 143 | 391 / 548 | 0.52 |
 | | msense_1D03 ↔ Watch | 0.83 | 0.53, 0.70, 0.72 | 175 | 694 / 531 | 0.66 |
 
-- **Watch ≈ msense_D0E5 (same forearm):** r 0.95–0.97, per-axis 0.88–0.97, RMSE ~10 % of peak
-  rotation speed. The Watch's 60 Hz stream keeps up with a 200 Hz sensor at up to ~700 °/s.
-- **iPhone ≈ msense_2A33 (thigh) in Tom's session** (r 0.89, axis 0.76–0.79); in Janys's session
-  the match is weak (0.63, axis 0.14–0.56): that sensor was probably worn elsewhere there.
-- **msense_1D03** follows the Watch arm but slower (p99 ~500 vs ~700 °/s): likely the upper arm or
-  the other wrist. **AirPods** in Tom's session match nothing: they were Janys's, not worn by Tom.
+- **Same place, Watch ↔ wrist sensor (D0E5):** r 0.95–0.97, per-axis 0.88–0.97, RMSE ~10 % of
+  peak rotation speed. The Watch's 60 Hz stream keeps up with a 200 Hz sensor at up to ~700 °/s.
+- **Same place, iPhone ↔ waist sensor in the same pocket (Tom, 2A33):** r 0.89, per-axis 0.76–0.79,
+  RMSE 48 °/s, identical peaks (263 / 261 °/s).
+- **Different places, iPhone (pocket) ↔ waist sensor on a belt loop (Janys):** r 0.63, per-axis
+  0.14–0.56. Expected: the pelvis and the thigh rotate differently, so this is not a quality measure.
+- **msense_1D03** (place not stated) follows the Watch arm but slower (p99 ~500 vs ~700 °/s): likely
+  the upper arm or forearm higher up. **AirPods** were Janys's; in Tom's session they match nothing.
 - The logger clock differed from ours by −0.66 s (Tom) and +0.16 s (Janys); `phone_internal` has
   its own offset (+0.88 s). Each needs its own alignment.
 
-**Limits:** placements are inferred, not recorded; our Watch stream here is the 60 Hz one (the
+**Limits:** which ID was at which reported place is inferred from motion; our Watch stream here is the 60 Hz one (the
 200 Hz high-rate stream would match the commercial rate); acceleration differs more than rotation
 because the sensors sit at different points on the limb.
 
-**Next:** record each sensor's placement; run OpenCap on the 10/24 videos for joint-angle ground truth.
+**Next:** note each sensor's ID and place at the trial; run OpenCap on the 10/24 videos for joint-angle ground truth.

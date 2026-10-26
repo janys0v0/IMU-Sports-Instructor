@@ -2,6 +2,24 @@
   "session": "20261019-180737-P01(test-2-tom)",
   "commercial": "generic_20261019T1810_20261019T1818_imu.csv",
   "overlap_s": 209.0,
+  "worn": {
+    "msense_D0E5": {
+      "where": "right wrist, with the Watch",
+      "same_place_as": "watch"
+    },
+    "msense_2A33": {
+      "where": "waist, in the right pocket with the phone",
+      "same_place_as": "phone"
+    },
+    "msense_1D03": {
+      "where": "not stated",
+      "same_place_as": null
+    },
+    "phone_internal": {
+      "where": "the logging phone (not stated)",
+      "same_place_as": null
+    }
+  },
   "match": {
     "msense_1D03": "watch",
     "msense_2A33": "phone",

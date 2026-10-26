@@ -9,6 +9,15 @@ Overlap 209 s. Rotation-speed correlation of every pair (best lag within ±5 s):
 | msense_D0E5 | 0.62 | -0.05 | 0.95 | watch |
 | phone_internal | 0.75 | 0.03 | 0.54 | phone |
 
+Where each sensor was worn (reported) and the device of ours at the same place:
+
+| commercial | worn | same place as | motion match |
+|---|---|---|---|
+| msense_1D03 | not stated | — | watch |
+| msense_2A33 | waist, in the right pocket with the phone | phone | phone |
+| msense_D0E5 | right wrist, with the Watch | watch | watch |
+| phone_internal | the logging phone (not stated) | — | phone |
+
 Matched pairs, after the fixed rotation between the two sensors' axes:
 
 | commercial → ours | lag s | gyro RMSE °/s | axis corr | p99 rotation speed °/s (ours / theirs) | acc magnitude corr | acc RMSE m/s² |
