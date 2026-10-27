@@ -101,6 +101,9 @@ final class WatchStreamer: NSObject, ObservableObject {
     func start(sessionID: String? = nil, loc: String? = nil, mirror: Bool = false) {
         launchFallback?.cancel()
         launchFallback = nil
+        // A second Start for the session already recording (the iPhone sends it by message and by
+        // application context) is ignored; isRunning is set a moment later, so check the ID.
+        if let sessionID, sessionID == currentSessionID { return }
         if isRunning, let sessionID, sessionID != currentSessionID {
             // Recording alone ("Watch only") and the iPhone starts a session: join it.
             stop()
@@ -231,12 +234,8 @@ final class WatchStreamer: NSObject, ObservableObject {
             "sample_rate_hz": MotionFormat.sampleRateHz,
         ]
         do {
-            if SessionRecorder.unclosedSessions(store: store).contains(id) {
-                _ = try SessionRecorder.recover(store: store, clock: clock, sessionID: id)
-                return try WatchRecorder.resume(store: store, clock: clock, link: link, sessionID: id)
-            }
-            let r = try WatchRecorder.start(store: store, clock: clock, link: link, sessionID: id, metadata: metadata)
-            return r
+            // New, crashed or stopped-and-started-again: chunk numbers always continue (never overwrite).
+            return try WatchRecorder.open(store: store, clock: clock, link: link, sessionID: id, metadata: metadata)
         } catch {
             setStatus("Cannot record: \(error)")
             return nil

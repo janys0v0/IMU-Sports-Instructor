@@ -52,11 +52,22 @@ public final class TransferInbox {
             return .rejected("sha256 mismatch")
         }
         let dir = "\(SessionRecorder.sessionsDir)/\(session)"
-        let path = "\(dir)/\(file)"
+        var path = "\(dir)/\(file)"
+        var stored = file
         let outcome: Outcome
-        if store.exists(path), let old = try? store.read(path), sha256Hex(old) == sha {
+        if let existing = copy(of: sha, at: path) {
             outcome = .duplicate
+            stored = existing
         } else {
+            // A different chunk under a name already used (a Watch that restarted a session with an
+            // older build): never replace the first copy, keep this one next to it.
+            if store.exists(path) {
+                stored = Self.clashName(file, sha: sha)
+                path = "\(dir)/\(stored)"
+                journal(session).flatMap {
+                    try? $0.write("chunk_name_clash", ["file": "\(dir)/\(file)", "stored_as": path, "sha256": sha])
+                }
+            }
             do {
                 try store.createDirectory((path as NSString).deletingLastPathComponent)
                 try store.writeAtomically(data, to: path)
@@ -68,10 +79,31 @@ public final class TransferInbox {
                 return .rejected("cannot store: \(error)")
             }
         }
-        received[session, default: [:]][kind, default: []].insert(file)
+        received[session, default: [:]][kind, default: []].insert(stored)
         link.sendMessage(LinkMessage(kind: .ack, session: session, file: file, sha256: sha).encoded)
         onChange?(session)
         return outcome
+    }
+
+    /// "watch/000000.jsonl" -> "watch/000000.clash-<first 8 of sha>.jsonl"
+    static func clashName(_ file: String, sha: String) -> String {
+        let ext = (file as NSString).pathExtension
+        let base = (file as NSString).deletingPathExtension
+        return "\(base).clash-\(sha.prefix(8)).\(ext)"
+    }
+
+    /// The name this exact chunk is already stored under, if any (the original or a clash copy).
+    private func copy(of sha: String, at path: String) -> String? {
+        let dir = "\(SessionRecorder.sessionsDir)/"
+        let clash =
+            (path as NSString).deletingPathExtension + ".clash-\(sha.prefix(8))." + (path as NSString).pathExtension
+        for candidate in [path, clash] where store.exists(candidate) {
+            if let old = try? store.read(candidate), sha256Hex(old) == sha {
+                let session = candidate.dropFirst(dir.count).split(separator: "/", maxSplits: 1)
+                return session.count == 2 ? String(session[1]) : nil
+            }
+        }
+        return nil
     }
 
     /// Handles the Watch's Stop summary.

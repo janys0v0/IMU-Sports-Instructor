@@ -33,6 +33,7 @@ final class WatchAppDelegate: NSObject, WKApplicationDelegate {
 
 struct WatchContentView: View {
     @EnvironmentObject private var streamer: WatchStreamer
+    @State private var confirmStop = false
 
     var body: some View {
         // Re-checked every second so the screen notices when the iPhone stops answering.
@@ -74,9 +75,15 @@ struct WatchContentView: View {
         Label("iPhone not reachable", systemImage: "iphone.slash").foregroundStyle(.orange)
         Text(streamer.status).font(.footnote)
         Button(streamer.isRunning ? "Stop Watch recording" : "Record on Watch only") {
-            streamer.isRunning ? streamer.stop() : streamer.start()
+            if streamer.isRunning { confirmStop = true } else { streamer.start() }
         }
         .tint(streamer.isRunning ? .red : .gray)
+        .confirmationDialog("Stop recording on the Watch?", isPresented: $confirmStop) {
+            Button("Stop", role: .destructive) { streamer.stop() }
+            Button("Keep recording", role: .cancel) {}
+        } message: {
+            Text("The iPhone may still be recording this session. The Watch keeps recording without it.")
+        }
     }
 
     @ViewBuilder

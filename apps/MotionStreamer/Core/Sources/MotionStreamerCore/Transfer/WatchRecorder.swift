@@ -68,10 +68,28 @@ public final class WatchRecorder {
         return r
     }
 
-    /// Continues a Watch session after a crash as a new segment (the Watch's half of design §4).
-    public static func resume(store: FileStore, clock: Clock, link: WatchLink, sessionID: String) throws
-        -> WatchRecorder
-    {
+    /// The one way to begin recording a session on the Watch: a new session starts; one left open by a
+    /// crash is recovered; one that was stopped and is started again continues as a new segment. Chunk
+    /// numbers always continue, so an earlier chunk is never written over.
+    public static func open(
+        store: FileStore, clock: Clock, link: WatchLink, sessionID: String, metadata: [String: Any]
+    ) throws -> WatchRecorder {
+        let journalPath = "\(SessionRecorder.sessionsDir)/\(sessionID)/journal.jsonl"
+        if SessionRecorder.unclosedSessions(store: store).contains(sessionID) {
+            _ = try SessionRecorder.recover(store: store, clock: clock, sessionID: sessionID)
+            return try resume(store: store, clock: clock, link: link, sessionID: sessionID)
+        }
+        if store.exists(journalPath) {
+            return try resume(store: store, clock: clock, link: link, sessionID: sessionID, reason: "restarted")
+        }
+        return try start(store: store, clock: clock, link: link, sessionID: sessionID, metadata: metadata)
+    }
+
+    /// Continues a Watch session as a new segment: after a crash (the Watch's half of design §4), or
+    /// when a stopped session is started again.
+    public static func resume(
+        store: FileStore, clock: Clock, link: WatchLink, sessionID: String, reason: String = "recovered_after_crash"
+    ) throws -> WatchRecorder {
         let dir = "\(SessionRecorder.sessionsDir)/\(sessionID)"
         let (entries, _) = try Journal.read(store: store, path: "\(dir)/journal.jsonl")
         let segment = SessionRecorder.currentSegment(entries) + 1
@@ -89,7 +107,7 @@ public final class WatchRecorder {
             else { continue }
             r.outbox.add(chunkEntry: e, kind: path.contains("/watch_hf/") ? "hf" : "60hz")
         }
-        try r.journal.write("segment_open", ["segment": segment, "reason": "recovered_after_crash"])
+        try r.journal.write("segment_open", ["segment": segment, "reason": reason])
         return r
     }
 
