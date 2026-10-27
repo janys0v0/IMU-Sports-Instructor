@@ -154,6 +154,7 @@ Core Motion doesn't keep an app awake; the app must stay awake through a backgro
 | Level | When | Shows | Source |
 |---|---|---|---|
 | ① Live strip | While recording | Hz, last-sample age, 🟢🟡🔴 per stream | Memory |
+| ① Live motion plot | While recording, at the top of the screen | Rotation speed of each device over the last 10 s, updated twice a second; "no data" in red after 1.5 s of silence (`LiveMotionPanel`) | Memory (samples by device clock) |
 | ② Review screen | Any time | Whole-session timeline (gaps, calibrations) + last 60 s plots per device | **Closed chunks on disk** |
 | ③ Session check | After Stop | PASS / WARN / FAIL card | Journal + chunks |
 

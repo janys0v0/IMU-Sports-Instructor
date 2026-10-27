@@ -67,6 +67,8 @@ final class StreamController: NSObject, ObservableObject {
     @Published private(set) var calibrationStatus: String?
     /// "Trial 3 running" / "Trial 3 ✅ keep" / "Trial 3 🔁 redo".
     @Published private(set) var trialStatus: String?
+    /// The live motion plot while recording: last 10 s of each device's rotation speed (LiveMotion).
+    @Published private(set) var liveMotion: [LiveMotionPanel.Row] = []
     /// The court-exit check after Stop (design §8 ④).
     @Published private(set) var courtExit: CourtExitCheck.Verdict?
     /// "Watch: 58 / 60 chunks · high-rate 12 / 60" for the status section (design §3).
@@ -1169,7 +1171,17 @@ final class StreamController: NSObject, ObservableObject {
             let sent = self.sent
             let ackAge = self.lastAckUptime.map { now - $0 }
             let elapsed = now - self.startUptime
+            // Planned devices always get a row (so a silent one shows "no data"); others once they send.
+            let devices = ["phone", "watch", "airpods"].filter {
+                self.sessionPlan.contains($0) || !(self.recent[$0]?.isEmpty ?? true)
+            }
+            let live = devices.map { device in
+                LiveMotionPanel.Row(
+                    device: device, points: LiveMotion.points(self.recent[device] ?? [], now: now),
+                    age: self.recent[device]?.last.map { now - $0.arrival })
+            }
             DispatchQueue.main.async {
+                self.liveMotion = live
                 self.phone = phone
                 self.watch = watch
                 self.head = head

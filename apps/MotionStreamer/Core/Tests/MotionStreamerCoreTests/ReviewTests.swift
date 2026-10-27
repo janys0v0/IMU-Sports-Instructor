@@ -130,6 +130,22 @@ final class ReviewTests: XCTestCase {
                 Double(differing) / Double(total), 0.01, "\(name) changed; delete the reference to re-record")
         }
 
+        func test_liveMotionPanel() throws {
+            func wave(_ amplitude: Double, _ period: Double) -> [LiveMotion.Point] {
+                (0..<200).map { k in
+                    let t = Double(k) / 20 - 10
+                    return LiveMotion.Point(
+                        t: t, rotation: amplitude * (1 + sin(2 * .pi * t / period)), acceleration: 0)
+                }
+            }
+            let panel = LiveMotionPanel(rows: [
+                .init(device: "phone", points: wave(80, 2), age: 0.1),
+                .init(device: "watch", points: wave(300, 1), age: 0.2),
+                .init(device: "airpods", points: Array(wave(20, 3).prefix(100)), age: 5),
+            ])
+            try snapshot("live_motion_panel", panel.padding(), size: CGSize(width: 390, height: 330))
+        }
+
         func test_P5_reviewScreen() throws {
             let review = ReviewLoader.build(
                 sessionID: "20261020-120000-P01", packets: ReviewTests.syntheticPackets(), chunksRead: 3)

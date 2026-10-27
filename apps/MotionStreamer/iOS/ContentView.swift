@@ -25,10 +25,15 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             Form {
-                setupSection
+                // While recording the (locked) setup moves to the bottom so the live plot is in view.
+                if !controller.isRecording { setupSection }
                 controlSection
+                if controller.isRecording, !controller.liveMotion.isEmpty {
+                    Section { LiveMotionPanel(rows: controller.liveMotion) }
+                }
                 statusSection
                 airPodsSection
+                if controller.isRecording { setupSection }
                 if !controller.recentEvents.isEmpty {
                     Section("Events") {
                         ForEach(controller.recentEvents, id: \.self) { Text($0).font(.footnote) }
