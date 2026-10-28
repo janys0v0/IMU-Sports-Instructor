@@ -21,9 +21,10 @@ SESSION = "20261020-120000-P01"
 class FieldSession:
     """Writes a session folder the way the phone and Watch do: chunks, journal, Watch summary."""
 
-    def __init__(self, root: Path):
-        self.dir = root / SESSION
-        self.journal = [{"j": "session_open", "session": SESSION}]
+    def __init__(self, root: Path, session: str = SESSION):
+        self.session = session
+        self.dir = root / session
+        self.journal = [{"j": "session_open", "session": session}]
         for sub in ("phone", "watch", "watch_hf"):
             (self.dir / sub).mkdir(parents=True)
         self.numbers = {"phone": 0, "watch": 0, "watch_hf": 0}
@@ -40,7 +41,7 @@ class FieldSession:
         self.journal.append(
             {
                 "j": "chunk_closed",
-                "file": f"sessions/{SESSION}/{rel}",
+                "file": f"sessions/{self.session}/{rel}",
                 "sha256": sha(data),
                 "segment": segment,
             }
@@ -53,7 +54,7 @@ class FieldSession:
         self.journal.append(
             {
                 "j": "chunk_received",
-                "file": f"sessions/{SESSION}/{rel}",
+                "file": f"sessions/{self.session}/{rel}",
                 "sha256": sha(data),
                 "kind": "60hz",
             }
@@ -72,7 +73,7 @@ class FieldSession:
         self.journal.append(
             {
                 "j": "chunk_received",
-                "file": f"sessions/{SESSION}/{rel}",
+                "file": f"sessions/{self.session}/{rel}",
                 "sha256": sha(data),
                 "kind": "hf",
             }

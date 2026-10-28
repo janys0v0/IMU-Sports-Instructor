@@ -754,6 +754,8 @@ final class StreamController: NSObject, ObservableObject {
 
     private func handleHello(_ data: Data) {
         guard let hello = try? JSONDecoder().decode(WatchHello.self, from: data) else { return }
+        // The Watch says hello when it starts recording, possibly under its own ID: point it at ours.
+        DispatchQueue.main.async { self.resendWatchStart() }
         ioQueue.async {
             self.recorder?.journalEvent(
                 "watch_info",
@@ -868,6 +870,13 @@ final class StreamController: NSObject, ObservableObject {
         lastControlSentUnix = now
         state.sentUnix = now
         session.sendMessage(state.wcMessage(), replyHandler: nil, errorHandler: nil)
+    }
+
+    /// Sends the session's Start to the Watch again (main thread); only while recording.
+    private func resendWatchStart() {
+        guard isRecording, !sessionID.isEmpty else { return }
+        sendWatchCommand(
+            "start", extra: ["session": sessionID, "loc": watchLocation, "mirror": keepAliveMethod == .mirroring])
     }
 
     private func launchWatch() {
@@ -1217,6 +1226,9 @@ extension StreamController: WCSessionDelegate {
             guard self.active else { return }
             self.logEvent(reachable ? "watch_reachable" : "watch_unreachable")
         }
+        // A Watch that was unreachable at Start records under its own ID after 10 s; tell it the
+        // session again so it joins (it ignores a Start for the session it already records).
+        if reachable { DispatchQueue.main.async { self.resendWatchStart() } }
     }
 
     func session(_ session: WCSession, didReceiveMessageData messageData: Data) {

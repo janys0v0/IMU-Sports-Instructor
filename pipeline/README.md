@@ -21,6 +21,7 @@ data/recordings ──▶ preprocessing/ (load · resample · calibrate) ──�
 | | `send_recording.py` | Replay a saved recording over UDP (test without devices) |
 | | `fake_phone.py` | Send synthetic packets (test the receiver without devices) |
 | `ingest/` | `ingest_field.py` | Check a field session (checksums, gaps + causes, clock fit, high-rate) and merge it into `stream.jsonl` |
+| | `merge_watch.py` | Merge a Watch session recorded under its own ID (`…-W`) into its phone session (new `<phone>+<watch>` folder) |
 | | `quality.py`, `high_rate.py` | Shared quality rules (same as the app) and the binary high-rate loader |
 | `analysis/` | `plot_trajectories.py` | Head and thigh angles, heights and acceleration over time |
 | | `knee_pca.py` | PCA of the 3D knee path during knee raises, per-repetition metrics |
@@ -44,6 +45,7 @@ PY=.venv/bin/python
 | Mesh video from a recording (`phase2/replay_lp_h.mp4`) | `$PY -m pipeline.pose.replay data/recordings/<session> --head --single --screen leg --render --no-tran` |
 | Trajectory plots | `$PY -m pipeline.analysis.plot_trajectories data/recordings/<session> --screen leg` |
 | Check and merge a field session copied from the phone | `$PY -m pipeline.ingest.ingest_field data/recordings/field/<session>` (`--phone-only` without a Watch) |
+| Watch recorded under its own ID (`…-W`): merge, then ingest the new folder | `$PY -m pipeline.ingest.merge_watch data/recordings/field/<phone> data/recordings/field/<watch-W>` |
 | Knee PCA | `$PY -m pipeline.analysis.knee_pca data/recordings/<session> --screen leg` |
 
 ## Things to know
