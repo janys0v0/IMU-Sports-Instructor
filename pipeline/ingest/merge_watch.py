@@ -4,7 +4,9 @@ Usage (repo root):
     .venv/bin/python -m pipeline.ingest.merge_watch data/recordings/field/<phone> data/recordings/field/<watch-W>
 
 When the Watch cannot reach the phone at Start it records under its own ID, so the phone session
-has no (or only some) Watch files. This writes a new folder `<phone>+<watch>` next to the phone
+has no (or only some) Watch files. The Watch's own copy of the same session (read off the Watch
+when the link dropped before everything was sent) merges the same way; chunks the phone already
+has are skipped. This writes a new folder `<phone>+<watch>` next to the phone
 session (both device folders stay untouched): the phone session plus the Watch session's chunks,
 added to the journal as received chunks (SHA-256 checked again) in Watch segments after any the
 phone session already has. Then run the ingest on the new folder.
@@ -20,6 +22,10 @@ from pathlib import Path
 from pipeline.ingest.ingest_field import check_files, read_jsonl, relative, watch_segments
 
 SUBDIRS = {"watch": "60hz", "watch_hf": "hf"}
+
+
+def session_id(journal):
+    return next((e.get("session") for e in journal if e.get("j") == "session_open"), None)
 
 
 def merge(phone_dir: Path, watch_dir: Path, out_dir: Path = None) -> Path:
@@ -48,7 +54,14 @@ def merge(phone_dir: Path, watch_dir: Path, out_dir: Path = None) -> Path:
         if e.get("j") in ("chunk_received", "chunk_closed") and "/watch" in e.get("file", ""):
             existing[relative(e["file"])] = e
     have = watch_segments(out)
-    offset = max([have.get(rel, e.get("segment", 1)) for rel, e in existing.items()], default=0)
+    # The Watch's own copy of this same session keeps its segments; a separate "-W" session goes
+    # after whatever Watch segments the phone session already has.
+    same_session = session_id(journal) == session_id(watch_journal)
+    offset = (
+        0
+        if same_session
+        else max([have.get(rel, e.get("segment", 1)) for rel, e in existing.items()], default=0)
+    )
     their_segments = watch_segments(watch_dir)
 
     added = []
@@ -58,9 +71,11 @@ def merge(phone_dir: Path, watch_dir: Path, out_dir: Path = None) -> Path:
             continue
         name = Path(rel).name
         target = f"{sub}/{name}"
-        if (out / target).exists():
-            target = f"{sub}/{watch_dir.name}-{name}"
         data = (watch_dir / rel).read_bytes()
+        if (out / target).exists():
+            if (out / target).read_bytes() == data:
+                continue  # the phone already has this exact chunk
+            target = f"{sub}/{watch_dir.name}-{name}"
         (out / sub).mkdir(exist_ok=True)
         (out / target).write_bytes(data)
         segment = offset + their_segments.get(rel, e.get("segment", 1))

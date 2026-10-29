@@ -61,3 +61,27 @@ def test_watch_files_already_in_the_phone_session_are_kept_apart(tmp_path):
     report = ingest(out, phone_only=True)
     assert not report["file_problems"]
     assert {"watch/segment1", "watch/segment2"} <= set(report["streams"])
+
+
+def test_the_watchs_own_copy_of_the_same_session_fills_in_the_rest(tmp_path):
+    # 20261028-113121-P01: the phone got the Watch's first 3 chunks, then the link dropped and the
+    # Watch's battery died before sending the rest; its own copy (same ID) was read off the Watch.
+    phone = FieldSession(tmp_path / "phone")
+    for chunk in minutes_of("phone", 3):
+        phone.phone_chunk(chunk)
+    minutes = minutes_of("watch", 3)
+    phone.watch_chunk(minutes[0])
+    phone_dir = phone.close()
+    own = FieldSession(tmp_path / "from-watch")
+    for chunk in minutes:
+        own.watch_chunk(chunk)
+    own_dir = own.close()
+
+    out = merge(phone_dir, own_dir)
+    report = ingest(out, phone_only=True)
+    assert not report["file_problems"]
+    assert set(k for k in report["streams"] if k.startswith("watch")) == {"watch/segment1"}
+    assert report["streams"]["watch/segment1"]["coverage"] > 0.99
+    assert (
+        len(list((out / "watch").glob("*.jsonl"))) == 3
+    ), "the identical first chunk is not added twice"
