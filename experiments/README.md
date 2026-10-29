@@ -33,14 +33,20 @@ experiments/
 │   ├── README.md
 │   ├── run.py                        data consistency + trajectories figure
 │   └── results/<session>/
-└── E04_video_validation/         IMU joint angles vs single-camera video (Apple Vision 3D)
-    ├── README.md                     question, recording checklist, limits
-    ├── align.py                      video <-> IMU offset from on-screen vs sensor motion
-    ├── vision_pose.swift             3D body pose per video frame
-    ├── angles.py                     joint angles from both joint sets, agreement metrics
-    ├── run.py
-    ├── make_video.py                 camera + skeleton next to the IMU meshes
-    └── results/<session>/
+├── E04_video_validation/         IMU joint angles vs single-camera video (Apple Vision 3D)
+│   ├── README.md                     question, recording checklist, limits
+│   ├── align.py                      video <-> IMU offset from on-screen vs sensor motion
+│   ├── vision_pose.swift             3D body pose per video frame
+│   ├── angles.py                     joint angles from both joint sets, agreement metrics
+│   ├── run.py
+│   ├── make_video.py                 camera + skeleton next to the IMU meshes
+│   └── results/<session>/
+└── E06_side_by_side/            Apple devices vs commercial IMUs, reconstructed side by side (+ OpenCap slot)
+    ├── README.md
+    ├── commercial.py                 commercial logs -> orientation streams (Madgwick + magnetometer heading)
+    ├── run.py                        clock, shared calibration, MobilePoser on both input sets
+    ├── make_video.py                 meshes + rolling rotation-speed charts
+    └── results/<label>/
 ```
 
 ## Conventions

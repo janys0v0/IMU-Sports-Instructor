@@ -1,0 +1,549 @@
+{
+  "label": "tom-IMU4",
+  "session": "20261028-113121-P01(tennis-tom)+20261028-113121-P01",
+  "commercial_log": "tennis_20261028T1131_20261028T1236_imu.csv",
+  "start_unix": 1793201481.6723816,
+  "clock_lag_s": 0.36,
+  "clock_match_r": 0.953,
+  "segments": [
+    {
+      "hold_s": 137.8,
+      "from_s": 140.8,
+      "to_s": 717.3
+    },
+    {
+      "hold_s": 717.6,
+      "from_s": 720.6,
+      "to_s": 900.8
+    }
+  ],
+  "apple_inputs": {
+    "right_pocket": "phone",
+    "right_wrist": "watch"
+  },
+  "commercial_inputs": {
+    "right_wrist": "msense_D0E5",
+    "right_pocket": "msense_2F5A (waist, in the pocket slot)"
+  },
+  "combos": {
+    "apple": "rw_rp",
+    "commercial": "rw_rp"
+  },
+  "calibration_checks": [
+    {
+      "sensor": "msense_D0E5",
+      "hold": 137.8,
+      "still_rot_rms_rad_s": 0.049,
+      "passed": true
+    },
+    {
+      "sensor": "msense_2F5A",
+      "hold": 137.8,
+      "still_rot_rms_rad_s": 0.088,
+      "passed": true
+    },
+    {
+      "sensor": "msense_D0E5",
+      "hold": 717.6,
+      "still_rot_rms_rad_s": 0.083,
+      "passed": true
+    },
+    {
+      "sensor": "msense_2F5A",
+      "hold": 717.6,
+      "still_rot_rms_rad_s": 0.162,
+      "passed": true
+    }
+  ],
+  "frozen_gyro_share": {
+    "msense_1D03": 0.002,
+    "msense_2F5A": 0.002,
+    "msense_6955": 0.0,
+    "msense_D0E5": 0.009
+  },
+  "pocket_screen": "leg",
+  "swings": [
+    {
+      "t": 84.37,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 160.59,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 165.18,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 169.21,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 180.22,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 184.03,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 189.74,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 193.03,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 196.05,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 200.38,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 204.73,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 207.87,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 210.85,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 213.76,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 218.61,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 221.94,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 224.58,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 262.62,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 265.95,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 269.24,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 272.65,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 275.53,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 281.02,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 284.44,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 288.18,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 298.58,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 301.26,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 305.97,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 309.31,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 312.63,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 315.87,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 319.65,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 323.35,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 329.52,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 338.77,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 347.79,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 350.77,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 354.39,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 357.07,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 359.74,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 366.6,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 370.41,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 393.88,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 397.17,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 403.81,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 410.14,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 419.59,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 422.73,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 426.12,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 429.93,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 433.77,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 437.25,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 440.53,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 443.86,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 452.58,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 455.98,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 460.74,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 464.91,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 468.87,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 473.29,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 505.53,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 508.77,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 515.8,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 519.39,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 523.02,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 531.64,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 534.91,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 537.9,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 540.36,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 547.33,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 550.51,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 553.75,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 556.96,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 561.07,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 573.34,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 576.96,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 580.11,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 583.44,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 588.12,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 591.19,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 593.91,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 597.68,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 601.56,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 607.8,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 611.16,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 614.6,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 617.8,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 623.58,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 627.06,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 633.24,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 640.42,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 673.65,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 676.72,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 679.93,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 685.33,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 688.89,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 691.86,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 695.86,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 699.07,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 702.66,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 737.01,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 744.76,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 745.81,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 748.9,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 752.86,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 776.59,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 789.04,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 792.3,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 795.25,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 799.57,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 802.24,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 814.54,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 817.84,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 825.75,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 829.48,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 832.15,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 836.97,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 840.6,
+      "sensor": "msense_6955"
+    },
+    {
+      "t": 843.78,
+      "sensor": "msense_6955"
+    }
+  ],
+  "calibrations_s": [
+    137.5,
+    717.3,
+    1130.1,
+    1459.6
+  ]
+}

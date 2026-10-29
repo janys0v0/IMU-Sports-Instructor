@@ -265,3 +265,21 @@ Checked which published models could run on head + one wrist + thigh data:
 - **Arms-out Watch calibration** (option): still worse than the fixed standing calibration;
   kept only for comparison.
 - E01-E03 results predate this fix (their arm numbers used the wrong rest pose).
+
+## 2026-10-28
+
+### Tennis sessions, Janys and Tom (shared commercial IMUs, phone videos for OpenCap)
+
+- Our app: Janys 10:41:20–11:28:13 (46 min 53 s; the Watch recorded under its own ID, merged),
+  Tom 11:31:21–12:11:42 (40 min 21 s; the Watch's battery died before sending, its own copy read off
+  the Watch and merged): ingest PASS for both apart from the Watch's first 17 s for Janys.
+- Commercial IMUs (es224/20261028Janys Tom): 5 blocks of 4 sensors, ~21 of Janys's and ~30 of Tom's
+  minutes. The wrist sensor worn with the Watch matches it at r 0.95–0.98 in every block until it
+  rebooted at 12:00 (clock jump 1.9 s). OpenCap: only Janys's neutral trial is processed so far.
+
+### E06: Apple vs commercial reconstruction side by side
+
+- Same holds and body heading for both; commercial orientation from a Madgwick filter with a
+  magnetometer heading. Median joint-angle difference between the two: 9–16° for legs, spine and
+  head, 29–47° for the elbows, 24–38° at the root (waist sensor in the pocket slot). Videos with an
+  OpenCap slot and rolling rotation-speed charts. Details: [`experiments/E06_side_by_side/`](experiments/E06_side_by_side/README.md).
