@@ -234,6 +234,7 @@ def main():
     meta = {
         "label": args.label,
         "session": session.name,
+        "session_dir": str(session),
         "commercial_log": imu_csv.name,
         "start_unix": start - unix_to_phone,
         "clock_lag_s": lag,

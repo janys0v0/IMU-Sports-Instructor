@@ -283,3 +283,16 @@ Checked which published models could run on head + one wrist + thigh data:
   magnetometer heading. Median joint-angle difference between the two: 9–16° for legs, spine and
   head, 29–47° for the elbows, 24–38° at the root (waist sensor in the pocket slot). Videos with an
   OpenCap slot and rolling rotation-speed charts. Details: [`experiments/E06_side_by_side/`](experiments/E06_side_by_side/README.md).
+
+## 2026-11-04
+
+### E06 with OpenCap: camera + OpenCap skeleton in the third panel
+
+- OpenCap results for the 10/28 trials (`janys` 11:00:32–11:28:03, `tom` 11:32:56–11:45:45,
+  `tom3` 11:47:10–12:04:38) placed on our clock from the Watch (offset steady within ±0.07 s).
+- Rotation speed vs OpenCap: Watch r 0.57 / 0.68 (Janys / Tom), commercial wrist 0.58 / 0.67,
+  iPhone vs OpenCap thigh 0.46 / 0.49. Videos now show phone1's footage with OpenCap's skeleton
+  projected onto it and OpenCap's segment rotation speed as the reference line.
+- Phone1 synced by sound against the logger audio; its camera (not one of OpenCap's two) fitted
+  by DLT from OpenCap markers vs the player's feet and head: 7.2 px median. OpenCap sometimes
+  tracks the wrong person (Tom beside Janys).

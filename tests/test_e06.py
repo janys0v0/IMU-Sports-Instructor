@@ -62,3 +62,30 @@ def test_heading_comes_from_field_samples_after_the_hold():
     s = C.device_stream(raw, hold=(1000.5, 1001.5), t_end=1005.5, unix_to_phone=0.0)
     est = Rotation.from_quat(s.quat[-1])
     assert (est.inv() * true).magnitude() < np.radians(1)
+
+
+def test_audio_offset_finds_a_shifted_clap_track():
+    from experiments.E06_side_by_side import sync
+
+    rate = 100.0
+    rng = np.random.default_rng(1)
+    base = rng.normal(0, 0.05, 6000)
+    for k in rng.choice(5800, 40, replace=False):
+        base[k : k + 3] += 5.0  # ball hits
+    shifted = np.r_[np.zeros(1234), base][:6000]  # the same hits 12.34 s later
+    assert abs(sync.offset_s(base, shifted, rate) - 12.34) < 0.02
+
+
+def test_dlt_recovers_a_camera_from_3d_2d_pairs():
+    from experiments.E06_side_by_side import camera
+
+    rng = np.random.default_rng(2)
+    K = np.array([[1500.0, 0, 960], [0, 1500, 540], [0, 0, 1]])
+    R = Rotation.from_euler("y", 20, degrees=True).as_matrix()
+    P = K @ np.c_[R, [0.5, -1.0, 12.0]]
+    X = rng.uniform([-4, 0, -6], [4, 2, 6], (60, 3))
+    x = camera.project(P, X)
+    x[:10] += 300  # wrong detections
+    P_fit, inl = camera.fit_projection(X, x, tries=300)
+    assert inl[10:].all() and not inl[:10].any()
+    assert np.abs(camera.project(P_fit, X[10:]) - x[10:]).max() < 1e-6
