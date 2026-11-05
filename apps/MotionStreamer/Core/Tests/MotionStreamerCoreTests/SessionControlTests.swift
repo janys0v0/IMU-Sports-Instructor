@@ -81,6 +81,26 @@ final class DevicePlanTests: XCTestCase {
     func test_phoneIsAlwaysRequired() {
         XCTAssertEqual(DevicePlan.required(planned: [], watchStarted: true), ["phone"])
     }
+
+    // Calibration follows the plan too: a Watch + phone session must calibrate while AirPods that
+    // aren't part of it are connected (in their case, or worn for music).
+    func test_calibrationIgnoresConnectedAirPodsOutsideThePlan() {
+        let c = DevicePlan.calibration(planned: ["phone", "watch"], airPodsConnected: true, watchStreaming: true)
+        XCTAssertFalse(c.airpods)
+        XCTAssertTrue(c.watch)
+    }
+
+    func test_calibrationUsesPlannedAirPodsOnlyWhenConnected() {
+        let all = DevicePlan.all
+        XCTAssertTrue(DevicePlan.calibration(planned: all, airPodsConnected: true, watchStreaming: true).airpods)
+        XCTAssertFalse(DevicePlan.calibration(planned: all, airPodsConnected: false, watchStreaming: true).airpods)
+    }
+
+    func test_calibrationUsesTheWatchOnceItStreams() {
+        let planned: Set<String> = ["phone", "watch"]
+        XCTAssertFalse(DevicePlan.calibration(planned: planned, airPodsConnected: false, watchStreaming: false).watch)
+        XCTAssertFalse(DevicePlan.calibration(planned: ["phone"], airPodsConnected: false, watchStreaming: true).watch)
+    }
 }
 
 /// Both screens show the Watch → iPhone transfer in the same words (found on device 2026-10-19:

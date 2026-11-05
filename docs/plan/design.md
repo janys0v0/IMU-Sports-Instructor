@@ -233,6 +233,11 @@ resets on reconnect. E02 measured ~5-10°/min of model orientation drift for hea
 Reasons: "you moved" · "the phone isn't upright in your pocket" · "your arms weren't level" ·
 "the AirPods aren't connected" · "the watch isn't sending data".
 
+**Devices checked:** the ones planned at Go / No-Go (§8) that are there. AirPods outside the plan
+are ignored even when connected, so a Watch + phone session calibrates with AirPods in their case
+or worn for music; planned AirPods that aren't connected are skipped; the arms-out pose runs once
+the Watch streams.
+
 **Check on the phone right after the holds**
 
 | Check | Pass |

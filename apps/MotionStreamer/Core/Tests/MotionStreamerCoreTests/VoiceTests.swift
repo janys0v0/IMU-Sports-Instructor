@@ -18,6 +18,7 @@ final class CalibrationHarness {
     var armsLevelDelay = 0.0  // seconds after the arms-out prompt (C7) before arms are level
     var watchSending = true
     var airpodsConnected = true
+    var airpodsMoving = false  // e.g. AirPods outside the plan, worn for music
 
     private var holdsMoved = 0
     private var armsCommandAt: Double?
@@ -71,7 +72,7 @@ final class CalibrationHarness {
         var out: [MotionSample] = []
         var t = (from * 50).rounded(.up) / 50
         while t <= to {
-            let rot = isMoving(t) ? 1.0 : 0.01
+            let rot = isMoving(t) || (device == "airpods" && airpodsMoving) ? 1.0 : 0.01
             switch device {
             case "phone":
                 out.append([
@@ -120,6 +121,16 @@ final class CalibrationTests: XCTestCase {
         XCTAssertEqual(event["hold_s"] as? Double, 3.3)
         XCTAssertNotNil(h.eventNames("calibrate_arms").first)
         XCTAssertEqual(h.eventNames("calibrate_result").last?["result"] as? String, "pass")
+    }
+
+    func test_watchAndPhoneOnlyPassesWhileOtherAirPodsMove() throws {
+        let h = CalibrationHarness(outputs: ["watch"])
+        h.airpodsMoving = true
+        h.flow.requireAirPods = false
+        h.flow.start()
+        h.run()
+        XCTAssertTrue(try XCTUnwrap(h.result).passed)
+        XCTAssertNotNil(h.eventNames("calibrate_arms").first)
     }
 
     func test_C3_movingOnceGetsOneWarningThenPasses() throws {

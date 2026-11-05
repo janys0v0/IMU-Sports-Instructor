@@ -84,4 +84,14 @@ public enum DevicePlan {
         if !watchStarted { r.remove("watch") }
         return r
     }
+
+    /// Which devices a calibration checks and measures: the planned ones that are there. AirPods
+    /// outside the plan are ignored even when connected, so a Watch + phone session can calibrate
+    /// with AirPods in their case or worn for music.
+    public static func calibration(
+        planned: Set<String>, airPodsConnected: Bool, watchStreaming: Bool
+    ) -> (watch: Bool, airpods: Bool) {
+        let r = required(planned: planned, watchStarted: watchStreaming)
+        return (r.contains("watch"), r.contains("airpods") && airPodsConnected)
+    }
 }

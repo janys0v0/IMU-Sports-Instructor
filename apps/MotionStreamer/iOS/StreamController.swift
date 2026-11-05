@@ -463,8 +463,13 @@ final class StreamController: NSObject, ObservableObject {
         guard isRecording else { return "Press Start first" }
         guard !flow.isRunning else { return "Already calibrating" }
         flow.landmark = landmark
-        flow.requireAirPods = airPodsConnected
-        flow.requireWatch = watchReachable
+        let devices = ioQueue.sync {
+            DevicePlan.calibration(
+                planned: sessionPlan, airPodsConnected: ioAirPodsConnected,
+                watchStreaming: ioWatchReachable || lastWatchBatch.map { uptime() - $0 < 30 } ?? false)
+        }
+        flow.requireAirPods = devices.airpods
+        flow.requireWatch = devices.watch
         ioQueue.async { self.logEvent("calibrate_requested") }
         calibrationStatus = "Calibrating: follow the voice"
         flow.start()
