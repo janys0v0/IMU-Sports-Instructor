@@ -53,6 +53,7 @@ experiments/
     ├── align.py, geometric.py, qmt_heading.py, constraint.py, opensense*.py   model-free methods
     ├── wearmocap.py, learned_published.py, learned_own.py                    learned methods
     ├── evaluate.py, figures.py, video.py                                     scores, report figures, videos
+    ├── colors.py                     one color per method, shared by figures, videos and the report
     └── figures/                      report PNGs (results/ holds data, not committed)
 ```
 

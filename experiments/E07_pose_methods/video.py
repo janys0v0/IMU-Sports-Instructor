@@ -2,7 +2,7 @@
 a grey ghost in each), and rolling curves under them: the Watch's 200 Hz rotation speed, elbow
 angle and shoulder elevation per method with OpenCap in black.
 
-    .venv/bin/python -m experiments.E07_pose_methods.video PLAYER --methods a,b,c [--start S --seconds N]
+    .venv/bin/python -m experiments.E07_pose_methods.video PLAYER [--methods a,b,c] [--start S --seconds N]
 
 Writes results/<player>/videos/compare_<start>.mp4 (not committed).
 """
@@ -14,6 +14,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
+from .colors import FEATURED, bgr
 from .common import OUT, angle_between, load, load_method
 from .data import PLAYERS, elevation_plane
 
@@ -21,17 +22,7 @@ FPS = 30
 PANEL_W, PANEL_H, CAM_W = 300, 300, 640
 CHART_H, HEADER, FOOT = 120, 70, 40
 INK, GREY, LIGHT, BG = (40, 40, 40), (150, 150, 150), (225, 225, 225), (250, 250, 250)
-GT_COLOR = (30, 30, 30)
-COLORS = [
-    (214, 120, 42),
-    (52, 104, 235),
-    (122, 175, 27),
-    (0, 161, 237),
-    (164, 123, 232),
-    (0, 131, 0),
-    (129, 129, 217),
-    (180, 130, 60),
-]  # BGR, fixed order
+GT_COLOR = bgr("#0b0b0b")  # OpenCap; methods use colors.bgr(name)
 UPPER_M, FORE_M = 0.30, 0.27
 SHOULDER = np.array([0.0, 0.0, 0.18])  # right shoulder in the trunk frame (x fwd, y up, z right), m
 
@@ -161,7 +152,7 @@ def main():
 
     p = argparse.ArgumentParser()
     p.add_argument("player", choices=list(PLAYERS))
-    p.add_argument("--methods", required=True)
+    p.add_argument("--methods", default=",".join(FEATURED))
     p.add_argument("--start", type=float, default=0.0, help="seconds into the block")
     p.add_argument("--seconds", type=float)
     p.add_argument("--clip", help="phone1 clip (960x540 copy)")
@@ -258,7 +249,7 @@ def main():
             r, c = divmod(k, ncol)
             pan = arm_panel(
                 n,
-                COLORS[k % len(COLORS)],
+                bgr(n),
                 m["hum"][i],
                 m["fore"][i],
                 d["gt_hum"][i] if gt_ok[i] else np.full(3, np.nan),
@@ -283,7 +274,7 @@ def main():
                     np.interp(t, hf_t[sel_hf], hf_w[sel_hf], left=np.nan, right=np.nan)
                     if sel_hf.sum() > 2
                     else np.full(len(t), np.nan),
-                    (60, 60, 200),
+                    (90, 90, 90),  # sensor signal: neutral, not a method color
                     1,
                 )
             ],
@@ -298,8 +289,7 @@ def main():
             cy + CHART_H,
             W,
             "Elbow flexion",
-            [(gmask(gel), GT_COLOR, 3)]
-            + [(c[0], COLORS[k % len(COLORS)], 1) for k, c in enumerate(curves)],
+            [(gmask(gel), GT_COLOR, 3)] + [(c[0], bgr(n), 1) for n, c in zip(names, curves)],
             t,
             now,
             160,
@@ -311,8 +301,7 @@ def main():
             cy + 2 * CHART_H,
             W,
             "Shoulder elevation",
-            [(gmask(gev), GT_COLOR, 3)]
-            + [(c[1], COLORS[k % len(COLORS)], 1) for k, c in enumerate(curves)],
+            [(gmask(gev), GT_COLOR, 3)] + [(c[1], bgr(n), 1) for n, c in zip(names, curves)],
             t,
             now,
             160,
