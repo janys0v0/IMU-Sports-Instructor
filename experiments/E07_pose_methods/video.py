@@ -128,7 +128,7 @@ def chart(img, y0, w, title, series, t, now, ymax, swings, unit):
             img,
             (int(x_of(np.array([s]))[0]), y0),
             (int(x_of(np.array([s]))[0]), y0 + h),
-            (200, 220, 245),
+            (175, 175, 175),  # neutral: no method hue
             1,
         )
     for v, color, thick in series:
@@ -216,7 +216,7 @@ def main():
         )
         text(
             img,
-            "Right arm in the chest frame, same view for every method. Swings (blue ticks) from the Watch's 200 Hz rotation speed.",
+            "Right arm in the chest frame, same view for every method. Swings (grey ticks) from the Watch's 200 Hz rotation speed.",
             (10, 52),
             0.45,
             GREY,
