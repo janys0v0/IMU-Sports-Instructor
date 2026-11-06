@@ -22,6 +22,8 @@ from pipeline.ingest.high_rate import read_file as read_high_rate
 from pipeline.ingest.quality import stream_stats, stream_verdict, thresholds, worst
 
 STREAM_DIRS = ("phone", "watch", "watch_hf")
+# Files Finder and Google Drive for desktop add to folders; never chunks.
+NOT_CHUNKS = {"Icon\r", ".DS_Store"}
 # Events that explain a gap when they happen within this many seconds of it.
 CAUSE_WINDOW_S = 2.0
 CAUSE_EVENTS = {
@@ -70,6 +72,8 @@ def check_files(session: Path, journal: list) -> tuple:
     for sub in STREAM_DIRS:
         for path in sorted((session / sub).glob("*")) if (session / sub).exists() else []:
             rel = f"{sub}/{path.name}"
+            if path.name in NOT_CHUNKS:
+                continue
             if path.name.endswith(".open"):
                 problems.append(
                     {"file": rel, "problem": "unclosed chunk (open the app to recover it)"}

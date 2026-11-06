@@ -166,6 +166,16 @@ def test_I2_missing_extra_and_renamed_chunks_are_reported_not_merged(complete_se
     assert len(rec.streams["right_pocket"].t) == 3600, "the extra file isn't merged"
 
 
+def test_finder_and_drive_files_are_not_extra_chunks(complete_session):
+    # Google Drive for desktop puts an "Icon\r" file in every synced folder (found 2026-11-06).
+    for sub in ("phone", "watch"):
+        (complete_session / sub / "Icon\r").write_bytes(b"")
+        (complete_session / sub / ".DS_Store").write_bytes(b"")
+    report = ingest(complete_session)
+    assert report["file_problems"] == []
+    assert report["status"] == "PASS"
+
+
 def test_I3_segments_merge_in_order_keyed_by_segment_and_index(tmp_path):
     fs = FieldSession(tmp_path)
     fs.phone_chunk(minutes_of("phone", 1)[0], segment=1)
