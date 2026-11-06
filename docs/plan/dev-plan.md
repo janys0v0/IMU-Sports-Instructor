@@ -33,6 +33,7 @@ when its gate passes on two consecutive runs; then the next stage starts.
 | 9 | Endurance + device tests | 35 real recordings to replay | G9 | 3-4 | Simulators + devices |
 | 10 | Calibration interval | — | G10 | 2 (two court days) | Devices |
 | 11 | Accuracy against video (E04, single camera) | MobilePoser offline runner (E01) | G11 | 1-2 | Mac + one camera |
+| 12 | Arm-only swing model (Watch alone) | direct arm angles from segment sensors (10/28, exploratory) | G12 | 3-4 + 1 court day | Mac + devices |
 
 ◐ = partly built (details below). **Total: about 22-29 working days (4-6 weeks).** Estimates
 assume one person coding with Claude; device stages depend on court and weather.
@@ -322,5 +323,31 @@ OpenCap ([`opencap.md`](../deferred/opencap.md)). Can run alongside stages 9-10.
       camera, Vision's own error; angles only, not positions). Knees agree (RMSE ~19°). The Watch
       hand-off is fixed (model forearm r −0.39 → 0.67); arm angles stay ~30° off because one
       wrist sensor cannot fix the upper arm (see the log, 2026-10-19).
+
+## Stage 12: Arm-only swing model (Watch alone)
+
+**Goal:** elbow flexion and shoulder elevation through each stroke from the Watch alone, with no
+full-body model. Why: with an upper-arm sensor, plain geometry already beats MobilePoser on 10/28
+(elbow 9-12° vs 17-23° median error, shoulder 7-8°, against OpenCap), but the Apple setup has no
+upper-arm device. Forearm swing metrics (path, peak speed, rotation at contact) need no model.
+
+**Tasks**
+1. **Teacher labels:** move the exploratory direct method into `pipeline/` with tests: joint zero
+   from the Calibrate hold, elbow = forearm swing relative to the upper arm (twist removed),
+   shoulder = upper arm vs trunk. Set the hanging elbow to ~15°, not 0°, and fix relative heading
+   with the elbow's hinge axis instead of the magnetometer.
+2. **Data:** 10/28 gives 24 min with Watch + upper arm (1D03) + trunk (2F5A): Janys 9.3, Tom 15.0.
+   Record 3-4 more players × 20 min with the same sensors, OpenCap filming for some of it.
+3. **Inputs:** 1 s windows of the Watch's 200 Hz motion stream: gravity direction, rotation rate,
+   acceleration, orientation relative to the body heading from calibration.
+4. **Model:** a non-learned baseline first (nearest neighbour or ridge on window features), then a
+   small sequence model (GRU or 1D CNN, ~100k parameters) predicting both angles.
+5. **Evaluate:** leave one player out; error against the direct labels and against OpenCap; same
+   numbers for MobilePoser; per stroke: angle at contact and range through the swing.
+
+**Testable goals (G12)**
+- [ ] Direct arm angles covered by tests; within 10° of OpenCap on 10/28 after the rest-angle fix.
+- [ ] On a held-out player, Watch-only elbow and shoulder errors beat MobilePoser's (elbow < 17°).
+- [ ] **Demo:** one stroke plotted (Watch-only, direct, OpenCap) and in the side-by-side video.
 
 **After stage 10: first real field session.**

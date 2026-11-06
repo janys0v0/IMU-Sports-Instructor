@@ -14,6 +14,7 @@ method and full results.
 | E02 | MobilePoser vs IMUCoCo on the same inputs | [`experiments/E02_imucoco_comparison/`](experiments/E02_imucoco_comparison/README.md) | Done 2026-10-08 |
 | E03 | Data consistency of each sensor stream (rate, missingness, delay) vs motion | [`experiments/E03_stream_quality/`](experiments/E03_stream_quality/README.md) | Done 2026-10-14 |
 | E04 | How closely do IMU joint angles match a single-camera video? | [`experiments/E04_video_validation/`](experiments/E04_video_validation/README.md) | First run 2026-10-19 |
+| E07 | Which method gives the best arm angles during swings (geometry, OpenSense, constraints, published and own models)? | [`experiments/E07_pose_methods/`](experiments/E07_pose_methods/README.md) | Done 2026-11-05 |
 
 ## Reference recordings
 
@@ -296,3 +297,19 @@ Checked which published models could run on head + one wrist + thigh data:
 - Phone1 synced by sound against the logger audio; its camera (not one of OpenCap's two) fitted
   by DLT from OpenCap markers vs the player's feet and head: 7.2 px median. OpenCap sometimes
   tracks the wrong person (Tom beside Janys).
+
+## 2026-11-05
+
+### E07: arm pose methods compared against OpenCap (swings)
+
+- Shared 30 Hz dataset per player (every sensor + OpenCap), 22 methods in 5 families scored on
+  elbow, shoulder elevation, forearm inclination and arm directions, block and swings.
+- Best without training: chest + upper arm + Watch geometry with qmt's heading correction and a
+  fixed 18° hanging-elbow angle (swings: elbow 11°, elevation 16°). Published models (WearMoCap,
+  MobilePoser, IMUCoCo) and Watch-only methods: elevation 20-40° off in swings. Our GRU trained on
+  the other player: forearm direction 26° (best cross-player); with the player's own minutes
+  (same session) the all-sensor GRU reaches elbow 9°, elevation 7°.
+- Found: commercial magnetometers unusable near the court (VQF 6-axis drifts least, 15-20°/min
+  heading); body forward from the pocket phone's screen was ~110° off for Tom; MPS returns NaN
+  for the GRU (trained on CPU); the shared session loader drops a merged session's Watch stored
+  as `wrist` (worked around in E07). Details: [`experiments/E07_pose_methods/`](experiments/E07_pose_methods/README.md).

@@ -31,6 +31,7 @@ xcuserdata/
 # ── Third-party model repos (cloned + patched by tools/setup_third_party.sh) ──
 third_party/MobilePoser/
 third_party/IMUCoCo/
+third_party/wearmocap/
 
 # ── Data: kept on the shared drive, never in git ────────────────
 data/

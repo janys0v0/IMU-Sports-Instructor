@@ -41,12 +41,19 @@ experiments/
 │   ├── run.py
 │   ├── make_video.py                 camera + skeleton next to the IMU meshes
 │   └── results/<session>/
-└── E06_side_by_side/            Apple devices vs commercial IMUs, reconstructed side by side (+ OpenCap slot)
-    ├── README.md
-    ├── commercial.py                 commercial logs -> orientation streams (Madgwick + magnetometer heading)
-    ├── run.py                        clock, shared calibration, MobilePoser on both input sets
-    ├── make_video.py                 meshes + rolling rotation-speed charts
-    └── results/<label>/
+├── E06_side_by_side/            Apple devices vs commercial IMUs, reconstructed side by side (+ OpenCap slot)
+│   ├── README.md
+│   ├── commercial.py                 commercial logs -> orientation streams (Madgwick + magnetometer heading)
+│   ├── run.py                        clock, shared calibration, MobilePoser on both input sets
+│   ├── make_video.py                 meshes + rolling rotation-speed charts
+│   └── results/<label>/
+└── E07_pose_methods/            arm pose methods vs OpenCap on 10/28
+    ├── README.md                     methods, results, how to run each step
+    ├── data.py, common.py            shared 30 Hz dataset and the method contract
+    ├── align.py, geometric.py, qmt_heading.py, constraint.py, opensense*.py   model-free methods
+    ├── wearmocap.py, learned_published.py, learned_own.py                    learned methods
+    ├── evaluate.py, figures.py, video.py                                     scores, report figures, videos
+    └── figures/                      report PNGs (results/ holds data, not committed)
 ```
 
 ## Conventions
