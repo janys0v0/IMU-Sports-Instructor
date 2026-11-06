@@ -85,3 +85,24 @@ def test_the_watchs_own_copy_of_the_same_session_fills_in_the_rest(tmp_path):
     assert (
         len(list((out / "watch").glob("*.jsonl"))) == 3
     ), "the identical first chunk is not added twice"
+
+
+def test_high_rate_samples_from_both_sessions_are_counted(tmp_path):
+    # 20261105-124230-P01: the phone session had 6 high-rate chunks, the -W session 1 more; the
+    # report counted only the -W chunk's samples (its numbering starts again at 0).
+    phone = FieldSession(tmp_path / "phone")
+    for chunk in minutes_of("phone", 2):
+        phone.phone_chunk(chunk)
+    for chunk in minutes_of("watch", 2):
+        phone.watch_chunk(chunk)
+    phone.hf_chunk(0, 800)
+    phone.hf_chunk(800, 800)
+    phone.watch_summary(2, 2)
+    phone_dir = phone.close()
+    watch = FieldSession(tmp_path / "watch", WATCH_SESSION)
+    watch.watch_chunk(minutes_of("watch", 1, t0=200.0)[0])
+    watch.hf_chunk(0, 100)
+    watch.watch_summary(1, 1)
+    hf = ingest(merge(phone_dir, watch.close()))["watch_hf"]
+    assert hf["samples"]["accel"] == 1700
+    assert hf["continuity_problems"] == []

@@ -235,9 +235,13 @@ def check_high_rate(session: Path, journal: list, verified: dict, phone_only: bo
             "high-rate chunks still on the Watch: keep it near the phone until all are sent"
         )
         return result
-    counts = {"accel": 0, "motion": 0}
+    # Chunks merged in from another Watch session ("<session>-000000.bin", see merge_watch) number
+    # their samples from 0 again: check continuity per source and add the sources up.
+    per_source: dict = {}
     continuity = []
     for rel in received:
+        source = Path(rel).stem.rpartition("-")[0]
+        counts = per_source.setdefault(source, {"accel": 0, "motion": 0})
         chunk = read_high_rate(session / rel)
         first = chunk.header.get("first_index", {})
         for kind, n in (("accel", len(chunk.accel)), ("motion", len(chunk.motion))):
@@ -246,7 +250,8 @@ def check_high_rate(session: Path, journal: list, verified: dict, phone_only: bo
                     f"{rel}: {kind} starts at {first.get(kind)}, expected {counts[kind]}"
                 )
             counts[kind] = (first.get(kind, counts[kind]) or 0) + n
-    result.update({"samples": counts, "continuity_problems": continuity})
+    total = {k: sum(c[k] for c in per_source.values()) for k in ("accel", "motion")}
+    result.update({"samples": total, "continuity_problems": continuity})
     result["status"] = "FAIL" if continuity else "PASS"
     return result
 
