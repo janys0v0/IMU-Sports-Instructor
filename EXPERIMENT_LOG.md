@@ -15,6 +15,7 @@ method and full results.
 | E03 | Data consistency of each sensor stream (rate, missingness, delay) vs motion | [`experiments/E03_stream_quality/`](experiments/E03_stream_quality/README.md) | Done 2026-10-14 |
 | E04 | How closely do IMU joint angles match a single-camera video? | [`experiments/E04_video_validation/`](experiments/E04_video_validation/README.md) | First run 2026-10-19 |
 | E07 | Which method gives the best arm angles during swings (geometry, OpenSense, constraints, published and own models)? | [`experiments/E07_pose_methods/`](experiments/E07_pose_methods/README.md) | Done 2026-11-05 |
+| E08 | Do models trained on one day (10/28) work on another day (11/05)? | [`experiments/E08_new_day/`](experiments/E08_new_day/README.md) | Done 2026-11-10 |
 
 ## Reference recordings
 
@@ -313,3 +314,18 @@ Checked which published models could run on head + one wrist + thigh data:
   heading); body forward from the pocket phone's screen was ~110° off for Tom; MPS returns NaN
   for the GRU (trained on CPU); the shared session loader drops a merged session's Watch stored
   as `wrist` (worked around in E07). Details: [`experiments/E07_pose_methods/`](experiments/E07_pose_methods/README.md).
+
+## 2026-11-10
+
+### E08: 10/28-trained arm models tested on 11/05 (Janys)
+
+- 11/05 ground truth: jtchen's 3-camera HRNet OpenCap (100 segments of about 25 s), turned into
+  body rotations with OpenSim and aligned to the Watch per recording (unambiguous peaks, no drift).
+  Test set: 35.8 min, 278 swings, session `20261105-124805-P01`.
+- E07's GRU and ridge, unchanged, trained on 10/28. Swings, Janys:
+  - Watch-only GRU: elbow 14°, elevation 10° on the new day (vs 10° / 8° within 10/28).
+  - Trained on Tom only: 24° / 34°.
+  - With half of 11/05 added to training: 11° / 8°.
+  - Phone and AirPods add nothing.
+- Five segments where all models jump together look like OpenCap errors (two are documented
+  wrong-person segments). Details: [`experiments/E08_new_day/`](experiments/E08_new_day/README.md).

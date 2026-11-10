@@ -47,14 +47,18 @@ experiments/
 │   ├── run.py                        clock, shared calibration, MobilePoser on both input sets
 │   ├── make_video.py                 meshes + rolling rotation-speed charts
 │   └── results/<label>/
-└── E07_pose_methods/            arm pose methods vs OpenCap on 10/28
-    ├── README.md                     methods, results, how to run each step
-    ├── data.py, common.py            shared 30 Hz dataset and the method contract
-    ├── align.py, geometric.py, qmt_heading.py, constraint.py, opensense*.py   model-free methods
-    ├── wearmocap.py, learned_published.py, learned_own.py                    learned methods
-    ├── evaluate.py, figures.py, video.py                                     scores, report figures, videos
-    ├── colors.py                     one color per method, shared by figures, videos and the report
-    └── figures/                      report PNGs (results/ holds data, not committed)
+├── E07_pose_methods/            arm pose methods vs OpenCap on 10/28
+│   ├── README.md                     methods, results, how to run each step
+│   ├── data.py, common.py            shared 30 Hz dataset and the method contract
+│   ├── align.py, geometric.py, qmt_heading.py, constraint.py, opensense*.py   model-free methods
+│   ├── wearmocap.py, learned_published.py, learned_own.py                    learned methods
+│   ├── evaluate.py, figures.py, video.py                                     scores, report figures, videos
+│   ├── colors.py                     one color per method, shared by figures, videos and the report
+│   └── figures/                      report PNGs (results/ holds data, not committed)
+└── E08_new_day/                 E07's own models trained on 10/28, tested on 11/05
+    ├── opencap_gt.py, align.py, data.py   11/05 OpenCap -> body rotations, clock, test set
+    ├── run.py, figures.py            train/test, scores and figures
+    └── figures/
 ```
 
 ## Conventions
