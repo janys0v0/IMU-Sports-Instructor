@@ -334,3 +334,8 @@ Checked which published models could run on head + one wrist + thigh data:
   segment. All are 23–48° off on elbow or elevation in swings. The 10/28-trained GRU is best by
   10–20°. Most get worse than on 10/28: the 11/05 ground truth is noisier (Watch vs OpenCap
   forearm tilt in ground 7° vs 4°), and the trunk leaned slightly more.
+- Cross-session (`cross.py`), Watch GRU, swings, tested on whole 10/28 sessions:
+  - Tom 10/28: trained on Janys 10/28, elbow 22° / elevation 22°; adding Janys 11/05, 14° / 15°.
+  - Janys 10/28: trained on Tom, 23° / 39°; on Janys 11/05, 10° / 8°; Janys 11/05 + Tom, 11° / 9°.
+  - Another day of the same player is as good as same-session minutes; more days of one player
+    also help on a new one.

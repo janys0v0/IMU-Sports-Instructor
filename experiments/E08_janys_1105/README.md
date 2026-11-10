@@ -119,6 +119,30 @@ Janys, swings, median error in degrees. Full table: `results/summary.md`.
   segments (a_s012, b_s040, b_s041, c_s000, c_s005). jtchen's README says OpenCap first tracked
   another person on b_s040 and c_s000. They are kept in the scores, as on 10/28.
 
+### Cross-session tests on 10/28 (`cross.py`)
+
+Each model is trained on some sessions and tested on a whole 10/28 session it never saw: Tom 10/28
+(8.9 min with OpenCap) or Janys 10/28 (17.0 min). Watch-only, swings, median error in degrees.
+Every variant: `results/cross.md`; figures `figures/cross_swing.png`, `figures/cross_all.png`.
+
+| Tested on | Trained on | GRU elbow | GRU elev. | GRU forearm dir. | Ridge elbow | Ridge elev. |
+|---|---|---|---|---|---|---|
+| Tom 10/28 | Janys 10/28 | 22 | 22 | 25 | 18 | 24 |
+| Tom 10/28 | Janys 10/28 + Janys 11/05 | **14** | **15** | 28 | 16 | 21 |
+| Janys 10/28 | Tom 10/28 | 23 | 39 | 25 | 27 | 38 |
+| Janys 10/28 | Janys 11/05 | **10** | **8** | 19 | 19 | 20 |
+| Janys 10/28 | Janys 11/05 + Tom 10/28 | 11 | 9 | 18 | 22 | 22 |
+
+- **A second day of Janys helps on a new player.** On Tom, the Watch GRU goes from elbow 22° and
+  elevation 22° to 14° and 15°. Forearm direction does not improve (25° to 28°).
+- **Janys's other day is as good as her same-day minutes.** Trained on Janys 11/05 only, the GRU
+  reaches elbow 10° and elevation 8° on Janys 10/28: E07's same-session personal result.
+- **Adding Tom to Janys 11/05 changes nothing on Janys** (11° / 9°). His data neither helps nor
+  hurts once her own day is there.
+- The phone and AirPods still add nothing; with them the GRU is 3-6° worse on the elbow.
+- Caveat: GRU predictions keep dropout on (see `docs/method_details/README.md`), so single
+  numbers can shift slightly between runs.
+
 **Limits:**
 - One test player and date: Janys 11/05.
 - The 11/05 OpenCap differs from 10/28's: 3 cameras instead of 2, 30 fps instead of 60, and
@@ -136,6 +160,8 @@ Janys, swings, median error in degrees. Full table: `results/summary.md`.
 .venv/bin/python -m experiments.E08_janys_1105.frame_methods                    # E07's other methods (~30 min)
 .venv/bin/python -m experiments.E08_janys_1105.evaluate                         # results/scores_all.json
 .venv/bin/python -m experiments.E08_janys_1105.figures
+.venv/bin/python -m experiments.E08_janys_1105.cross ridge gru                  # results/cross.json (~1 h, CPU)
+.venv/bin/python -m experiments.E08_janys_1105.cross figures                    # results/cross.md, figures/cross_*.png
 swift experiments/E08_janys_1105/vision2d.swift data/external/20261105/cameras/IMG_0021.MOV \
     data/external/20261105/cameras/IMG_0021_vision_0-1200.json --stride 6 --start 0 --seconds 1200
 .venv/bin/python -m experiments.E08_janys_1105.camera                        # results/camera.json

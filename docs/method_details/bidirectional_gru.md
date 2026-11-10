@@ -427,16 +427,26 @@ plane-of-elevation error 17° in swings.
 
 ### 8.3 Cross-session, tested on 10/28
 
-`experiments/E08_janys_1105/results/cross.json`. On 11/10 the GRU cross run was still in
-progress; only these rows existed (the ridge rows are complete, see the ridge document):
+From `experiments/E08_janys_1105/results/cross.json` (swings: 1.2 min Tom, 1.6 min Janys).
+Figures: `experiments/E08_janys_1105/figures/cross_swing.png`, `cross_all.png`.
 
 | GRU variant | Test | Trained on | Elbow | Elevation | Forearm dir. | Elbow (all) | Elev. (all) |
 |---|---|---|---|---|---|---|---|
 | Watch | Tom 10/28 | Janys 10/28 | 22 | 22 | 25 | 17 | 9 |
 | Watch | Tom 10/28 | Janys 10/28 + 11/05 | 14 | 15 | 28 | 14 | 8 |
 | Watch | Janys 10/28 | Tom 10/28 | 23 | 39 | 25 | 14 | 11 |
-
-Rerun `cross.py figures` after the run finishes to refresh `results/cross.md`.
+| Watch | Janys 10/28 | Janys 11/05 | 10 | 8 | 19 | 7 | 6 |
+| Watch | Janys 10/28 | Janys 11/05 + Tom 10/28 | 11 | 9 | 18 | 7 | 5 |
+| Watch+phone | Tom 10/28 | Janys 10/28 | 29 | 31 | 30 | 20 | 10 |
+| Watch+phone | Tom 10/28 | Janys 10/28 + 11/05 | 20 | 21 | 28 | 17 | 7 |
+| Watch+phone | Janys 10/28 | Tom 10/28 | 22 | 30 | 37 | 19 | 11 |
+| Watch+phone | Janys 10/28 | Janys 11/05 | 15 | 12 | 23 | 12 | 8 |
+| Watch+phone | Janys 10/28 | Janys 11/05 + Tom 10/28 | 14 | 11 | 28 | 13 | 8 |
+| Watch+phone+AirPods | Tom 10/28 | Janys 10/28 | 31 | 32 | 29 | 19 | 8 |
+| Watch+phone+AirPods | Tom 10/28 | Janys 10/28 + 11/05 | 18 | 20 | 30 | 18 | 7 |
+| Watch+phone+AirPods | Janys 10/28 | Tom 10/28 | 19 | 31 | 42 | 16 | 9 |
+| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 | 13 | 11 | 23 | 12 | 8 |
+| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 + Tom 10/28 | 13 | 15 | 23 | 12 | 9 |
 
 What the results say: the same player on another day costs a few degrees (elbow 10 → 14°);
 training only on the other player costs about 10° on the elbow and 20-30° on elevation (34-39° in
