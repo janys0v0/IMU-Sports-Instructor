@@ -49,7 +49,7 @@ pipeline/                 Mac-side Python, run as `python -m pipeline.<folder>.<
 ├── live/                     UDP receiver, live viewer, test senders
 └── analysis/                 trajectory and knee plots
 experiments/              offline studies E00-E03, shared code, annotations
-docs/                     plan/ (design, dev plan, tests, decisions) · research/ · deferred/
+docs/                     plan/ (design, dev plan, tests, decisions) · research/ · method_details/ · deferred/
 tools/                    checks and setup scripts
 third_party/              MobilePoser, IMUCoCo (cloned, not in git) + our patches
 data/                     recordings (not in git)
@@ -68,6 +68,7 @@ Each topic lives in exactly one file; other files link to it instead of repeatin
 | Device facts from Apple docs and forums | [`docs/research/device-research.md`](docs/research/device-research.md) |
 | OpenCap ground truth (deferred) | [`docs/deferred/opencap.md`](docs/deferred/opencap.md) |
 | Literature, model survey, proposal | [`docs/research/`](docs/research) |
+| How each arm-pose method works, step by step | [`docs/method_details/`](docs/method_details/README.md) |
 | Experiment and device-test log | [`EXPERIMENT_LOG.md`](EXPERIMENT_LOG.md) |
 | Mac pipeline and commands | [`pipeline/README.md`](pipeline/README.md) |
 | Experiments and how to run them | [`experiments/README.md`](experiments/README.md) |
