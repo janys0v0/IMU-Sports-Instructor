@@ -37,6 +37,16 @@ methods (frame-based geometry, constraints, OpenSense, published models) do on J
    - WearMoCap, MobilePoser and IMUCoCo.
    Methods built on the commercial chest and upper-arm sensors can't run: those weren't worn.
 6. `evaluate.py` scores every saved method with E07's `score`.
+7. **Video** (`camera.py`, `video.py`): the IMG_0021 clip (iPhone behind Janys, 70 min, 60 fps,
+   from the Drive folder) next to one arm panel per method and rolling curves, as in E07.
+   - jtchen's calibration of this phone wasn't shared, so the clip is synced and its projection
+     fitted from the footage itself. Apple Vision 2D keypoints (`vision2d.swift`, first 20 min at
+     10 Hz) are matched to OpenCap's markers.
+   - Offset: right-wrist speed correlation, peak 0.144 vs at most 0.074 elsewhere. It agrees with
+     the clip's recorded start (12:47:14) to under a second.
+   - Projection: normalized DLT with RANSAC, median reprojection error 8 px; it holds across all
+     three recordings.
+   - The clip is stored rotated 180°. Vision has to be told, or the keypoints come out upside down.
 
 ## Results
 
@@ -126,4 +136,9 @@ Janys, swings, median error in degrees. Full table: `results/summary.md`.
 .venv/bin/python -m experiments.E08_janys_1105.frame_methods                    # E07's other methods (~30 min)
 .venv/bin/python -m experiments.E08_janys_1105.evaluate                         # results/scores_all.json
 .venv/bin/python -m experiments.E08_janys_1105.figures
+swift experiments/E08_janys_1105/vision2d.swift data/external/20261105/cameras/IMG_0021.MOV \
+    data/external/20261105/cameras/IMG_0021_vision_0-1200.json --stride 6 --start 0 --seconds 1200
+.venv/bin/python -m experiments.E08_janys_1105.camera                        # results/camera.json
+avconvert -s data/external/20261105/cameras/IMG_0021.MOV -o data/external/20261105/cameras/IMG_0021_540.mov -p Preset960x540
+.venv/bin/python -m experiments.E08_janys_1105.video [--start S --seconds N] # results/janys/videos/ (not committed)
 ```

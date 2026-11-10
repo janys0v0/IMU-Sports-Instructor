@@ -60,6 +60,7 @@ experiments/
     ├── run.py                        trained models: 10/28 -> 11/05
     ├── frame_methods.py, opensense_run.py   E07's other Apple-only methods on 11/05
     ├── evaluate.py, figures.py       scores and figures
+    ├── camera.py, vision2d.swift, video.py   IMG_0021 clip synced and fitted; comparison video
     └── figures/
 ```
 
