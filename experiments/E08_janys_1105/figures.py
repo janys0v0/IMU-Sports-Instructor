@@ -1,9 +1,9 @@
-"""E08 figures: 10/28-trained models on 11/05, next to the same models' same-day 10/28 numbers.
+"""E08 figures: models trained on Janys + Tom 10/28, tested on Janys 11/05, next to E07's Janys 10/28 numbers.
 
 One color per training set in every figure; grey = the same model's E07 result for Janys on
-10/28 (trained on Tom + Janys's other 10/28 minutes, tested the same day).
+10/28 (trained on Tom 10/28 + Janys's other 10/28 minutes, tested on Janys 10/28).
 
-    .venv/bin/python -m experiments.E08_new_day.figures     # writes figures/*.png, results/summary.md
+    .venv/bin/python -m experiments.E08_janys_1105.figures     # writes figures/*.png, results/summary.md
 """
 
 import json
@@ -21,10 +21,10 @@ INK, INK2, GRID, SURF = "#0b0b0b", "#52514e", "#e6e5e0", "#fcfcfb"
 TRAIN = {  # training set -> (label, color): palette hues no 11/05 method uses in E07's colors.py
     "janys": ("Janys 10/28", "#2a78d6"),
     "both": ("Janys + Tom 10/28", "#e87ba4"),
-    "tom": ("Tom 10/28 (new player)", "#1baf7a"),
-    "both+half": ("Janys + Tom 10/28 + half of 11/05", "#6250d6"),
+    "tom": ("Tom 10/28", "#1baf7a"),
+    "both+half": ("Janys + Tom 10/28 + half of Janys 11/05", "#6250d6"),
 }
-SAME_DAY = ("10/28 same day (E07, + own minutes)", "#b5b4ae")
+SAME_DAY = ("tested on Janys 10/28 (E07: Tom + Janys's other 10/28 minutes)", "#b5b4ae")
 MODELS = [(m, v) for m in ("gru", "ridge") for v in ("watch", "watch_phone", "watch_phone_airpods")]
 VLABEL = {
     "watch": "Watch",
@@ -72,7 +72,9 @@ def bars(scores, ref, part):
         [f"{m.upper() if m == 'gru' else 'Ridge'}, {VLABEL[v]}" for m, v in MODELS]
     )
     handles = [plt.Rectangle((0, 0), 1, 1, color=c) for _, c in [SAME_DAY, *TRAIN.values()]]
-    labels = [SAME_DAY[0]] + [f"tested on 11/05, trained on {lab}" for lab, _ in TRAIN.values()]
+    labels = [SAME_DAY[0]] + [
+        f"tested on Janys 11/05, trained on {lab}" for lab, _ in TRAIN.values()
+    ]
     fig.legend(
         handles, labels, loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, -0.09)
     )
@@ -112,13 +114,13 @@ def traces(d, model="gru", variant="watch_phone", n=4, width=3.0):
             ax[r, c].axvline(0, color=GRID, lw=1)
             ax[r, c].grid(axis="y", color=GRID)
         ax[1, c].set_xlabel("s from swing peak")
-        ax[0, c].set_title(f"11/05 swing {c + 1}", loc="left", color=INK, fontsize=10)
+        ax[0, c].set_title(f"Janys 11/05, swing {c + 1}", loc="left", color=INK, fontsize=10)
     ax[0, 0].set_ylabel("elbow flexion (deg)")
     ax[1, 0].set_ylabel("shoulder elevation (deg)")
     h, lab = ax[0, 0].get_legend_handles_labels()
     fig.legend(h, lab, loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, -0.1))
     fig.suptitle(
-        f"{model.upper()}, {VLABEL[variant]}: four 11/05 swings", x=0.01, ha="left", color=INK
+        f"{model.upper()}, {VLABEL[variant]}: four Janys 11/05 swings", x=0.01, ha="left", color=INK
     )
     fig.savefig(FIG / f"traces_{model}_{variant}.png", dpi=130, bbox_inches="tight")
     plt.close(fig)
@@ -149,7 +151,7 @@ def over_the_day(d, model="gru", variant="watch_phone"):
             np.insert(ys, np.nonzero(gap)[0], np.nan),
         )
         ax.plot(xs, ys, "o-", color=col, ms=3.5, lw=1, label=f"trained on {lab}")
-    ax.set_xlabel("minutes since the first OpenCap segment (11/05)")
+    ax.set_xlabel("minutes since the first OpenCap segment (Janys 11/05)")
     ax.set_ylabel("elbow error per segment (deg)")
     ax.grid(axis="y", color=GRID)
     ax.legend(frameon=False, fontsize=8.5, ncol=2)
@@ -170,7 +172,7 @@ def summary(scores, ref):
         name = f"{'GRU' if m == 'gru' else 'Ridge'}, {VLABEL[v]}"
         f = lambda s, k: f"{s[k]:.0f}" if k in s else "–"  # noqa: E731
         sw, al = r.get("swing", {}), r.get("all", {})
-        rows.append(f"| {name} | *10/28 same day (E07)* | {f(sw, 'elbow_mae')} | {f(sw, 'elevation_mae')} | "
+        rows.append(f"| {name} | *tested on Janys 10/28 (E07)* | {f(sw, 'elbow_mae')} | {f(sw, 'elevation_mae')} | "
                     f"{f(sw, 'forearm_dir_deg')} | {f(al, 'elbow_mae')} | {f(al, 'elevation_mae')} |")  # fmt: skip
         for t, (lab, _) in TRAIN.items():
             s = scores.get(f"{m}_{v}_{t}", {})
@@ -263,7 +265,7 @@ def methods_bars(scores, ref, part):
     )
     fig.suptitle(
         f"Janys on 11/05: median error vs OpenCap {what}. Bar = 11/05; diamond = the same method on Janys's 10/28 data\n"
-        "(for our models: E07's same-day model of that kind). Colors as in E07; trained models in their training-set color.",
+        "(for our models: E07's model of that kind, tested on Janys 10/28). Colors as in E07; trained models in their training-set color.",
         x=0.01, ha="left", color=INK, fontsize=10.5,
     )  # fmt: skip
     fig.savefig(FIG / f"methods_{part}.png", dpi=130)

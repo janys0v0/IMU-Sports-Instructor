@@ -1,9 +1,9 @@
-# E08: Do models trained on one day work on another day?
+# E08: Arm models trained on Janys + Tom 10/28, tested on Janys 11/05
 
 **Question:** E07's own models (ridge, bidirectional GRU) reached elbow 10° and shoulder elevation
 8° in swings when trained with the player's own minutes, but those minutes came from the same
 session. Trained on 10/28, how do they do on Janys's 11/05 session? And how do E07's other
-methods (frame-based geometry, constraints, OpenSense, published models) do on the new day?
+methods (frame-based geometry, constraints, OpenSense, published models) do on Janys 11/05?
 
 **Data:**
 - **Training:** E07's Apple-only `dataset_full` for 10/28: every Calibrate segment OpenCap covers.
@@ -27,7 +27,7 @@ methods (frame-based geometry, constraints, OpenSense, published models) do on t
 4. `run.py` trains E07's models, unchanged, on four training sets and tests them on 11/05:
    - Janys 10/28;
    - Janys + Tom 10/28;
-   - Tom 10/28 (a new player as well as a new day);
+   - Tom 10/28 (another player and another date);
    - Janys + Tom 10/28 plus the other half of 11/05 (two folds in time, 10 s gap).
 5. `frame_methods.py` runs every E07 method that needs only the Apple devices, called exactly as in
    E07. Each OpenCap segment uses the latest Calibrate hold before it (six holds, every 8–10 min).
@@ -43,7 +43,7 @@ methods (frame-based geometry, constraints, OpenSense, published models) do on t
 ### Every method on 11/05
 
 Janys, swings, median error in degrees; in brackets, the same method on Janys's 10/28 data (E07;
-for our models, E07's same-day model of that kind). Figures: `figures/methods_swing.png`,
+for our models, E07's model of that kind, trained with Janys's own 10/28 minutes). Figures: `figures/methods_swing.png`,
 `figures/methods_all.png`.
 
 | Method | Elbow | Elevation | Forearm incl. | Forearm dir. |
@@ -64,7 +64,7 @@ for our models, E07's same-day model of that kind). Figures: `figures/methods_sw
 | GRU, Watch (Janys + Tom 10/28) | 14 (10) | 10 (8) | 9 (6) | 22 (13) |
 | GRU, Watch (+ half of 11/05) | 11 (10) | 8 (8) | 7 (6) | 17 (13) |
 
-- **Our GRU trained on Janys's 10/28 data is the best method on 11/05 that uses no 11/05 data.**
+- **Our GRU trained on Janys 10/28 is the best method on Janys 11/05 that uses no 11/05 data.**
   It beats every method that needs no training by 10–20° on elbow and elevation in swings.
 - **Most methods without training get worse on 11/05, including on forearm inclination,** which
   needs no heading. Watch with fixed trunk: 24° vs 15°. Two causes, both measured:
@@ -86,31 +86,31 @@ Janys, swings, median error in degrees. Full table: `results/summary.md`.
 
 | Model | Trained on | Elbow | Elevation | Forearm dir. |
 |---|---|---|---|---|
-| GRU, Watch | 10/28 same day (E07) | 10 | 8 | 13 |
-| GRU, Watch | Janys 10/28 → 11/05 | 14 | 10 | 22 |
-| GRU, Watch | Janys + Tom 10/28 → 11/05 | 14 | 10 | 22 |
-| GRU, Watch | Tom 10/28 → 11/05 | 24 | 34 | 35 |
-| GRU, Watch | Janys + Tom 10/28 + half of 11/05 | 11 | 8 | 17 |
-| Ridge, Watch+phone | 10/28 same day (E07) | 16 | 15 | 18 |
-| Ridge, Watch+phone | Janys + Tom 10/28 → 11/05 | 17 | 14 | 29 |
+| GRU, Watch | Janys 10/28, tested on Janys 10/28 (E07) | 10 | 8 | 13 |
+| GRU, Watch | Janys 10/28 → Janys 11/05 | 14 | 10 | 22 |
+| GRU, Watch | Janys + Tom 10/28 → Janys 11/05 | 14 | 10 | 22 |
+| GRU, Watch | Tom 10/28 → Janys 11/05 | 24 | 34 | 35 |
+| GRU, Watch | Janys + Tom 10/28 + half of Janys 11/05 | 11 | 8 | 17 |
+| Ridge, Watch+phone | Janys 10/28, tested on Janys 10/28 (E07) | 16 | 15 | 18 |
+| Ridge, Watch+phone | Janys + Tom 10/28 → Janys 11/05 | 17 | 14 | 29 |
 
-- **A new day for the same player costs a few degrees, not the model.**
+- **From Janys 10/28 to Janys 11/05 costs a few degrees, not the model.**
   - The Watch-only GRU goes from 10° to 14° on the elbow and from 8° to 10° on elevation.
   - Over all minutes, not just swings, it is elbow 9° and elevation 6°.
   - Ridge barely changes on the angles. Forearm direction suffers more: it is the one target that
     depends on how the trunk is oriented relative to the arm.
-- **A new player is still the problem.** Trained on Tom alone, every model is 23–27° off on the
+- **Training on another player is still the problem.** Trained on Tom 10/28 alone, every model is 23–27° off on the
   elbow and 31–44° on elevation in Janys's swings. That's the same as E07's cross-player result.
-- **Half a session from the test day closes most of the gap:** GRU elbow 11°, elevation 8°. That
-  is back at the same-day level.
-- **The phone and AirPods add nothing on a new day**, as in E07; the Watch carries the arm.
+- **Half of Janys 11/05 in training closes most of the gap:** GRU elbow 11°, elevation 8°. That
+  is back at the Janys 10/28 level.
+- **The phone and AirPods add nothing on Janys 11/05**, as in E07; the Watch carries the arm.
 - **No drift over the 67 min session.** Error per segment stays flat (`figures/error_over_session.png`).
 - **The error spikes are probably ground-truth errors.** All models jump together on five
   segments (a_s012, b_s040, b_s041, c_s000, c_s005). jtchen's README says OpenCap first tracked
   another person on b_s040 and c_s000. They are kept in the scores, as on 10/28.
 
 **Limits:**
-- One player (Janys), one new day.
+- One test player and date: Janys 11/05.
 - The 11/05 OpenCap differs from 10/28's: 3 cameras instead of 2, 30 fps instead of 60, and
   segments of about 25 s. Some of the gap may come from that change rather than the day.
 - The "half of 11/05" split is within one session, like E07's personal split.
@@ -119,11 +119,11 @@ Janys, swings, median error in degrees. Full table: `results/summary.md`.
 - OpenSense uses Janys's 10/28 scaled model (as in E07), not the 11/05 one.
 
 ```bash
-~/micromamba-envs/opensim/bin/python experiments/E08_new_day/opencap_gt.py   # OpenCap -> body rotations
-.venv/bin/python -m experiments.E08_new_day.align                            # clip -> unix per recording
-.venv/bin/python -m experiments.E08_new_day.data                             # results/janys/dataset.npz
-.venv/bin/python -m experiments.E08_new_day.run ridge gru                    # results/scores.json (~1 h, CPU)
-.venv/bin/python -m experiments.E08_new_day.frame_methods                    # E07's other methods (~30 min)
-.venv/bin/python -m experiments.E08_new_day.evaluate                         # results/scores_all.json
-.venv/bin/python -m experiments.E08_new_day.figures
+~/micromamba-envs/opensim/bin/python experiments/E08_janys_1105/opencap_gt.py   # OpenCap -> body rotations
+.venv/bin/python -m experiments.E08_janys_1105.align                            # clip -> unix per recording
+.venv/bin/python -m experiments.E08_janys_1105.data                             # results/janys/dataset.npz
+.venv/bin/python -m experiments.E08_janys_1105.run ridge gru                    # results/scores.json (~1 h, CPU)
+.venv/bin/python -m experiments.E08_janys_1105.frame_methods                    # E07's other methods (~30 min)
+.venv/bin/python -m experiments.E08_janys_1105.evaluate                         # results/scores_all.json
+.venv/bin/python -m experiments.E08_janys_1105.figures
 ```

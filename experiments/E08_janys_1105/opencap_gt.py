@@ -11,7 +11,7 @@ against the Watch, as on 10/28.
 
 Runs in the OpenSim env (see E07's opensense.py for how it was made):
 
-    ~/micromamba-envs/opensim/bin/python experiments/E08_new_day/opencap_gt.py
+    ~/micromamba-envs/opensim/bin/python experiments/E08_janys_1105/opencap_gt.py
 """
 
 import json

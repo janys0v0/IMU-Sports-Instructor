@@ -1,6 +1,6 @@
 """Score every method saved for 11/05 against OpenCap (E07's `score`: all minutes and swings).
 
-.venv/bin/python -m experiments.E08_new_day.evaluate     # writes results/scores_all.json
+.venv/bin/python -m experiments.E08_janys_1105.evaluate     # writes results/scores_all.json
 """
 
 import json

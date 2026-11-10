@@ -10,7 +10,7 @@ commercial chest and upper-arm sensors were not worn on 11/05).
 
 Each method is called exactly as in E07; only the dataset (11/05) and the output folder change.
 
-    .venv/bin/python -m experiments.E08_new_day.frame_methods [geometric constraint wearmocap published opensense]
+    .venv/bin/python -m experiments.E08_janys_1105.frame_methods [geometric constraint wearmocap published opensense]
 """
 
 import os

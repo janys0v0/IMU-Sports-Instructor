@@ -1,7 +1,7 @@
 """OpenSense IK (Watch + phone) on the 11/05 test set with E07's IK script, unchanged except for
 its inputs: E08's results folder, and only the two Apple sensors. Runs in the OpenSim env:
 
-    ~/micromamba-envs/opensim/bin/python experiments/E08_new_day/opensense_run.py
+    ~/micromamba-envs/opensim/bin/python experiments/E08_janys_1105/opensense_run.py
 """
 
 import sys

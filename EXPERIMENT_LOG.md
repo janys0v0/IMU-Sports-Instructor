@@ -15,7 +15,7 @@ method and full results.
 | E03 | Data consistency of each sensor stream (rate, missingness, delay) vs motion | [`experiments/E03_stream_quality/`](experiments/E03_stream_quality/README.md) | Done 2026-10-14 |
 | E04 | How closely do IMU joint angles match a single-camera video? | [`experiments/E04_video_validation/`](experiments/E04_video_validation/README.md) | First run 2026-10-19 |
 | E07 | Which method gives the best arm angles during swings (geometry, OpenSense, constraints, published and own models)? | [`experiments/E07_pose_methods/`](experiments/E07_pose_methods/README.md) | Done 2026-11-05 |
-| E08 | Do models trained on one day (10/28) work on another day (11/05)? | [`experiments/E08_new_day/`](experiments/E08_new_day/README.md) | Done 2026-11-10 |
+| E08 | Do arm models trained on Janys + Tom 10/28 work on Janys 11/05? | [`experiments/E08_janys_1105/`](experiments/E08_janys_1105/README.md) | Done 2026-11-10 |
 
 ## Reference recordings
 
@@ -323,12 +323,12 @@ Checked which published models could run on head + one wrist + thigh data:
   body rotations with OpenSim and aligned to the Watch per recording (unambiguous peaks, no drift).
   Test set: 35.8 min, 278 swings, session `20261105-124805-P01`.
 - E07's GRU and ridge, unchanged, trained on 10/28. Swings, Janys:
-  - Watch-only GRU: elbow 14°, elevation 10° on the new day (vs 10° / 8° within 10/28).
+  - Watch-only GRU: elbow 14°, elevation 10° on Janys 11/05 (vs 10° / 8° on Janys 10/28).
   - Trained on Tom only: 24° / 34°.
   - With half of 11/05 added to training: 11° / 8°.
   - Phone and AirPods add nothing.
 - Five segments where all models jump together look like OpenCap errors (two are documented
-  wrong-person segments). Details: [`experiments/E08_new_day/`](experiments/E08_new_day/README.md).
+  wrong-person segments). Details: [`experiments/E08_janys_1105/`](experiments/E08_janys_1105/README.md).
 - Added: every Apple-only E07 method on 11/05 (frame-based Watch orientation, constraints,
   OpenSense Watch + phone, WearMoCap, MobilePoser, IMUCoCo), with the latest Calibrate hold per
   segment. All are 23–48° off on elbow or elevation in swings. The 10/28-trained GRU is best by

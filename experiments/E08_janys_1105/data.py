@@ -6,7 +6,7 @@ Inputs: session 20261105-124805-P01 (phone + Watch + AirPods, 67 min), OpenCap r
 The E07 helpers (grid sampling, arm targets, swing detection) are reused unchanged, so the
 features and targets are computed exactly as for 10/28.
 
-    .venv/bin/python -m experiments.E08_new_day.data     # writes results/janys/dataset.npz
+    .venv/bin/python -m experiments.E08_janys_1105.data     # writes results/janys/dataset.npz
 """
 
 import json

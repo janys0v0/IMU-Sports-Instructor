@@ -5,7 +5,7 @@ Reports the correlation peak and the runner-up outside ±2 s, then re-checks the
 segment (a ±1 s search around it) so a wrong lock shows as scattered per-segment lags. Writes
 `data/external/20261105/aligned/<rec>/alignment.json` with `unix0` (clip time + unix0 = unix).
 
-    .venv/bin/python -m experiments.E08_new_day.align
+    .venv/bin/python -m experiments.E08_janys_1105.align
 """
 
 import json

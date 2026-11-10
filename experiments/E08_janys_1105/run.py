@@ -1,15 +1,15 @@
-"""Train E07's own models on 10/28 and test them on 11/05 (a different day; Janys only).
+"""Train E07's own models on Janys + Tom 10/28 and test them on Janys 11/05.
 
 Training sets (all Apple-only, every 10/28 Calibrate segment OpenCap covers, E07 `dataset_full`):
-- `janys`: Janys's 10/28 minutes (same player, new day);
+- `janys`: Janys 10/28;
 - `both`: Janys + Tom on 10/28;
-- `tom`: Tom only (new player and new day, for reference);
+- `tom`: Tom 10/28 only (another player, for reference);
 - `both+half`: both players on 10/28 plus the other half of 11/05 (two folds in time, 10 s gap),
-  i.e. how much a few minutes from the test day add.
+  i.e. how much a few Janys 11/05 minutes add.
 Inputs per variant: Watch; Watch + phone; Watch + phone + AirPods. Models: ridge and the
 bidirectional GRU, unchanged from `experiments/E07_pose_methods/learned_own.py`.
 
-    .venv/bin/python -m experiments.E08_new_day.run [ridge] [gru]    # writes results/scores.json
+    .venv/bin/python -m experiments.E08_janys_1105.run [ridge] [gru]    # writes results/scores.json
 """
 
 import json

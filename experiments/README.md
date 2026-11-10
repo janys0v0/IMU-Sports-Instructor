@@ -55,7 +55,7 @@ experiments/
 │   ├── evaluate.py, figures.py, video.py                                     scores, report figures, videos
 │   ├── colors.py                     one color per method, shared by figures, videos and the report
 │   └── figures/                      report PNGs (results/ holds data, not committed)
-└── E08_new_day/                 E07's own models trained on 10/28, tested on 11/05
+└── E08_janys_1105/                 arm models trained on Janys + Tom 10/28, tested on Janys 11/05
     ├── opencap_gt.py, align.py, data.py   11/05 OpenCap -> body rotations, clock, test set
     ├── run.py                        trained models: 10/28 -> 11/05
     ├── frame_methods.py, opensense_run.py   E07's other Apple-only methods on 11/05
