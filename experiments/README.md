@@ -57,7 +57,9 @@ experiments/
 │   └── figures/                      report PNGs (results/ holds data, not committed)
 └── E08_new_day/                 E07's own models trained on 10/28, tested on 11/05
     ├── opencap_gt.py, align.py, data.py   11/05 OpenCap -> body rotations, clock, test set
-    ├── run.py, figures.py            train/test, scores and figures
+    ├── run.py                        trained models: 10/28 -> 11/05
+    ├── frame_methods.py, opensense_run.py   E07's other Apple-only methods on 11/05
+    ├── evaluate.py, figures.py       scores and figures
     └── figures/
 ```
 

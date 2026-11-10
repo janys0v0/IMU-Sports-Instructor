@@ -329,3 +329,8 @@ Checked which published models could run on head + one wrist + thigh data:
   - Phone and AirPods add nothing.
 - Five segments where all models jump together look like OpenCap errors (two are documented
   wrong-person segments). Details: [`experiments/E08_new_day/`](experiments/E08_new_day/README.md).
+- Added: every Apple-only E07 method on 11/05 (frame-based Watch orientation, constraints,
+  OpenSense Watch + phone, WearMoCap, MobilePoser, IMUCoCo), with the latest Calibrate hold per
+  segment. All are 23–48° off on elbow or elevation in swings. The 10/28-trained GRU is best by
+  10–20°. Most get worse than on 10/28: the 11/05 ground truth is noisier (Watch vs OpenCap
+  forearm tilt in ground 7° vs 4°), and the trunk leaned slightly more.

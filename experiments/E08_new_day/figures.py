@@ -18,11 +18,11 @@ from .data import OUT, load
 FIG = Path(__file__).resolve().parent / "figures"
 E07_SCORES = Path(__file__).resolve().parents[1] / "E07_pose_methods" / "results" / "scores.json"
 INK, INK2, GRID, SURF = "#0b0b0b", "#52514e", "#e6e5e0", "#fcfcfb"
-TRAIN = {  # training set -> (label, color); fixed order, validated palette slots 1-4
+TRAIN = {  # training set -> (label, color): palette hues no 11/05 method uses in E07's colors.py
     "janys": ("Janys 10/28", "#2a78d6"),
-    "both": ("Janys + Tom 10/28", "#eb6834"),
+    "both": ("Janys + Tom 10/28", "#e87ba4"),
     "tom": ("Tom 10/28 (new player)", "#1baf7a"),
-    "both+half": ("Janys + Tom 10/28 + half of 11/05", "#eda100"),
+    "both+half": ("Janys + Tom 10/28 + half of 11/05", "#6250d6"),
 }
 SAME_DAY = ("10/28 same day (E07, + own minutes)", "#b5b4ae")
 MODELS = [(m, v) for m in ("gru", "ridge") for v in ("watch", "watch_phone", "watch_phone_airpods")]
@@ -184,12 +184,100 @@ def summary(scores, ref):
     )
 
 
+# Every method run on 11/05: name -> (label, family, E07 name for Janys's 10/28 reference marker)
+LINEUP = {
+    "watch_static_trunk": ("Watch orientation, trunk fixed", "Geometric", "watch_static_trunk"),
+    "watch_airpods_trunk": ("Watch orientation, AirPods as trunk", "Geometric", "watch_airpods_trunk"),
+    "opensense_watch_phone": ("OpenSense IK, Watch+phone", "OpenSense", "opensense_watch_phone"),
+    "constraint_watch_static_trunk": ("Joint limits + effort, Watch only", "Constraint", "constraint_watch_static_trunk"),
+    "constraint_watch_swing": ("Joint limits, swing-aware, Watch only", "Constraint", "constraint_watch_swing"),
+    "wearmocap_watch": ("WearMoCap (pretrained), Watch", "Published model", "wearmocap_watch"),
+    "wearmocap_watch_phone": ("WearMoCap (pretrained), Watch+phone", "Published model", "wearmocap_watch_phone"),
+    "mobileposer_rw_rp_h": ("MobilePoser, Watch+phone+AirPods", "Published model", "mobileposer_rw_rp_h"),
+    "mobileposer_rw_rp": ("MobilePoser, Watch+phone", "Published model", "mobileposer_rw_rp"),
+    "imucoco_rw_rp_h": ("IMUCoCo, Watch+phone+AirPods", "Published model", "imucoco_rw_rp_h"),
+    "ridge_watch_phone_both": ("Ridge, Watch+phone (Janys + Tom 10/28)", "Ours, trained on 10/28", "own_ridge_watch_phone_personal"),
+    "gru_watch_tom": ("GRU, Watch (Tom 10/28 only)", "Ours, trained on 10/28", "own_gru_watch_xplayer"),
+    "gru_watch_janys": ("GRU, Watch (Janys 10/28)", "Ours, trained on 10/28", "own_gru_watch_personal"),
+    "gru_watch_both": ("GRU, Watch (Janys + Tom 10/28)", "Ours, trained on 10/28", "own_gru_watch_personal"),
+    "gru_watch_both+half": ("GRU, Watch (+ half of 11/05)", "Ours, trained on 10/28", "own_gru_watch_personal"),
+}  # fmt: skip
+METHOD_METRICS = [("elbow_mae", "Elbow flexion error (deg)"), ("elevation_mae", "Shoulder elevation error (deg)"),
+                  ("forearm_incl_mae", "Forearm inclination error (deg)"), ("forearm_dir_deg", "Forearm direction error (deg)")]  # fmt: skip
+
+
+def method_color(name):
+    """E07's per-method color (colors.py); trained models in their training set's color."""
+    from experiments.E07_pose_methods.colors import FEATURED, OTHER
+
+    if name in FEATURED:
+        return FEATURED[name]
+    for t, (_, col) in sorted(TRAIN.items(), key=lambda kv: -len(kv[0])):
+        if name.endswith("_" + t):
+            return col
+    return OTHER
+
+
+def methods_bars(scores, ref, part):
+    """E07's line-up chart for 11/05: bar = 11/05, black diamond = the same method on 10/28."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    style(plt)
+    names = [n for n in LINEUP if n in scores]
+    fig, axes = plt.subplots(
+        1, 4, figsize=(18, 0.46 * len(names) + 1.8), sharey=True, constrained_layout=True
+    )
+    y = np.arange(len(names))[::-1]
+    for ax, (key, title) in zip(axes, METHOD_METRICS):
+        for yi, n in zip(y, names):
+            v = scores[n].get(part, {}).get(key)
+            r = ref.get(LINEUP[n][2], {}).get("janys", {}).get(part, {}).get(key)
+            if v is None:
+                ax.text(1, yi, "n/a", va="center", color=INK2, fontsize=8)
+            else:
+                ax.barh(yi, v, color=method_color(n), height=0.62)
+                ax.text(
+                    v + 0.8, yi + 0.22, f"{v:.0f}", va="bottom", fontsize=8, color=INK
+                )  # above the bar end
+            if r is not None:
+                ax.plot(r, yi, "D", color="white", mec=INK, mew=1.0, ms=5.5)
+        for k in range(1, len(names)):
+            if LINEUP[names[k]][1] != LINEUP[names[k - 1]][1]:
+                ax.axhline(y[k] + 0.5, color="#c8c7c2", lw=0.8)
+        ax.set_title(title, loc="left", fontsize=10, color=INK)
+        ax.grid(axis="x", color=GRID)
+    fams = [LINEUP[n][1] for n in names]
+    for fam in dict.fromkeys(fams):
+        ys = [yi for yi, f in zip(y, fams) if f == fam]
+        axes[-1].text(1.02, np.mean(ys), fam, transform=axes[-1].get_yaxis_transform(), va="center",
+                      fontsize=9, color=INK2)  # fmt: skip
+    axes[0].set_yticks(y)
+    axes[0].set_yticklabels([LINEUP[n][0] for n in names])
+    what = (
+        "during swings (±0.5 s around each Watch-detected swing)"
+        if part == "swing"
+        else "over all OpenCap minutes"
+    )
+    fig.suptitle(
+        f"Janys on 11/05: median error vs OpenCap {what}. Bar = 11/05; diamond = the same method on Janys's 10/28 data\n"
+        "(for our models: E07's same-day model of that kind). Colors as in E07; trained models in their training-set color.",
+        x=0.01, ha="left", color=INK, fontsize=10.5,
+    )  # fmt: skip
+    fig.savefig(FIG / f"methods_{part}.png", dpi=130)
+    plt.close(fig)
+
+
 def main():
     FIG.mkdir(exist_ok=True)
-    scores = json.loads((OUT / "scores.json").read_text())
+    path = OUT / "scores_all.json"  # every method, from evaluate.py
+    scores = json.loads((path if path.exists() else OUT / "scores.json").read_text())
     ref = json.loads(E07_SCORES.read_text())
     for part in ("swing", "all"):
         bars(scores, ref, part)
+        methods_bars(scores, ref, part)
     d = load()
     traces(d)
     over_the_day(d)

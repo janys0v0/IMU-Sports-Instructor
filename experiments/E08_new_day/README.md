@@ -2,7 +2,8 @@
 
 **Question:** E07's own models (ridge, bidirectional GRU) reached elbow 10° and shoulder elevation
 8° in swings when trained with the player's own minutes, but those minutes came from the same
-session. Trained on 10/28, how do they do on Janys's 11/05 session?
+session. Trained on 10/28, how do they do on Janys's 11/05 session? And how do E07's other
+methods (frame-based geometry, constraints, OpenSense, published models) do on the new day?
 
 **Data:**
 - **Training:** E07's Apple-only `dataset_full` for 10/28: every Calibrate segment OpenCap covers.
@@ -28,10 +29,60 @@ session. Trained on 10/28, how do they do on Janys's 11/05 session?
    - Janys + Tom 10/28;
    - Tom 10/28 (a new player as well as a new day);
    - Janys + Tom 10/28 plus the other half of 11/05 (two folds in time, 10 s gap).
+5. `frame_methods.py` runs every E07 method that needs only the Apple devices, called exactly as in
+   E07. Each OpenCap segment uses the latest Calibrate hold before it (six holds, every 8–10 min).
+   - Frame-based: Watch orientation with a fixed trunk, or with the AirPods as trunk.
+   - Joint-limit constraints, plain and swing-aware.
+   - OpenSense IK with Watch + phone (`opensense_run.py`, OpenSim env).
+   - WearMoCap, MobilePoser and IMUCoCo.
+   Methods built on the commercial chest and upper-arm sensors can't run: those weren't worn.
+6. `evaluate.py` scores every saved method with E07's `score`.
 
 ## Results
 
-Janys, swings, median error in degrees. Full table: `results/summary.md`; figures in `figures/`.
+### Every method on 11/05
+
+Janys, swings, median error in degrees; in brackets, the same method on Janys's 10/28 data (E07;
+for our models, E07's same-day model of that kind). Figures: `figures/methods_swing.png`,
+`figures/methods_all.png`.
+
+| Method | Elbow | Elevation | Forearm incl. | Forearm dir. |
+|---|---|---|---|---|
+| Watch orientation, trunk fixed | – | – | 24 (15) | 65 (44) |
+| Watch orientation, AirPods as trunk | – | – | 26 (15) | 69 (46) |
+| OpenSense IK, Watch+phone | 29 (27) | 39 (53) | 32 (34) | 62 (70) |
+| Joint limits + effort, Watch only | 34 (38) | 47 (55) | 24 (15) | 65 (44) |
+| Joint limits, swing-aware, Watch only | 34 (38) | 41 (49) | 24 (15) | 65 (44) |
+| WearMoCap (pretrained), Watch | 35 (28) | 26 (23) | 23 (13) | 58 (38) |
+| WearMoCap (pretrained), Watch+phone | 34 (28) | 23 (21) | 23 (14) | 70 (52) |
+| MobilePoser, Watch+phone+AirPods | 25 (33) | 48 (62) | 36 (23) | 73 (40) |
+| MobilePoser, Watch+phone | 24 (33) | 48 (63) | 37 (22) | 76 (39) |
+| IMUCoCo, Watch+phone+AirPods | 25 (25) | 32 (22) | 16 (11) | 66 (28) |
+| Ridge, Watch+phone (Janys + Tom 10/28) | 17 (16) | 14 (15) | 14 (8) | 29 (18) |
+| GRU, Watch (Tom 10/28 only) | 24 (21) | 34 (30) | 14 (14) | 35 (26) |
+| GRU, Watch (Janys 10/28) | 14 (10) | 10 (8) | 10 (6) | 22 (13) |
+| GRU, Watch (Janys + Tom 10/28) | 14 (10) | 10 (8) | 9 (6) | 22 (13) |
+| GRU, Watch (+ half of 11/05) | 11 (10) | 8 (8) | 7 (6) | 17 (13) |
+
+- **Our GRU trained on Janys's 10/28 data is the best method on 11/05 that uses no 11/05 data.**
+  It beats every method that needs no training by 10–20° on elbow and elevation in swings.
+- **Most methods without training get worse on 11/05, including on forearm inclination,** which
+  needs no heading. Watch with fixed trunk: 24° vs 15°. Two causes, both measured:
+  - **The 11/05 ground truth is noisier.** Compared in OpenCap's own ground frame, Watch and
+    OpenCap forearm tilt agree to 4° on 10/28 but 7° on 11/05 (swings: 6° vs 10°, r 0.94 vs
+    0.86). A few segments are off by 20–70° (b_s000, c_s005, c_s020, ...).
+  - **Janys's trunk leaned slightly more on 11/05** (median 21° from vertical vs 19°). The
+    frame-based methods assume an upright trunk; the trained models learned typical lean.
+  - A clock error is ruled out: shifting the Watch by ±100 ms doesn't change the swing error.
+- **Heading is still the weak point.** Forearm direction is 58–76° off for every method without
+  training (38–70° on 10/28).
+- **Shoulder elevation:** OpenSense, constraints and MobilePoser are slightly better on 11/05 than
+  on 10/28 but still 39–48° off in swings. WearMoCap (23–26°) and IMUCoCo (32°) are about as
+  before.
+
+### Trained models by training set
+
+Janys, swings, median error in degrees. Full table: `results/summary.md`.
 
 | Model | Trained on | Elbow | Elevation | Forearm dir. |
 |---|---|---|---|---|
@@ -64,12 +115,15 @@ Janys, swings, median error in degrees. Full table: `results/summary.md`; figure
   segments of about 25 s. Some of the gap may come from that change rather than the day.
 - The "half of 11/05" split is within one session, like E07's personal split.
 - No commercial upper-arm or chest sensors on 11/05 (one msense, 2DA6), so E07's all-sensor and
-  geometric methods can't be tested here.
+  chest + upper-arm geometric methods (its best model-free result) can't be tested here.
+- OpenSense uses Janys's 10/28 scaled model (as in E07), not the 11/05 one.
 
 ```bash
 ~/micromamba-envs/opensim/bin/python experiments/E08_new_day/opencap_gt.py   # OpenCap -> body rotations
 .venv/bin/python -m experiments.E08_new_day.align                            # clip -> unix per recording
 .venv/bin/python -m experiments.E08_new_day.data                             # results/janys/dataset.npz
 .venv/bin/python -m experiments.E08_new_day.run ridge gru                    # results/scores.json (~1 h, CPU)
+.venv/bin/python -m experiments.E08_new_day.frame_methods                    # E07's other methods (~30 min)
+.venv/bin/python -m experiments.E08_new_day.evaluate                         # results/scores_all.json
 .venv/bin/python -m experiments.E08_new_day.figures
 ```

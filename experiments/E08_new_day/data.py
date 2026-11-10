@@ -85,6 +85,33 @@ def build():
     d["body_names"], d["ik_names"] = np.array(bn), np.array(ikn)
     g = d["t"]
 
+    # Calibrate holds (3 s from each "calibrate" event, as on 10/28): each segment uses the latest
+    # hold before it, so the frame-based and published methods get the same calibration as on 10/28
+    from scipy.spatial.transform import Rotation
+
+    ev = [e for e in rec.events if e.get("name") in ("start", "calibrate")]
+    start = next(e for e in ev if e["name"] == "start")
+    # hold start = its phone time after Start (the event's own unix stamp is the hold's end)
+    holds = sorted(
+        start["unix"] + e["t_phone"] - start["t_phone"] for e in ev if e["name"] == "calibrate"
+    )
+    d["start_unix"] = start["unix"]
+    d["calibrations_s"] = np.array(holds) - start["unix"]
+    seg_hold = []
+    for kk in range(int(d["seg"].max()) + 1):
+        t0 = g[d["seg"] == kk][0]
+        before = [h for h in holds if h + 3.0 <= t0]
+        seg_hold.append(before[-1] if before else holds[0])  # segments before the first hold
+    d["hold"] = np.stack([np.array(seg_hold)[d["seg"]], np.array(seg_hold)[d["seg"]] + 3.0], 1)
+    for name in ("phone", "watch", "airpods"):
+        sd = st[name]
+        qs = []
+        for h0 in seg_hold:
+            v = on_grid(sd.t + sd.boot_to_unix, sd.quat, sd.rot_rate, sd.user_acc, sd.gravity,
+                        np.arange(h0, h0 + 3.0, 1 / FS))  # fmt: skip
+            qs.append(Rotation.from_quat(v["quat"]).mean().as_quat())
+        d[f"{name}_hold_quat"] = np.array(qs)
+
     hf = [read_file(p) for p in sorted((SESSION / "watch_hf").glob("*.bin"))]
     mot = np.concatenate([c.motion for c in hf])
     mot = mot[np.argsort(mot[:, 0])]
