@@ -119,7 +119,7 @@ def test_hits_need_an_impact_and_a_fast_arm():
 
 
 def test_figures_show_players_anonymously():
-    import matplotlib
+    matplotlib = pytest.importorskip("matplotlib")  # CI installs no plotting
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
