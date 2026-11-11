@@ -62,3 +62,21 @@ def test_only_one_render_runs_at_a_time(tmp_path, monkeypatch):
         (tmp_path / f"s{k}").mkdir()
         receiver.start_render(tmp_path / f"s{k}")
     assert len(started) == 1
+
+
+def test_opensim_segments_start_at_identity_in_the_body_frame():
+    import numpy as np
+    from scipy.spatial.transform import Rotation
+
+    from pipeline.live.opensim_live import body_frame, segment_quat
+
+    # phone calibration: forward = world +y, up = world +z (CoreMotion), left = -x
+    R_MI = np.array([[-1.0, 0, 0], [0, 0, 1.0], [0, 1.0, 0]])  # rows: left, up, forward
+    M = body_frame(R_MI)  # world -> OpenSim body (x forward, y up, z right)
+    assert np.allclose(M @ [0, 1.0, 0], [1, 0, 0]) and np.allclose(M @ [1.0, 0, 0], [0, 0, 1])
+    R_hold = Rotation.from_euler("xyz", [10, 20, 30], degrees=True).as_matrix()
+    assert np.allclose(segment_quat(M, R_hold, R_hold), [1, 0, 0, 0])  # w, x, y, z
+    # turning 90 deg about the world vertical after the hold = 90 deg about the body's y axis
+    R_now = Rotation.from_euler("z", 90, degrees=True).as_matrix() @ R_hold
+    q = segment_quat(M, R_now, R_hold)
+    assert np.allclose(Rotation.from_quat([*q[1:], q[0]]).as_rotvec(), [0, np.pi / 2, 0])
