@@ -94,6 +94,10 @@ Four methods side by side, all Watch + phone (`figures/four_methods.png`, `four_
 MobilePoser and OpenSense IK need no training; ridge and GRU are trained on Janys + Tom 10/28.
 Swings, elbow / elevation / forearm direction: MobilePoser 24 / 48 / 76, OpenSense 29 / 39 / 62,
 ridge 17 / 14 / 29, GRU 15 / 11 / 22.
+Elbow / wrist position, swings (cm, shoulder-anchored): MobilePoser 29 / 47, OpenSense 32 / 47,
+ridge 11 / 17, GRU 8 / 12; all minutes: 14 / 28, 24 / 35, 6 / 11, 5 / 8. For scale, the papers
+report WearMoCap 2.6 cm (wrist and elbow, IROS 2023; ~10 cm Watch-only, 2025) and MobilePoser
+11.9 cm (mean joint error, whole body) on their own data.
 
 ### Trained models by training set
 

@@ -354,3 +354,14 @@ Checked which published models could run on head + one wrist + thigh data:
 - Fixed: `GRU.predict` left dropout on at test time. Every E07/E08 GRU retrained and rescored
   (numbers above are the fixed ones). Janys's scores moved by about 1°; cross-player swing scores
   moved by up to 6° (E07 Watch GRU, other player: elbow 21° -> 24°, elevation 25° -> 30°).
+
+## 2026-11-11
+
+### Elbow and wrist position error in cm (E07, E08)
+
+- Added `elbow_pos_cm` and `wrist_pos_cm` to E07's `score`: shoulder-anchored in the trunk frame,
+  both arms with the player's OpenCap arm lengths, so they combine the direction errors in cm.
+  For comparing with published papers, which report joint positions in cm.
+- Janys 11/05 swings, Watch + phone: GRU 8 / 12 cm (elbow / wrist), ridge 11 / 17, MobilePoser
+  29 / 47, OpenSense 32 / 47. WearMoCap: 18 / 30 here vs 2.6 cm in its paper (its own data).
+- Cross-session scores (`cross.json`) are not rescored: `cross.py` keeps no predictions.

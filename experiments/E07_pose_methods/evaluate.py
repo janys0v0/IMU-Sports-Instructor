@@ -11,10 +11,31 @@ from .common import OUT, angle_between, load, load_method, methods
 from .data import PLAYERS, elevation_plane
 
 PLANE_MIN_ELEV = 30.0  # the plane of elevation is meaningless for a hanging arm
+SHOULDER, ELBOW, WRIST = 1, 2, 3  # OpenCap marker order (RShoulder, RElbow, RWrist)
+
+
+def arm_lengths(mk, valid):
+    """Upper-arm and forearm length (m): median OpenCap marker distances over valid frames."""
+    m = mk[valid]
+    upper = np.nanmedian(np.linalg.norm(m[:, ELBOW] - m[:, SHOULDER], axis=1))
+    fore = np.nanmedian(np.linalg.norm(m[:, WRIST] - m[:, ELBOW], axis=1))
+    return float(upper), float(fore)
+
+
+def position_errors(hum, fore, gt_hum, gt_fore, lengths):
+    """Elbow and wrist position error (cm), shoulder-anchored in the trunk frame.
+
+    Both arms get the player's OpenCap segment lengths, so only the directions differ:
+    elbow = |Lu (h - h*)|, wrist = |Lu (h - h*) + Lf (f - f*)|."""
+    lu, lf = lengths
+    e = lu * (hum - gt_hum)
+    w = e + lf * (fore - gt_fore)
+    return 100 * np.linalg.norm(e, axis=1), 100 * np.linalg.norm(w, axis=1)
 
 
 def score(d, m):
     base = d["gt_valid"] & m["valid"]
+    lengths = arm_lengths(d["gt_mk"], d["gt_valid"])
     out = {}
     for part, mask in (("all", base), ("swing", base & d["in_swing"])):
         s = {"minutes": round(float(mask.sum() / 30 / 60), 2)}
@@ -44,6 +65,12 @@ def score(d, m):
             if up.sum() > 30:
                 dp = (pl[up] - d["gt_plane"][hum_ok][up] + 180) % 360 - 180
                 s["plane_mae"] = float(np.median(np.abs(dp)))
+        both_ok = hum_ok & np.isfinite(m["fore"]).all(1)
+        if both_ok.sum() > 30:
+            pe, pw = position_errors(m["hum"][both_ok], m["fore"][both_ok],
+                                     d["gt_hum"][both_ok], d["gt_fore"][both_ok], lengths)  # fmt: skip
+            s["elbow_pos_cm"] = float(np.median(pe))
+            s["wrist_pos_cm"] = float(np.median(pw))
         el_ok = mask & np.isfinite(m["elbow"])
         if el_ok.sum() > 30:
             e = m["elbow"][el_ok] - d["gt_elbow"][el_ok]
@@ -60,7 +87,7 @@ def main():
         d = load(p)
         for name in methods(p):
             scores.setdefault(name, {})[p] = score(d, load_method(p, name))
-    (OUT / "scores.json").write_text(json.dumps(scores, indent=1))
+    (OUT / "scores.json").write_text(json.dumps(scores, indent=1) + "\n")
     cols = [
         "forearm_incl_mae",
         "elevation_mae",

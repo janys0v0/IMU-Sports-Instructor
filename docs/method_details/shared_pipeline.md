@@ -267,7 +267,14 @@ degrees (`common.py:92-93`). "med" = median over frames.
 | `elbow_mae` | elbow flexion | $\operatorname{med}\lvert e - e^*\rvert$, $e^*$ = OpenSim `elbow_flex_r`; needs > 30 frames | no | `evaluate.py:47-50` |
 | `elbow_bias` | elbow bias | $\operatorname{med}(e - e^*)$ | no | `evaluate.py:51` |
 | `elbow_r` | elbow correlation | $r(e, e^*)$ | no | `evaluate.py:52` |
+| `elbow_pos_cm` | elbow position error | shoulder at the origin, both arms with the player's OpenCap lengths $L_u, L_f$ (median RShoulder-RElbow and RElbow-RWrist marker distances); $\operatorname{med}\ 100\,\lVert L_u(\hat h-\hat h^*)\rVert$ cm; needs > 30 frames | yes | `evaluate.py` `position_errors` |
+| `wrist_pos_cm` | wrist position error | $\operatorname{med}\ 100\,\lVert L_u(\hat h-\hat h^*) + L_f(\hat f-\hat f^*)\rVert$ cm | yes | same |
 | `minutes` | scored time | frames / 30 / 60 | – | `evaluate.py:20` |
+
+Positions are for comparing with published papers, which report joint position errors in cm.
+Ours are shoulder-anchored in the trunk frame, so they leave out trunk and shoulder error; the
+papers' are measured on their own (mostly non-tennis) data. Arm lengths: Janys 24-25 / 21-22 cm,
+Tom 27 / 23 cm.
 
 Why both kinds: inclination, elevation and elbow need only gravity, so they test a method
 without its heading. The direction errors and the plane also test heading, which is the weak

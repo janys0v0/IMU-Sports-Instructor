@@ -83,3 +83,18 @@ def test_context_stays_within_segment():
     # columns: value, ±15-frame mean, std; frames next to the boundary must not see the other segment
     assert np.allclose(c[:40, 1:], 0)
     assert np.allclose(c[40:, 1], 100) and np.allclose(c[40:, 2], 0)
+
+
+def test_position_errors_use_opencap_arm_lengths():
+    from experiments.E07_pose_methods.evaluate import arm_lengths, position_errors
+
+    n = 60
+    mk = np.zeros((n, 20, 3))
+    mk[:, 2] = [0, -0.25, 0]  # RElbow 25 cm below RShoulder (index 1, at origin)
+    mk[:, 3] = [0, -0.47, 0]  # RWrist 22 cm below the elbow
+    valid = np.ones(n, bool)
+    assert np.allclose(arm_lengths(mk, valid), [0.25, 0.22])
+    down = np.tile([0, -1.0, 0], (n, 1))
+    fwd = np.tile([1.0, 0, 0], (n, 1))
+    elbow, wrist = position_errors(down, fwd, down, down, (0.25, 0.22))
+    assert np.allclose(elbow, 0) and np.allclose(wrist, 22 * np.sqrt(2))  # forearm 90 deg off
