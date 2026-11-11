@@ -90,6 +90,11 @@ for our models, E07's model of that kind, trained with Janys's own 10/28 minutes
   on 10/28 but still 39–48° off in swings. WearMoCap (23–26°) and IMUCoCo (32°) are about as
   before.
 
+Four methods side by side, all Watch + phone (`figures/four_methods.png`, `four_methods.py`):
+MobilePoser and OpenSense IK need no training; ridge and GRU are trained on Janys + Tom 10/28.
+Swings, elbow / elevation / forearm direction: MobilePoser 24 / 48 / 76, OpenSense 29 / 39 / 62,
+ridge 17 / 14 / 29, GRU 15 / 11 / 22.
+
 ### Trained models by training set
 
 Janys, swings, median error in degrees. Full table: `results/summary.md`.
@@ -162,6 +167,7 @@ Every variant: `results/cross.md`; figures `figures/cross_swing.png`, `figures/c
 .venv/bin/python -m experiments.E08_janys_1105.figures
 .venv/bin/python -m experiments.E08_janys_1105.cross ridge gru                  # results/cross.json (~1 h, CPU)
 .venv/bin/python -m experiments.E08_janys_1105.cross figures                    # results/cross.md, figures/cross_*.png
+.venv/bin/python -m experiments.E08_janys_1105.four_methods                     # figures/four_methods.png
 swift experiments/E08_janys_1105/vision2d.swift data/external/20261105/cameras/IMG_0021.MOV \
     data/external/20261105/cameras/IMG_0021_vision_0-1200.json --stride 6 --start 0 --seconds 1200
 .venv/bin/python -m experiments.E08_janys_1105.camera                        # results/camera.json
