@@ -330,8 +330,8 @@ latest Calibrate hold before it (six holds, every 8–10 min).
 
 ## 5. Our results
 
-Median absolute error vs OpenCap, degrees. "Swing" = ±0.5 s around each Watch rotation-speed
-peak above 15 rad/s (`experiments/E07_pose_methods/data.py:31`). Scoring:
+Median absolute error vs OpenCap, degrees. "Swing" = ±0.5 s around each ball contact detected from
+the Watch ([`shared_pipeline.md` §6](shared_pipeline.md#6-swing-detection-ball-contacts)). Scoring:
 `experiments/E07_pose_methods/evaluate.py:16`. Elbow bias = median(model − OpenCap); negative =
 model reads the elbow straighter.
 
@@ -339,17 +339,17 @@ model reads the elbow straighter.
 
 | Method | Player | Part | Elbow | Elbow bias | Elbow r | Shoulder elev. | Forearm incl. | Forearm dir. | Upper-arm dir. |
 |---|---|---|---|---|---|---|---|---|---|
-| Watch only | Janys | swing | 28 | +5 | 0.17 | 23 | 13 | 38 | 41 |
-| Watch only | Tom | swing | 26 | −21 | 0.70 | 17 | 11 | 33 | 27 |
+| Watch only | Janys | swing | 31 | +10 | 0.11 | 26 | 13 | 40 | 43 |
+| Watch only | Tom | swing | 26 | −19 | 0.70 | 17 | 11 | 31 | 26 |
 | Watch only | Janys | all | 20 | −15 | 0.56 | 25 | 14 | 30 | 34 |
 | Watch only | Tom | all | 15 | −9 | 0.72 | 21 | 9 | 33 | 30 |
-| Watch + phone | Janys | swing | 28 | +19 | 0.19 | 21 | 14 | 52 | 40 |
-| Watch + phone | Tom | swing | 20 | −9 | 0.65 | 22 | 11 | 63 | 52 |
+| Watch + phone | Janys | swing | 30 | +20 | 0.12 | 23 | 13 | 54 | 42 |
+| Watch + phone | Tom | swing | 19 | −6 | 0.65 | 21 | 10 | 63 | 50 |
 | Watch + phone | Janys | all | 21 | −14 | 0.45 | 26 | 17 | 37 | 40 |
 | Watch + phone | Tom | all | 14 | −7 | 0.74 | 25 | 12 | 53 | 42 |
 
-Mean of the two players, swings (`results/summary.md`): Watch only elbow 27, elevation 20,
-forearm inclination 12, forearm direction 35, upper-arm direction 34. It was the best published
+Mean of the two players, swings (`results/summary.md`): Watch only elbow 29, elevation 21,
+forearm inclination 12, forearm direction 36, upper-arm direction 34. It was the best published
 model on forearm inclination and close to IMUCoCo on forearm direction. The Watch + phone
 variant is worse on direction (the thigh-based yaw hurts).
 
@@ -357,12 +357,12 @@ variant is worse on direction (the thigh-based yaw hurts).
 
 | Method | Part | Minutes | Elbow | Elbow bias | Elbow r | Shoulder elev. | Forearm incl. | Forearm dir. | Upper-arm dir. |
 |---|---|---|---|---|---|---|---|---|---|
-| Watch only | swing | 4.6 | 35 | −11 | 0.12 | 26 | 23 | 58 | 43 |
+| Watch only | swing | 4.4 | 35 | −8 | 0.11 | 26 | 23 | 56 | 43 |
 | Watch only | all | 35.8 | 24 | −17 | 0.50 | 25 | 18 | 53 | 41 |
-| Watch + phone | swing | 4.6 | 34 | 0 | 0.03 | 23 | 23 | 70 | 48 |
+| Watch + phone | swing | 4.4 | 35 | +3 | 0.01 | 24 | 23 | 70 | 48 |
 | Watch + phone | all | 35.8 | 22 | −14 | 0.46 | 28 | 22 | 64 | 46 |
 
-Compared with Janys 10/28 (swings): elbow 28 -> 35, elevation 23 -> 26, forearm inclination
-13 -> 23, forearm direction 38 -> 58. E08's README attributes part of the drop to noisier 11/05
+Compared with Janys 10/28 (swings): elbow 31 -> 35, elevation 26 -> 26, forearm inclination
+13 -> 23, forearm direction 40 -> 56. E08's README attributes part of the drop to noisier 11/05
 ground truth and more trunk lean. Our GRU trained on Janys 10/28 beats it on every metric
 (swings: elbow 14, elevation 11, forearm direction 23).

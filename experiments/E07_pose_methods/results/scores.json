@@ -17,19 +17,19 @@
     "elbow_r": 0.784
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 80.359,
-    "forearm_incl_mae": 22.993,
-    "forearm_incl_r": 0.551,
-    "upper_arm_dir_deg": 91.738,
-    "elevation_mae": 22.335,
-    "elevation_r": 0.718,
-    "plane_mae": 114.162,
-    "elbow_pos_cm": 35.67,
-    "wrist_pos_cm": 60.357,
-    "elbow_mae": 22.727,
-    "elbow_bias": -14.933,
-    "elbow_r": 0.409
+    "minutes": 0.8,
+    "forearm_dir_deg": 77.436,
+    "forearm_incl_mae": 22.202,
+    "forearm_incl_r": 0.486,
+    "upper_arm_dir_deg": 91.458,
+    "elevation_mae": 22.571,
+    "elevation_r": 0.729,
+    "plane_mae": 111.265,
+    "elbow_pos_cm": 35.585,
+    "wrist_pos_cm": 59.361,
+    "elbow_mae": 21.98,
+    "elbow_bias": -12.498,
+    "elbow_r": 0.386
    }
   },
   "tom": {
@@ -49,19 +49,19 @@
     "elbow_r": 0.799
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 44.104,
-    "forearm_incl_mae": 19.922,
-    "forearm_incl_r": 0.841,
-    "upper_arm_dir_deg": 40.133,
-    "elevation_mae": 12.521,
-    "elevation_r": 0.632,
-    "plane_mae": 68.508,
-    "elbow_pos_cm": 18.809,
-    "wrist_pos_cm": 32.857,
-    "elbow_mae": 18.423,
-    "elbow_bias": -16.777,
-    "elbow_r": 0.704
+    "minutes": 1.5,
+    "forearm_dir_deg": 45.606,
+    "forearm_incl_mae": 20.337,
+    "forearm_incl_r": 0.849,
+    "upper_arm_dir_deg": 41.655,
+    "elevation_mae": 12.69,
+    "elevation_r": 0.654,
+    "plane_mae": 70.633,
+    "elbow_pos_cm": 19.491,
+    "wrist_pos_cm": 33.484,
+    "elbow_mae": 18.104,
+    "elbow_bias": -16.684,
+    "elbow_r": 0.718
    }
   }
  },
@@ -83,19 +83,19 @@
     "elbow_r": 0.784
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 59.706,
-    "forearm_incl_mae": 21.286,
-    "forearm_incl_r": 0.718,
-    "upper_arm_dir_deg": 83.675,
-    "elevation_mae": 19.479,
-    "elevation_r": 0.812,
-    "plane_mae": 96.651,
-    "elbow_pos_cm": 33.149,
-    "wrist_pos_cm": 51.418,
-    "elbow_mae": 22.727,
-    "elbow_bias": -14.933,
-    "elbow_r": 0.409
+    "minutes": 0.8,
+    "forearm_dir_deg": 58.934,
+    "forearm_incl_mae": 21.047,
+    "forearm_incl_r": 0.683,
+    "upper_arm_dir_deg": 83.043,
+    "elevation_mae": 20.823,
+    "elevation_r": 0.813,
+    "plane_mae": 94.942,
+    "elbow_pos_cm": 32.944,
+    "wrist_pos_cm": 51.127,
+    "elbow_mae": 21.98,
+    "elbow_bias": -12.498,
+    "elbow_r": 0.386
    }
   },
   "tom": {
@@ -115,19 +115,19 @@
     "elbow_r": 0.799
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 44.235,
-    "forearm_incl_mae": 14.422,
-    "forearm_incl_r": 0.913,
-    "upper_arm_dir_deg": 40.899,
-    "elevation_mae": 11.417,
-    "elevation_r": 0.749,
-    "plane_mae": 68.216,
-    "elbow_pos_cm": 19.153,
-    "wrist_pos_cm": 34.857,
-    "elbow_mae": 18.423,
-    "elbow_bias": -16.777,
-    "elbow_r": 0.704
+    "minutes": 1.5,
+    "forearm_dir_deg": 44.708,
+    "forearm_incl_mae": 13.882,
+    "forearm_incl_r": 0.918,
+    "upper_arm_dir_deg": 43.187,
+    "elevation_mae": 11.973,
+    "elevation_r": 0.74,
+    "plane_mae": 70.086,
+    "elbow_pos_cm": 20.174,
+    "wrist_pos_cm": 35.968,
+    "elbow_mae": 18.104,
+    "elbow_bias": -16.684,
+    "elbow_r": 0.718
    }
   }
  },
@@ -140,10 +140,10 @@
     "forearm_incl_r": 0.827
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 59.706,
-    "forearm_incl_mae": 21.286,
-    "forearm_incl_r": 0.718
+    "minutes": 0.8,
+    "forearm_dir_deg": 58.934,
+    "forearm_incl_mae": 21.047,
+    "forearm_incl_r": 0.683
    }
   },
   "tom": {
@@ -154,10 +154,10 @@
     "forearm_incl_r": 0.929
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 44.235,
-    "forearm_incl_mae": 14.422,
-    "forearm_incl_r": 0.913
+    "minutes": 1.5,
+    "forearm_dir_deg": 44.708,
+    "forearm_incl_mae": 13.882,
+    "forearm_incl_r": 0.918
    }
   }
  },
@@ -179,19 +179,19 @@
     "elbow_r": 0.32
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 59.706,
-    "forearm_incl_mae": 21.286,
-    "forearm_incl_r": 0.718,
-    "upper_arm_dir_deg": 90.322,
-    "elevation_mae": 56.836,
-    "elevation_r": -0.039,
-    "plane_mae": 111.605,
-    "elbow_pos_cm": 35.24,
-    "wrist_pos_cm": 51.556,
-    "elbow_mae": 34.887,
-    "elbow_bias": 31.316,
-    "elbow_r": 0.124
+    "minutes": 0.8,
+    "forearm_dir_deg": 58.934,
+    "forearm_incl_mae": 21.047,
+    "forearm_incl_r": 0.683,
+    "upper_arm_dir_deg": 91.508,
+    "elevation_mae": 58.284,
+    "elevation_r": -0.079,
+    "plane_mae": 109.752,
+    "elbow_pos_cm": 35.601,
+    "wrist_pos_cm": 51.47,
+    "elbow_mae": 37.117,
+    "elbow_bias": 34.169,
+    "elbow_r": 0.036
    }
   },
   "tom": {
@@ -211,19 +211,19 @@
     "elbow_r": 0.697
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 44.235,
-    "forearm_incl_mae": 14.422,
-    "forearm_incl_r": 0.913,
-    "upper_arm_dir_deg": 41.372,
-    "elevation_mae": 24.935,
-    "elevation_r": 0.282,
-    "plane_mae": 60.252,
-    "elbow_pos_cm": 19.364,
-    "wrist_pos_cm": 35.246,
-    "elbow_mae": 17.914,
-    "elbow_bias": 8.803,
-    "elbow_r": 0.616
+    "minutes": 1.5,
+    "forearm_dir_deg": 44.708,
+    "forearm_incl_mae": 13.882,
+    "forearm_incl_r": 0.918,
+    "upper_arm_dir_deg": 42.675,
+    "elevation_mae": 25.513,
+    "elevation_r": 0.269,
+    "plane_mae": 66.916,
+    "elbow_pos_cm": 19.946,
+    "wrist_pos_cm": 35.823,
+    "elbow_mae": 18.84,
+    "elbow_bias": 11.268,
+    "elbow_r": 0.593
    }
   }
  },
@@ -245,19 +245,19 @@
     "elbow_r": 0.237
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 44.241,
-    "forearm_incl_mae": 15.345,
-    "forearm_incl_r": 0.823,
-    "upper_arm_dir_deg": 86.709,
-    "elevation_mae": 54.784,
-    "elevation_r": -0.069,
-    "plane_mae": 83.573,
-    "elbow_pos_cm": 34.118,
-    "wrist_pos_cm": 43.546,
-    "elbow_mae": 37.889,
-    "elbow_bias": 35.854,
-    "elbow_r": 0.067
+    "minutes": 0.8,
+    "forearm_dir_deg": 44.792,
+    "forearm_incl_mae": 15.005,
+    "forearm_incl_r": 0.769,
+    "upper_arm_dir_deg": 87.47,
+    "elevation_mae": 57.536,
+    "elevation_r": -0.083,
+    "plane_mae": 83.248,
+    "elbow_pos_cm": 34.357,
+    "wrist_pos_cm": 43.601,
+    "elbow_mae": 44.078,
+    "elbow_bias": 41.838,
+    "elbow_r": -0.017
    }
   },
   "tom": {
@@ -277,19 +277,19 @@
     "elbow_r": 0.725
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 31.083,
-    "forearm_incl_mae": 15.466,
-    "forearm_incl_r": 0.925,
-    "upper_arm_dir_deg": 38.488,
-    "elevation_mae": 24.597,
-    "elevation_r": 0.199,
-    "plane_mae": 46.478,
-    "elbow_pos_cm": 18.068,
-    "wrist_pos_cm": 24.012,
-    "elbow_mae": 15.373,
-    "elbow_bias": -1.197,
-    "elbow_r": 0.638
+    "minutes": 1.5,
+    "forearm_dir_deg": 29.216,
+    "forearm_incl_mae": 14.399,
+    "forearm_incl_r": 0.932,
+    "upper_arm_dir_deg": 38.804,
+    "elevation_mae": 25.438,
+    "elevation_r": 0.179,
+    "plane_mae": 48.225,
+    "elbow_pos_cm": 18.21,
+    "wrist_pos_cm": 24.049,
+    "elbow_mae": 15.672,
+    "elbow_bias": 1.122,
+    "elbow_r": 0.626
    }
   }
  },
@@ -311,19 +311,19 @@
     "elbow_r": 0.212
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 44.241,
-    "forearm_incl_mae": 15.345,
-    "forearm_incl_r": 0.823,
-    "upper_arm_dir_deg": 83.957,
-    "elevation_mae": 49.265,
-    "elevation_r": -0.123,
-    "plane_mae": 72.05,
-    "elbow_pos_cm": 33.24,
-    "wrist_pos_cm": 40.557,
-    "elbow_mae": 37.506,
-    "elbow_bias": 34.496,
-    "elbow_r": -0.082
+    "minutes": 0.8,
+    "forearm_dir_deg": 44.792,
+    "forearm_incl_mae": 15.005,
+    "forearm_incl_r": 0.769,
+    "upper_arm_dir_deg": 85.401,
+    "elevation_mae": 48.851,
+    "elevation_r": -0.198,
+    "plane_mae": 71.644,
+    "elbow_pos_cm": 33.703,
+    "wrist_pos_cm": 40.642,
+    "elbow_mae": 43.228,
+    "elbow_bias": 40.722,
+    "elbow_r": -0.182
    }
   },
   "tom": {
@@ -343,19 +343,19 @@
     "elbow_r": 0.679
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 31.083,
-    "forearm_incl_mae": 15.466,
-    "forearm_incl_r": 0.925,
-    "upper_arm_dir_deg": 39.406,
-    "elevation_mae": 20.072,
-    "elevation_r": 0.334,
-    "plane_mae": 46.046,
-    "elbow_pos_cm": 18.482,
-    "wrist_pos_cm": 24.813,
-    "elbow_mae": 17.752,
-    "elbow_bias": -11.649,
-    "elbow_r": 0.543
+    "minutes": 1.5,
+    "forearm_dir_deg": 29.216,
+    "forearm_incl_mae": 14.399,
+    "forearm_incl_r": 0.932,
+    "upper_arm_dir_deg": 39.785,
+    "elevation_mae": 20.324,
+    "elevation_r": 0.316,
+    "plane_mae": 45.77,
+    "elbow_pos_cm": 18.652,
+    "wrist_pos_cm": 24.6,
+    "elbow_mae": 17.301,
+    "elbow_bias": -10.222,
+    "elbow_r": 0.537
    }
   }
  },
@@ -377,19 +377,19 @@
     "elbow_r": -0.199
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 44.241,
-    "forearm_incl_mae": 15.345,
-    "forearm_incl_r": 0.823,
-    "upper_arm_dir_deg": 111.542,
-    "elevation_mae": 17.952,
-    "elevation_r": 0.831,
-    "plane_mae": 147.636,
-    "elbow_pos_cm": 41.089,
-    "wrist_pos_cm": 47.823,
-    "elbow_mae": 63.452,
-    "elbow_bias": 63.452,
-    "elbow_r": -0.139
+    "minutes": 0.8,
+    "forearm_dir_deg": 44.792,
+    "forearm_incl_mae": 15.005,
+    "forearm_incl_r": 0.769,
+    "upper_arm_dir_deg": 113.932,
+    "elevation_mae": 19.206,
+    "elevation_r": 0.82,
+    "plane_mae": 145.942,
+    "elbow_pos_cm": 41.663,
+    "wrist_pos_cm": 47.99,
+    "elbow_mae": 71.609,
+    "elbow_bias": 71.609,
+    "elbow_r": -0.246
    }
   },
   "tom": {
@@ -409,19 +409,19 @@
     "elbow_r": 0.56
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 31.083,
-    "forearm_incl_mae": 15.466,
-    "forearm_incl_r": 0.925,
-    "upper_arm_dir_deg": 37.206,
-    "elevation_mae": 8.211,
-    "elevation_r": 0.858,
-    "plane_mae": 71.289,
-    "elbow_pos_cm": 17.488,
-    "wrist_pos_cm": 25.498,
-    "elbow_mae": 22.887,
-    "elbow_bias": -15.823,
-    "elbow_r": 0.371
+    "minutes": 1.5,
+    "forearm_dir_deg": 29.216,
+    "forearm_incl_mae": 14.399,
+    "forearm_incl_r": 0.932,
+    "upper_arm_dir_deg": 38.986,
+    "elevation_mae": 8.329,
+    "elevation_r": 0.859,
+    "plane_mae": 82.275,
+    "elbow_pos_cm": 18.293,
+    "wrist_pos_cm": 26.375,
+    "elbow_mae": 21.078,
+    "elbow_bias": -11.162,
+    "elbow_r": 0.363
    }
   }
  },
@@ -443,19 +443,19 @@
     "elbow_r": -0.194
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 55.868,
-    "forearm_incl_mae": 17.656,
-    "forearm_incl_r": 0.756,
-    "upper_arm_dir_deg": 91.672,
-    "elevation_mae": 20.326,
-    "elevation_r": 0.679,
-    "plane_mae": 109.084,
-    "elbow_pos_cm": 35.65,
-    "wrist_pos_cm": 44.608,
-    "elbow_mae": 76.65,
-    "elbow_bias": 76.65,
-    "elbow_r": 0.032
+    "minutes": 0.8,
+    "forearm_dir_deg": 52.859,
+    "forearm_incl_mae": 17.103,
+    "forearm_incl_r": 0.687,
+    "upper_arm_dir_deg": 101.186,
+    "elevation_mae": 19.971,
+    "elevation_r": 0.652,
+    "plane_mae": 116.392,
+    "elbow_pos_cm": 38.399,
+    "wrist_pos_cm": 45.904,
+    "elbow_mae": 82.9,
+    "elbow_bias": 82.9,
+    "elbow_r": -0.106
    }
   },
   "tom": {
@@ -475,19 +475,19 @@
     "elbow_r": 0.556
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 86.619,
-    "forearm_incl_mae": 15.924,
-    "forearm_incl_r": 0.746,
-    "upper_arm_dir_deg": 58.615,
-    "elevation_mae": 10.333,
-    "elevation_r": 0.78,
-    "plane_mae": 135.308,
-    "elbow_pos_cm": 26.833,
-    "wrist_pos_cm": 46.091,
-    "elbow_mae": 24.411,
-    "elbow_bias": 5.959,
-    "elbow_r": 0.481
+    "minutes": 1.5,
+    "forearm_dir_deg": 81.37,
+    "forearm_incl_mae": 16.308,
+    "forearm_incl_r": 0.73,
+    "upper_arm_dir_deg": 54.796,
+    "elevation_mae": 9.837,
+    "elevation_r": 0.806,
+    "plane_mae": 131.022,
+    "elbow_pos_cm": 25.226,
+    "wrist_pos_cm": 45.049,
+    "elbow_mae": 23.468,
+    "elbow_bias": 5.143,
+    "elbow_r": 0.474
    }
   }
  },
@@ -509,19 +509,19 @@
     "elbow_r": -0.199
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 79.917,
-    "forearm_incl_mae": 12.665,
-    "forearm_incl_r": 0.781,
-    "upper_arm_dir_deg": 91.672,
-    "elevation_mae": 20.326,
-    "elevation_r": 0.679,
-    "plane_mae": 109.084,
-    "elbow_pos_cm": 35.65,
-    "wrist_pos_cm": 53.483,
-    "elbow_mae": 63.452,
-    "elbow_bias": 63.452,
-    "elbow_r": -0.139
+    "minutes": 0.8,
+    "forearm_dir_deg": 70.601,
+    "forearm_incl_mae": 12.285,
+    "forearm_incl_r": 0.698,
+    "upper_arm_dir_deg": 101.186,
+    "elevation_mae": 19.971,
+    "elevation_r": 0.652,
+    "plane_mae": 116.392,
+    "elbow_pos_cm": 38.399,
+    "wrist_pos_cm": 54.185,
+    "elbow_mae": 71.609,
+    "elbow_bias": 71.609,
+    "elbow_r": -0.246
    }
   },
   "tom": {
@@ -541,19 +541,19 @@
     "elbow_r": 0.56
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 82.497,
-    "forearm_incl_mae": 13.964,
-    "forearm_incl_r": 0.903,
-    "upper_arm_dir_deg": 58.615,
-    "elevation_mae": 10.333,
-    "elevation_r": 0.78,
-    "plane_mae": 135.308,
-    "elbow_pos_cm": 26.833,
-    "wrist_pos_cm": 51.496,
-    "elbow_mae": 22.887,
-    "elbow_bias": -15.823,
-    "elbow_r": 0.371
+    "minutes": 1.5,
+    "forearm_dir_deg": 87.742,
+    "forearm_incl_mae": 13.176,
+    "forearm_incl_r": 0.913,
+    "upper_arm_dir_deg": 54.796,
+    "elevation_mae": 9.837,
+    "elevation_r": 0.806,
+    "plane_mae": 131.022,
+    "elbow_pos_cm": 25.226,
+    "wrist_pos_cm": 52.039,
+    "elbow_mae": 21.078,
+    "elbow_bias": -11.162,
+    "elbow_r": 0.363
    }
   }
  },
@@ -575,19 +575,19 @@
     "elbow_r": 0.311
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 112.481,
-    "forearm_incl_mae": 18.39,
-    "forearm_incl_r": 0.665,
-    "upper_arm_dir_deg": 74.452,
-    "elevation_mae": 15.732,
-    "elevation_r": 0.838,
-    "plane_mae": 92.239,
-    "elbow_pos_cm": 30.065,
-    "wrist_pos_cm": 59.592,
-    "elbow_mae": 39.971,
-    "elbow_bias": 36.513,
-    "elbow_r": 0.123
+    "minutes": 0.8,
+    "forearm_dir_deg": 118.73,
+    "forearm_incl_mae": 18.897,
+    "forearm_incl_r": 0.609,
+    "upper_arm_dir_deg": 72.099,
+    "elevation_mae": 16.39,
+    "elevation_r": 0.816,
+    "plane_mae": 82.938,
+    "elbow_pos_cm": 29.246,
+    "wrist_pos_cm": 60.657,
+    "elbow_mae": 41.657,
+    "elbow_bias": 39.408,
+    "elbow_r": 0.026
    }
   },
   "tom": {
@@ -607,19 +607,19 @@
     "elbow_r": 0.443
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 68.849,
-    "forearm_incl_mae": 22.964,
-    "forearm_incl_r": 0.46,
-    "upper_arm_dir_deg": 39.523,
-    "elevation_mae": 10.025,
-    "elevation_r": 0.701,
-    "plane_mae": 78.414,
-    "elbow_pos_cm": 18.534,
-    "wrist_pos_cm": 41.097,
-    "elbow_mae": 22.498,
-    "elbow_bias": -14.257,
-    "elbow_r": 0.314
+    "minutes": 1.5,
+    "forearm_dir_deg": 72.414,
+    "forearm_incl_mae": 23.398,
+    "forearm_incl_r": 0.426,
+    "upper_arm_dir_deg": 43.011,
+    "elevation_mae": 10.781,
+    "elevation_r": 0.674,
+    "plane_mae": 92.779,
+    "elbow_pos_cm": 20.096,
+    "wrist_pos_cm": 42.958,
+    "elbow_mae": 22.574,
+    "elbow_bias": -13.204,
+    "elbow_r": 0.271
    }
   }
  },
@@ -641,19 +641,19 @@
     "elbow_r": -0.174
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 79.917,
-    "forearm_incl_mae": 12.665,
-    "forearm_incl_r": 0.781,
-    "upper_arm_dir_deg": 53.119,
-    "elevation_mae": 21.658,
-    "elevation_r": 0.716,
-    "plane_mae": 51.21,
-    "elbow_pos_cm": 22.221,
-    "wrist_pos_cm": 40.331,
-    "elbow_mae": 80.669,
-    "elbow_bias": 80.669,
-    "elbow_r": 0.147
+    "minutes": 0.8,
+    "forearm_dir_deg": 70.601,
+    "forearm_incl_mae": 12.285,
+    "forearm_incl_r": 0.698,
+    "upper_arm_dir_deg": 57.786,
+    "elevation_mae": 23.341,
+    "elevation_r": 0.707,
+    "plane_mae": 55.834,
+    "elbow_pos_cm": 24.012,
+    "wrist_pos_cm": 40.224,
+    "elbow_mae": 86.574,
+    "elbow_bias": 86.574,
+    "elbow_r": 0.11
    }
   },
   "tom": {
@@ -673,19 +673,19 @@
     "elbow_r": 0.664
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 82.497,
-    "forearm_incl_mae": 13.964,
-    "forearm_incl_r": 0.903,
-    "upper_arm_dir_deg": 54.258,
-    "elevation_mae": 10.174,
-    "elevation_r": 0.771,
-    "plane_mae": 121.637,
-    "elbow_pos_cm": 24.997,
-    "wrist_pos_cm": 50.307,
-    "elbow_mae": 25.005,
-    "elbow_bias": -2.579,
-    "elbow_r": 0.253
+    "minutes": 1.5,
+    "forearm_dir_deg": 87.742,
+    "forearm_incl_mae": 13.176,
+    "forearm_incl_r": 0.913,
+    "upper_arm_dir_deg": 48.569,
+    "elevation_mae": 9.866,
+    "elevation_r": 0.8,
+    "plane_mae": 112.6,
+    "elbow_pos_cm": 22.545,
+    "wrist_pos_cm": 49.998,
+    "elbow_mae": 25.37,
+    "elbow_bias": 3.187,
+    "elbow_r": 0.266
    }
   }
  },
@@ -707,19 +707,19 @@
     "elbow_r": 0.632
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 27.861,
-    "forearm_incl_mae": 10.6,
-    "forearm_incl_r": 0.777,
-    "upper_arm_dir_deg": 41.226,
-    "elevation_mae": 22.266,
-    "elevation_r": 0.425,
-    "plane_mae": 23.562,
-    "elbow_pos_cm": 17.496,
-    "wrist_pos_cm": 21.732,
-    "elbow_mae": 24.587,
-    "elbow_bias": -3.648,
-    "elbow_r": 0.462
+    "minutes": 0.8,
+    "forearm_dir_deg": 29.458,
+    "forearm_incl_mae": 10.405,
+    "forearm_incl_r": 0.682,
+    "upper_arm_dir_deg": 40.946,
+    "elevation_mae": 23.925,
+    "elevation_r": 0.289,
+    "plane_mae": 22.508,
+    "elbow_pos_cm": 17.382,
+    "wrist_pos_cm": 22.347,
+    "elbow_mae": 25.41,
+    "elbow_bias": -0.407,
+    "elbow_r": 0.406
    }
   },
   "tom": {
@@ -739,19 +739,19 @@
     "elbow_r": 0.587
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 37.819,
-    "forearm_incl_mae": 13.027,
-    "forearm_incl_r": 0.879,
-    "upper_arm_dir_deg": 59.911,
-    "elevation_mae": 30.123,
-    "elevation_r": 0.302,
-    "plane_mae": 68.426,
-    "elbow_pos_cm": 27.373,
-    "wrist_pos_cm": 37.825,
-    "elbow_mae": 35.241,
-    "elbow_bias": -33.735,
-    "elbow_r": 0.597
+    "minutes": 1.5,
+    "forearm_dir_deg": 37.567,
+    "forearm_incl_mae": 12.856,
+    "forearm_incl_r": 0.887,
+    "upper_arm_dir_deg": 60.787,
+    "elevation_mae": 31.185,
+    "elevation_r": 0.339,
+    "plane_mae": 67.311,
+    "elbow_pos_cm": 27.735,
+    "wrist_pos_cm": 37.916,
+    "elbow_mae": 35.666,
+    "elbow_bias": -34.213,
+    "elbow_r": 0.592
    }
   }
  },
@@ -773,19 +773,19 @@
     "elbow_r": 0.581
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 30.785,
-    "forearm_incl_mae": 13.768,
-    "forearm_incl_r": 0.768,
-    "upper_arm_dir_deg": 48.895,
-    "elevation_mae": 21.97,
-    "elevation_r": 0.519,
-    "plane_mae": 34.713,
-    "elbow_pos_cm": 20.568,
-    "wrist_pos_cm": 26.537,
-    "elbow_mae": 24.603,
-    "elbow_bias": -7.288,
-    "elbow_r": 0.463
+    "minutes": 0.8,
+    "forearm_dir_deg": 29.908,
+    "forearm_incl_mae": 13.219,
+    "forearm_incl_r": 0.7,
+    "upper_arm_dir_deg": 48.469,
+    "elevation_mae": 22.882,
+    "elevation_r": 0.333,
+    "plane_mae": 32.124,
+    "elbow_pos_cm": 20.399,
+    "wrist_pos_cm": 25.684,
+    "elbow_mae": 23.406,
+    "elbow_bias": -3.815,
+    "elbow_r": 0.406
    }
   },
   "tom": {
@@ -805,19 +805,19 @@
     "elbow_r": 0.554
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 63.36,
-    "forearm_incl_mae": 15.623,
-    "forearm_incl_r": 0.872,
-    "upper_arm_dir_deg": 76.79,
-    "elevation_mae": 25.58,
-    "elevation_r": 0.467,
-    "plane_mae": 106.057,
-    "elbow_pos_cm": 34.047,
-    "wrist_pos_cm": 53.931,
-    "elbow_mae": 35.856,
-    "elbow_bias": -35.252,
-    "elbow_r": 0.492
+    "minutes": 1.5,
+    "forearm_dir_deg": 63.364,
+    "forearm_incl_mae": 15.196,
+    "forearm_incl_r": 0.881,
+    "upper_arm_dir_deg": 77.574,
+    "elevation_mae": 26.332,
+    "elevation_r": 0.494,
+    "plane_mae": 106.933,
+    "elbow_pos_cm": 34.34,
+    "wrist_pos_cm": 55.006,
+    "elbow_mae": 35.7,
+    "elbow_bias": -35.152,
+    "elbow_r": 0.486
    }
   }
  },
@@ -839,19 +839,19 @@
     "elbow_r": 0.576
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 34.334,
-    "forearm_incl_mae": 16.36,
-    "forearm_incl_r": 0.716,
-    "upper_arm_dir_deg": 50.275,
-    "elevation_mae": 24.502,
-    "elevation_r": 0.488,
-    "plane_mae": 36.888,
-    "elbow_pos_cm": 21.111,
-    "wrist_pos_cm": 28.682,
-    "elbow_mae": 24.333,
-    "elbow_bias": -7.541,
-    "elbow_r": 0.458
+    "minutes": 0.8,
+    "forearm_dir_deg": 32.639,
+    "forearm_incl_mae": 15.525,
+    "forearm_incl_r": 0.661,
+    "upper_arm_dir_deg": 50.116,
+    "elevation_mae": 26.253,
+    "elevation_r": 0.338,
+    "plane_mae": 33.598,
+    "elbow_pos_cm": 21.048,
+    "wrist_pos_cm": 28.06,
+    "elbow_mae": 23.322,
+    "elbow_bias": -3.635,
+    "elbow_r": 0.412
    }
   },
   "tom": {
@@ -871,19 +871,19 @@
     "elbow_r": 0.554
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 66.141,
-    "forearm_incl_mae": 14.617,
-    "forearm_incl_r": 0.876,
-    "upper_arm_dir_deg": 79.297,
-    "elevation_mae": 25.782,
-    "elevation_r": 0.451,
-    "plane_mae": 114.584,
-    "elbow_pos_cm": 34.978,
-    "wrist_pos_cm": 55.474,
-    "elbow_mae": 35.199,
-    "elbow_bias": -34.278,
-    "elbow_r": 0.482
+    "minutes": 1.5,
+    "forearm_dir_deg": 65.964,
+    "forearm_incl_mae": 14.28,
+    "forearm_incl_r": 0.885,
+    "upper_arm_dir_deg": 80.041,
+    "elevation_mae": 26.808,
+    "elevation_r": 0.479,
+    "plane_mae": 115.715,
+    "elbow_pos_cm": 35.252,
+    "wrist_pos_cm": 56.553,
+    "elbow_mae": 35.196,
+    "elbow_bias": -34.367,
+    "elbow_r": 0.479
    }
   }
  },
@@ -905,19 +905,19 @@
     "elbow_r": 0.363
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 38.772,
-    "forearm_incl_mae": 22.399,
-    "forearm_incl_r": 0.583,
-    "upper_arm_dir_deg": 73.535,
-    "elevation_mae": 63.433,
-    "elevation_r": 0.208,
-    "plane_mae": 61.518,
-    "elbow_pos_cm": 29.747,
-    "wrist_pos_cm": 38.975,
-    "elbow_mae": 32.739,
-    "elbow_bias": 31.014,
-    "elbow_r": 0.107
+    "minutes": 0.8,
+    "forearm_dir_deg": 35.954,
+    "forearm_incl_mae": 20.612,
+    "forearm_incl_r": 0.486,
+    "upper_arm_dir_deg": 76.183,
+    "elevation_mae": 65.234,
+    "elevation_r": 0.117,
+    "plane_mae": 59.828,
+    "elbow_pos_cm": 30.659,
+    "wrist_pos_cm": 38.941,
+    "elbow_mae": 38.041,
+    "elbow_bias": 36.677,
+    "elbow_r": 0.02
    }
   },
   "tom": {
@@ -937,19 +937,19 @@
     "elbow_r": 0.575
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 50.989,
-    "forearm_incl_mae": 24.863,
-    "forearm_incl_r": 0.503,
-    "upper_arm_dir_deg": 39.509,
-    "elevation_mae": 16.456,
-    "elevation_r": 0.305,
-    "plane_mae": 62.843,
-    "elbow_pos_cm": 18.528,
-    "wrist_pos_cm": 30.747,
-    "elbow_mae": 22.86,
-    "elbow_bias": 16.72,
-    "elbow_r": 0.557
+    "minutes": 1.5,
+    "forearm_dir_deg": 50.233,
+    "forearm_incl_mae": 23.744,
+    "forearm_incl_r": 0.52,
+    "upper_arm_dir_deg": 40.112,
+    "elevation_mae": 16.616,
+    "elevation_r": 0.294,
+    "plane_mae": 61.85,
+    "elbow_pos_cm": 18.8,
+    "wrist_pos_cm": 30.675,
+    "elbow_mae": 25.825,
+    "elbow_bias": 19.772,
+    "elbow_r": 0.524
    }
   }
  },
@@ -971,19 +971,19 @@
     "elbow_r": 0.368
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 39.55,
-    "forearm_incl_mae": 23.146,
-    "forearm_incl_r": 0.531,
-    "upper_arm_dir_deg": 73.455,
-    "elevation_mae": 62.237,
-    "elevation_r": 0.074,
-    "plane_mae": 59.523,
-    "elbow_pos_cm": 29.719,
-    "wrist_pos_cm": 37.181,
-    "elbow_mae": 32.649,
-    "elbow_bias": 31.203,
-    "elbow_r": 0.154
+    "minutes": 0.8,
+    "forearm_dir_deg": 37.658,
+    "forearm_incl_mae": 20.593,
+    "forearm_incl_r": 0.429,
+    "upper_arm_dir_deg": 75.377,
+    "elevation_mae": 64.253,
+    "elevation_r": 0.018,
+    "plane_mae": 59.195,
+    "elbow_pos_cm": 30.383,
+    "wrist_pos_cm": 37.448,
+    "elbow_mae": 37.76,
+    "elbow_bias": 36.746,
+    "elbow_r": 0.074
    }
   },
   "tom": {
@@ -1003,19 +1003,19 @@
     "elbow_r": 0.607
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 41.332,
-    "forearm_incl_mae": 20.385,
-    "forearm_incl_r": 0.646,
-    "upper_arm_dir_deg": 34.419,
-    "elevation_mae": 15.674,
-    "elevation_r": 0.267,
-    "plane_mae": 54.656,
-    "elbow_pos_cm": 16.219,
-    "wrist_pos_cm": 25.612,
-    "elbow_mae": 21.958,
-    "elbow_bias": 15.924,
-    "elbow_r": 0.598
+    "minutes": 1.5,
+    "forearm_dir_deg": 42.051,
+    "forearm_incl_mae": 20.407,
+    "forearm_incl_r": 0.638,
+    "upper_arm_dir_deg": 34.86,
+    "elevation_mae": 16.182,
+    "elevation_r": 0.276,
+    "plane_mae": 52.051,
+    "elbow_pos_cm": 16.42,
+    "wrist_pos_cm": 25.715,
+    "elbow_mae": 23.952,
+    "elbow_bias": 19.016,
+    "elbow_r": 0.581
    }
   }
  },
@@ -1037,19 +1037,19 @@
     "elbow_r": 0.847
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 72.503,
-    "forearm_incl_mae": 24.21,
-    "forearm_incl_r": 0.626,
-    "upper_arm_dir_deg": 77.301,
-    "elevation_mae": 16.767,
-    "elevation_r": 0.751,
-    "plane_mae": 89.54,
-    "elbow_pos_cm": 31.039,
-    "wrist_pos_cm": 54.332,
-    "elbow_mae": 25.171,
-    "elbow_bias": -22.751,
-    "elbow_r": 0.57
+    "minutes": 0.8,
+    "forearm_dir_deg": 72.564,
+    "forearm_incl_mae": 23.452,
+    "forearm_incl_r": 0.552,
+    "upper_arm_dir_deg": 76.212,
+    "elevation_mae": 17.755,
+    "elevation_r": 0.782,
+    "plane_mae": 86.41,
+    "elbow_pos_cm": 30.669,
+    "wrist_pos_cm": 53.831,
+    "elbow_mae": 23.726,
+    "elbow_bias": -21.539,
+    "elbow_r": 0.624
    }
   },
   "tom": {
@@ -1069,19 +1069,19 @@
     "elbow_r": 0.482
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 56.888,
-    "forearm_incl_mae": 22.998,
-    "forearm_incl_r": 0.765,
-    "upper_arm_dir_deg": 44.564,
-    "elevation_mae": 13.519,
-    "elevation_r": 0.399,
-    "plane_mae": 66.685,
-    "elbow_pos_cm": 20.785,
-    "wrist_pos_cm": 38.246,
-    "elbow_mae": 26.482,
-    "elbow_bias": -21.896,
-    "elbow_r": 0.585
+    "minutes": 1.5,
+    "forearm_dir_deg": 58.695,
+    "forearm_incl_mae": 22.628,
+    "forearm_incl_r": 0.733,
+    "upper_arm_dir_deg": 47.14,
+    "elevation_mae": 14.954,
+    "elevation_r": 0.363,
+    "plane_mae": 68.814,
+    "elbow_pos_cm": 21.92,
+    "wrist_pos_cm": 40.96,
+    "elbow_mae": 26.437,
+    "elbow_bias": -20.617,
+    "elbow_r": 0.515
    }
   }
  },
@@ -1103,19 +1103,19 @@
     "elbow_r": -0.109
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 62.033,
-    "forearm_incl_mae": 20.456,
-    "forearm_incl_r": 0.719,
-    "upper_arm_dir_deg": 92.144,
-    "elevation_mae": 35.462,
-    "elevation_r": 0.147,
-    "plane_mae": 96.512,
-    "elbow_pos_cm": 35.792,
-    "wrist_pos_cm": 54.475,
-    "elbow_mae": 26.441,
-    "elbow_bias": 16.767,
-    "elbow_r": 0.235
+    "minutes": 0.8,
+    "forearm_dir_deg": 60.856,
+    "forearm_incl_mae": 19.915,
+    "forearm_incl_r": 0.675,
+    "upper_arm_dir_deg": 94.577,
+    "elevation_mae": 33.654,
+    "elevation_r": 0.181,
+    "plane_mae": 99.239,
+    "elbow_pos_cm": 36.516,
+    "wrist_pos_cm": 53.905,
+    "elbow_mae": 31.911,
+    "elbow_bias": 22.871,
+    "elbow_r": 0.136
    }
   },
   "tom": {
@@ -1135,19 +1135,19 @@
     "elbow_r": 0.411
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 47.386,
-    "forearm_incl_mae": 16.208,
-    "forearm_incl_r": 0.901,
-    "upper_arm_dir_deg": 38.312,
-    "elevation_mae": 12.865,
-    "elevation_r": 0.578,
-    "plane_mae": 54.96,
-    "elbow_pos_cm": 17.988,
-    "wrist_pos_cm": 32.71,
-    "elbow_mae": 17.696,
-    "elbow_bias": 2.133,
-    "elbow_r": 0.369
+    "minutes": 1.5,
+    "forearm_dir_deg": 48.212,
+    "forearm_incl_mae": 15.724,
+    "forearm_incl_r": 0.906,
+    "upper_arm_dir_deg": 38.791,
+    "elevation_mae": 12.418,
+    "elevation_r": 0.605,
+    "plane_mae": 55.039,
+    "elbow_pos_cm": 18.205,
+    "wrist_pos_cm": 32.898,
+    "elbow_mae": 16.866,
+    "elbow_bias": 1.8,
+    "elbow_r": 0.392
    }
   }
  },
@@ -1169,19 +1169,19 @@
     "elbow_r": 0.196
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 69.663,
-    "forearm_incl_mae": 34.148,
-    "forearm_incl_r": 0.426,
-    "upper_arm_dir_deg": 76.537,
-    "elevation_mae": 53.145,
-    "elevation_r": -0.1,
-    "plane_mae": 69.676,
-    "elbow_pos_cm": 30.78,
-    "wrist_pos_cm": 53.583,
-    "elbow_mae": 26.999,
-    "elbow_bias": 23.096,
-    "elbow_r": 0.222
+    "minutes": 0.8,
+    "forearm_dir_deg": 69.364,
+    "forearm_incl_mae": 34.293,
+    "forearm_incl_r": 0.361,
+    "upper_arm_dir_deg": 78.55,
+    "elevation_mae": 53.792,
+    "elevation_r": 0.01,
+    "plane_mae": 71.785,
+    "elbow_pos_cm": 31.46,
+    "wrist_pos_cm": 52.214,
+    "elbow_mae": 30.457,
+    "elbow_bias": 25.211,
+    "elbow_r": 0.219
    }
   },
   "tom": {
@@ -1201,19 +1201,19 @@
     "elbow_r": 0.641
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 57.704,
-    "forearm_incl_mae": 24.817,
-    "forearm_incl_r": 0.679,
-    "upper_arm_dir_deg": 32.654,
-    "elevation_mae": 18.474,
-    "elevation_r": 0.233,
-    "plane_mae": 30.952,
-    "elbow_pos_cm": 15.411,
-    "wrist_pos_cm": 30.252,
-    "elbow_mae": 15.904,
-    "elbow_bias": 2.583,
-    "elbow_r": 0.507
+    "minutes": 1.5,
+    "forearm_dir_deg": 58.257,
+    "forearm_incl_mae": 24.756,
+    "forearm_incl_r": 0.688,
+    "upper_arm_dir_deg": 33.299,
+    "elevation_mae": 19.836,
+    "elevation_r": 0.213,
+    "plane_mae": 31.748,
+    "elbow_pos_cm": 15.707,
+    "wrist_pos_cm": 29.939,
+    "elbow_mae": 15.149,
+    "elbow_bias": 3.637,
+    "elbow_r": 0.522
    }
   }
  },
@@ -1235,19 +1235,19 @@
     "elbow_r": 0.917
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 14.384,
-    "forearm_incl_mae": 7.306,
-    "forearm_incl_r": 0.882,
-    "upper_arm_dir_deg": 14.978,
-    "elevation_mae": 7.373,
-    "elevation_r": 0.924,
+    "minutes": 0.8,
+    "forearm_dir_deg": 14.05,
+    "forearm_incl_mae": 6.738,
+    "forearm_incl_r": 0.853,
+    "upper_arm_dir_deg": 15.791,
+    "elevation_mae": 7.302,
+    "elevation_r": 0.913,
     "plane_mae": 11.019,
-    "elbow_pos_cm": 6.477,
-    "wrist_pos_cm": 9.897,
-    "elbow_mae": 10.329,
-    "elbow_bias": -0.675,
-    "elbow_r": 0.836
+    "elbow_pos_cm": 6.827,
+    "wrist_pos_cm": 9.469,
+    "elbow_mae": 10.203,
+    "elbow_bias": 0.094,
+    "elbow_r": 0.835
    }
   },
   "tom": {
@@ -1267,19 +1267,19 @@
     "elbow_r": 0.93
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 12.192,
-    "forearm_incl_mae": 5.501,
-    "forearm_incl_r": 0.966,
-    "upper_arm_dir_deg": 10.024,
-    "elevation_mae": 6.743,
-    "elevation_r": 0.897,
-    "plane_mae": 7.777,
-    "elbow_pos_cm": 4.789,
-    "wrist_pos_cm": 7.566,
-    "elbow_mae": 8.587,
-    "elbow_bias": -2.796,
-    "elbow_r": 0.869
+    "minutes": 1.5,
+    "forearm_dir_deg": 12.109,
+    "forearm_incl_mae": 5.455,
+    "forearm_incl_r": 0.967,
+    "upper_arm_dir_deg": 9.694,
+    "elevation_mae": 6.375,
+    "elevation_r": 0.907,
+    "plane_mae": 7.468,
+    "elbow_pos_cm": 4.632,
+    "wrist_pos_cm": 7.476,
+    "elbow_mae": 8.263,
+    "elbow_bias": -1.903,
+    "elbow_r": 0.87
    }
   }
  },
@@ -1301,19 +1301,19 @@
     "elbow_r": 0.118
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 39.126,
-    "forearm_incl_mae": 13.269,
-    "forearm_incl_r": 0.645,
-    "upper_arm_dir_deg": 41.112,
-    "elevation_mae": 25.468,
-    "elevation_r": -0.077,
-    "plane_mae": 26.523,
-    "elbow_pos_cm": 17.45,
-    "wrist_pos_cm": 27.671,
-    "elbow_mae": 22.801,
-    "elbow_bias": -7.852,
-    "elbow_r": 0.003
+    "minutes": 0.8,
+    "forearm_dir_deg": 38.072,
+    "forearm_incl_mae": 12.034,
+    "forearm_incl_r": 0.597,
+    "upper_arm_dir_deg": 39.599,
+    "elevation_mae": 25.978,
+    "elevation_r": -0.127,
+    "plane_mae": 24.132,
+    "elbow_pos_cm": 16.834,
+    "wrist_pos_cm": 26.435,
+    "elbow_mae": 22.82,
+    "elbow_bias": -7.862,
+    "elbow_r": -0.026
    }
   },
   "tom": {
@@ -1333,19 +1333,19 @@
     "elbow_r": 0.338
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 39.02,
-    "forearm_incl_mae": 27.195,
-    "forearm_incl_r": 0.462,
-    "upper_arm_dir_deg": 76.764,
-    "elevation_mae": 52.952,
-    "elevation_r": 0.176,
-    "plane_mae": 33.566,
-    "elbow_pos_cm": 34.037,
-    "wrist_pos_cm": 41.702,
-    "elbow_mae": 35.646,
-    "elbow_bias": -32.826,
-    "elbow_r": 0.226
+    "minutes": 1.5,
+    "forearm_dir_deg": 37.464,
+    "forearm_incl_mae": 25.347,
+    "forearm_incl_r": 0.501,
+    "upper_arm_dir_deg": 75.677,
+    "elevation_mae": 53.925,
+    "elevation_r": 0.177,
+    "plane_mae": 30.925,
+    "elbow_pos_cm": 33.628,
+    "wrist_pos_cm": 41.465,
+    "elbow_mae": 36.327,
+    "elbow_bias": -33.389,
+    "elbow_r": 0.209
    }
   }
  },
@@ -1367,19 +1367,19 @@
     "elbow_r": 0.86
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 12.557,
-    "forearm_incl_mae": 6.741,
-    "forearm_incl_r": 0.872,
-    "upper_arm_dir_deg": 15.763,
-    "elevation_mae": 9.05,
-    "elevation_r": 0.889,
-    "plane_mae": 10.896,
-    "elbow_pos_cm": 6.815,
-    "wrist_pos_cm": 9.561,
-    "elbow_mae": 10.242,
-    "elbow_bias": -3.097,
-    "elbow_r": 0.785
+    "minutes": 0.8,
+    "forearm_dir_deg": 12.279,
+    "forearm_incl_mae": 6.526,
+    "forearm_incl_r": 0.828,
+    "upper_arm_dir_deg": 15.537,
+    "elevation_mae": 8.479,
+    "elevation_r": 0.893,
+    "plane_mae": 10.898,
+    "elbow_pos_cm": 6.718,
+    "wrist_pos_cm": 9.507,
+    "elbow_mae": 10.105,
+    "elbow_bias": -1.926,
+    "elbow_r": 0.813
    }
   }
  },
@@ -1401,19 +1401,19 @@
     "elbow_r": 0.895
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 13.433,
-    "forearm_incl_mae": 6.837,
-    "forearm_incl_r": 0.858,
-    "upper_arm_dir_deg": 15.132,
-    "elevation_mae": 7.55,
-    "elevation_r": 0.892,
-    "plane_mae": 10.645,
-    "elbow_pos_cm": 6.544,
-    "wrist_pos_cm": 9.601,
-    "elbow_mae": 10.495,
-    "elbow_bias": -2.548,
-    "elbow_r": 0.809
+    "minutes": 0.8,
+    "forearm_dir_deg": 13.249,
+    "forearm_incl_mae": 6.539,
+    "forearm_incl_r": 0.809,
+    "upper_arm_dir_deg": 15.046,
+    "elevation_mae": 7.13,
+    "elevation_r": 0.895,
+    "plane_mae": 10.525,
+    "elbow_pos_cm": 6.506,
+    "wrist_pos_cm": 9.181,
+    "elbow_mae": 10.392,
+    "elbow_bias": -0.66,
+    "elbow_r": 0.823
    }
   }
  },
@@ -1435,19 +1435,19 @@
     "elbow_r": 0.668
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 37.245,
-    "forearm_incl_mae": 16.345,
-    "forearm_incl_r": 0.684,
-    "upper_arm_dir_deg": 51.783,
-    "elevation_mae": 32.507,
-    "elevation_r": 0.488,
-    "plane_mae": 39.789,
-    "elbow_pos_cm": 21.701,
-    "wrist_pos_cm": 28.997,
-    "elbow_mae": 22.087,
-    "elbow_bias": 10.535,
-    "elbow_r": 0.338
+    "minutes": 0.8,
+    "forearm_dir_deg": 36.566,
+    "forearm_incl_mae": 14.541,
+    "forearm_incl_r": 0.579,
+    "upper_arm_dir_deg": 50.218,
+    "elevation_mae": 32.419,
+    "elevation_r": 0.522,
+    "plane_mae": 37.929,
+    "elbow_pos_cm": 21.088,
+    "wrist_pos_cm": 29.375,
+    "elbow_mae": 22.412,
+    "elbow_bias": 12.362,
+    "elbow_r": 0.369
    }
   },
   "tom": {
@@ -1467,19 +1467,19 @@
     "elbow_r": 0.518
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 33.415,
-    "forearm_incl_mae": 20.778,
-    "forearm_incl_r": 0.82,
-    "upper_arm_dir_deg": 46.917,
-    "elevation_mae": 34.652,
-    "elevation_r": 0.409,
-    "plane_mae": 21.28,
-    "elbow_pos_cm": 21.822,
-    "wrist_pos_cm": 27.82,
-    "elbow_mae": 23.578,
-    "elbow_bias": -21.724,
-    "elbow_r": 0.603
+    "minutes": 1.5,
+    "forearm_dir_deg": 33.435,
+    "forearm_incl_mae": 20.284,
+    "forearm_incl_r": 0.825,
+    "upper_arm_dir_deg": 45.408,
+    "elevation_mae": 33.988,
+    "elevation_r": 0.372,
+    "plane_mae": 20.616,
+    "elbow_pos_cm": 21.158,
+    "wrist_pos_cm": 27.07,
+    "elbow_mae": 23.533,
+    "elbow_bias": -20.977,
+    "elbow_r": 0.593
    }
   }
  },
@@ -1501,19 +1501,19 @@
     "elbow_r": 0.891
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 14.537,
-    "forearm_incl_mae": 6.912,
-    "forearm_incl_r": 0.875,
-    "upper_arm_dir_deg": 15.813,
-    "elevation_mae": 8.845,
-    "elevation_r": 0.887,
-    "plane_mae": 10.91,
-    "elbow_pos_cm": 6.836,
-    "wrist_pos_cm": 9.895,
-    "elbow_mae": 11.815,
-    "elbow_bias": -4.903,
-    "elbow_r": 0.774
+    "minutes": 0.8,
+    "forearm_dir_deg": 13.549,
+    "forearm_incl_mae": 6.631,
+    "forearm_incl_r": 0.84,
+    "upper_arm_dir_deg": 15.064,
+    "elevation_mae": 8.307,
+    "elevation_r": 0.884,
+    "plane_mae": 10.486,
+    "elbow_pos_cm": 6.514,
+    "wrist_pos_cm": 9.583,
+    "elbow_mae": 10.833,
+    "elbow_bias": -3.724,
+    "elbow_r": 0.811
    }
   }
  },
@@ -1535,19 +1535,19 @@
     "elbow_r": 0.726
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 35.458,
-    "forearm_incl_mae": 13.726,
-    "forearm_incl_r": 0.67,
-    "upper_arm_dir_deg": 49.64,
-    "elevation_mae": 33.561,
-    "elevation_r": 0.412,
-    "plane_mae": 36.161,
-    "elbow_pos_cm": 20.861,
-    "wrist_pos_cm": 28.699,
-    "elbow_mae": 21.029,
-    "elbow_bias": 10.109,
-    "elbow_r": 0.302
+    "minutes": 0.8,
+    "forearm_dir_deg": 34.904,
+    "forearm_incl_mae": 12.356,
+    "forearm_incl_r": 0.532,
+    "upper_arm_dir_deg": 48.658,
+    "elevation_mae": 31.644,
+    "elevation_r": 0.447,
+    "plane_mae": 34.696,
+    "elbow_pos_cm": 20.474,
+    "wrist_pos_cm": 28.061,
+    "elbow_mae": 21.081,
+    "elbow_bias": 11.762,
+    "elbow_r": 0.375
    }
   },
   "tom": {
@@ -1567,19 +1567,19 @@
     "elbow_r": 0.604
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 29.181,
-    "forearm_incl_mae": 17.235,
-    "forearm_incl_r": 0.856,
-    "upper_arm_dir_deg": 40.398,
-    "elevation_mae": 25.718,
-    "elevation_r": 0.554,
-    "plane_mae": 26.148,
-    "elbow_pos_cm": 18.928,
-    "wrist_pos_cm": 24.95,
-    "elbow_mae": 23.438,
-    "elbow_bias": -20.891,
-    "elbow_r": 0.572
+    "minutes": 1.5,
+    "forearm_dir_deg": 29.644,
+    "forearm_incl_mae": 17.061,
+    "forearm_incl_r": 0.864,
+    "upper_arm_dir_deg": 39.623,
+    "elevation_mae": 25.741,
+    "elevation_r": 0.532,
+    "plane_mae": 25.994,
+    "elbow_pos_cm": 18.579,
+    "wrist_pos_cm": 24.787,
+    "elbow_mae": 24.191,
+    "elbow_bias": -20.965,
+    "elbow_r": 0.561
    }
   }
  },
@@ -1601,19 +1601,19 @@
     "elbow_r": 0.719
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 25.846,
-    "forearm_incl_mae": 12.227,
-    "forearm_incl_r": 0.681,
-    "upper_arm_dir_deg": 45.173,
-    "elevation_mae": 34.752,
-    "elevation_r": 0.495,
-    "plane_mae": 25.926,
-    "elbow_pos_cm": 19.088,
-    "wrist_pos_cm": 23.447,
-    "elbow_mae": 22.218,
-    "elbow_bias": 13.643,
-    "elbow_r": 0.387
+    "minutes": 0.8,
+    "forearm_dir_deg": 22.495,
+    "forearm_incl_mae": 10.312,
+    "forearm_incl_r": 0.585,
+    "upper_arm_dir_deg": 45.984,
+    "elevation_mae": 35.783,
+    "elevation_r": 0.487,
+    "plane_mae": 24.901,
+    "elbow_pos_cm": 19.412,
+    "wrist_pos_cm": 23.39,
+    "elbow_mae": 24.78,
+    "elbow_bias": 18.677,
+    "elbow_r": 0.415
    }
   },
   "tom": {
@@ -1633,19 +1633,19 @@
     "elbow_r": 0.697
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 23.875,
-    "forearm_incl_mae": 12.901,
-    "forearm_incl_r": 0.909,
-    "upper_arm_dir_deg": 37.892,
-    "elevation_mae": 26.082,
-    "elevation_r": 0.438,
-    "plane_mae": 18.328,
-    "elbow_pos_cm": 17.798,
-    "wrist_pos_cm": 22.149,
-    "elbow_mae": 26.294,
-    "elbow_bias": -22.791,
-    "elbow_r": 0.633
+    "minutes": 1.5,
+    "forearm_dir_deg": 23.884,
+    "forearm_incl_mae": 12.768,
+    "forearm_incl_r": 0.912,
+    "upper_arm_dir_deg": 36.636,
+    "elevation_mae": 25.215,
+    "elevation_r": 0.445,
+    "plane_mae": 17.692,
+    "elbow_pos_cm": 17.229,
+    "wrist_pos_cm": 21.406,
+    "elbow_mae": 25.505,
+    "elbow_bias": -21.689,
+    "elbow_r": 0.628
    }
   }
  },
@@ -1667,19 +1667,19 @@
     "elbow_r": 0.885
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 17.077,
-    "forearm_incl_mae": 7.993,
-    "forearm_incl_r": 0.867,
-    "upper_arm_dir_deg": 19.575,
-    "elevation_mae": 9.948,
-    "elevation_r": 0.869,
-    "plane_mae": 14.958,
-    "elbow_pos_cm": 8.448,
-    "wrist_pos_cm": 12.26,
-    "elbow_mae": 12.551,
-    "elbow_bias": -4.636,
-    "elbow_r": 0.75
+    "minutes": 0.8,
+    "forearm_dir_deg": 16.862,
+    "forearm_incl_mae": 7.467,
+    "forearm_incl_r": 0.824,
+    "upper_arm_dir_deg": 20.835,
+    "elevation_mae": 11.464,
+    "elevation_r": 0.846,
+    "plane_mae": 14.04,
+    "elbow_pos_cm": 8.986,
+    "wrist_pos_cm": 12.355,
+    "elbow_mae": 13.156,
+    "elbow_bias": -2.752,
+    "elbow_r": 0.761
    }
   },
   "tom": {
@@ -1699,19 +1699,19 @@
     "elbow_r": 0.754
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 14.191,
+    "minutes": 1.5,
+    "forearm_dir_deg": 14.038,
     "forearm_incl_mae": 6.356,
-    "forearm_incl_r": 0.962,
-    "upper_arm_dir_deg": 13.376,
-    "elevation_mae": 7.167,
-    "elevation_r": 0.869,
-    "plane_mae": 11.703,
-    "elbow_pos_cm": 6.384,
-    "wrist_pos_cm": 9.486,
-    "elbow_mae": 8.998,
-    "elbow_bias": -1.034,
-    "elbow_r": 0.851
+    "forearm_incl_r": 0.963,
+    "upper_arm_dir_deg": 13.07,
+    "elevation_mae": 6.988,
+    "elevation_r": 0.882,
+    "plane_mae": 11.821,
+    "elbow_pos_cm": 6.239,
+    "wrist_pos_cm": 9.302,
+    "elbow_mae": 9.078,
+    "elbow_bias": -1.332,
+    "elbow_r": 0.852
    }
   }
  },
@@ -1733,19 +1733,19 @@
     "elbow_r": -0.075
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 42.59,
-    "forearm_incl_mae": 23.125,
-    "forearm_incl_r": 0.74,
-    "upper_arm_dir_deg": 45.516,
-    "elevation_mae": 33.2,
-    "elevation_r": -0.667,
-    "plane_mae": 28.824,
-    "elbow_pos_cm": 19.225,
-    "wrist_pos_cm": 24.678,
-    "elbow_mae": 21.146,
-    "elbow_bias": -0.504,
-    "elbow_r": -0.073
+    "minutes": 0.8,
+    "forearm_dir_deg": 42.611,
+    "forearm_incl_mae": 23.97,
+    "forearm_incl_r": 0.73,
+    "upper_arm_dir_deg": 43.983,
+    "elevation_mae": 32.536,
+    "elevation_r": -0.698,
+    "plane_mae": 27.348,
+    "elbow_pos_cm": 18.61,
+    "wrist_pos_cm": 24.221,
+    "elbow_mae": 19.392,
+    "elbow_bias": 0.13,
+    "elbow_r": 0.031
    }
   },
   "tom": {
@@ -1765,19 +1765,19 @@
     "elbow_r": -0.634
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 65.863,
-    "forearm_incl_mae": 24.239,
-    "forearm_incl_r": 0.779,
-    "upper_arm_dir_deg": 101.634,
-    "elevation_mae": 78.557,
-    "elevation_r": -0.379,
-    "plane_mae": 26.307,
-    "elbow_pos_cm": 42.492,
-    "wrist_pos_cm": 50.791,
-    "elbow_mae": 28.716,
-    "elbow_bias": 6.209,
-    "elbow_r": -0.306
+    "minutes": 1.5,
+    "forearm_dir_deg": 61.587,
+    "forearm_incl_mae": 24.032,
+    "forearm_incl_r": 0.787,
+    "upper_arm_dir_deg": 102.98,
+    "elevation_mae": 80.612,
+    "elevation_r": -0.357,
+    "plane_mae": 23.022,
+    "elbow_pos_cm": 42.895,
+    "wrist_pos_cm": 50.793,
+    "elbow_mae": 28.852,
+    "elbow_bias": 3.939,
+    "elbow_r": -0.299
    }
   }
  },
@@ -1799,19 +1799,19 @@
     "elbow_r": 0.605
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 21.565,
-    "forearm_incl_mae": 8.628,
-    "forearm_incl_r": 0.799,
-    "upper_arm_dir_deg": 27.628,
-    "elevation_mae": 15.093,
-    "elevation_r": 0.775,
-    "plane_mae": 19.963,
-    "elbow_pos_cm": 11.866,
-    "wrist_pos_cm": 16.553,
-    "elbow_mae": 15.62,
-    "elbow_bias": 1.72,
-    "elbow_r": 0.565
+    "minutes": 0.8,
+    "forearm_dir_deg": 18.467,
+    "forearm_incl_mae": 8.015,
+    "forearm_incl_r": 0.765,
+    "upper_arm_dir_deg": 27.554,
+    "elevation_mae": 15.783,
+    "elevation_r": 0.754,
+    "plane_mae": 18.744,
+    "elbow_pos_cm": 11.835,
+    "wrist_pos_cm": 15.732,
+    "elbow_mae": 16.45,
+    "elbow_bias": 5.51,
+    "elbow_r": 0.609
    }
   }
  },
@@ -1833,19 +1833,19 @@
     "elbow_r": 0.825
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 16.823,
-    "forearm_incl_mae": 7.91,
-    "forearm_incl_r": 0.843,
-    "upper_arm_dir_deg": 23.555,
-    "elevation_mae": 14.21,
-    "elevation_r": 0.767,
-    "plane_mae": 15.177,
-    "elbow_pos_cm": 10.144,
-    "wrist_pos_cm": 14.131,
-    "elbow_mae": 15.149,
-    "elbow_bias": -0.748,
-    "elbow_r": 0.551
+    "minutes": 0.8,
+    "forearm_dir_deg": 15.881,
+    "forearm_incl_mae": 6.977,
+    "forearm_incl_r": 0.798,
+    "upper_arm_dir_deg": 24.579,
+    "elevation_mae": 15.133,
+    "elevation_r": 0.735,
+    "plane_mae": 15.179,
+    "elbow_pos_cm": 10.578,
+    "wrist_pos_cm": 13.904,
+    "elbow_mae": 15.928,
+    "elbow_bias": 2.985,
+    "elbow_r": 0.593
    }
   }
  },
@@ -1867,19 +1867,19 @@
     "elbow_r": 0.533
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 35.846,
-    "forearm_incl_mae": 14.863,
-    "forearm_incl_r": 0.726,
-    "upper_arm_dir_deg": 56.818,
-    "elevation_mae": 41.186,
-    "elevation_r": 0.297,
-    "plane_mae": 44.1,
-    "elbow_pos_cm": 23.644,
-    "wrist_pos_cm": 30.307,
-    "elbow_mae": 32.603,
-    "elbow_bias": 20.283,
-    "elbow_r": -0.021
+    "minutes": 0.8,
+    "forearm_dir_deg": 34.114,
+    "forearm_incl_mae": 13.185,
+    "forearm_incl_r": 0.652,
+    "upper_arm_dir_deg": 56.438,
+    "elevation_mae": 40.507,
+    "elevation_r": 0.269,
+    "plane_mae": 42.2,
+    "elbow_pos_cm": 23.499,
+    "wrist_pos_cm": 30.54,
+    "elbow_mae": 33.431,
+    "elbow_bias": 23.273,
+    "elbow_r": -0.022
    }
   },
   "tom": {
@@ -1899,19 +1899,19 @@
     "elbow_r": 0.645
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 26.992,
-    "forearm_incl_mae": 10.233,
-    "forearm_incl_r": 0.904,
-    "upper_arm_dir_deg": 37.189,
-    "elevation_mae": 25.83,
-    "elevation_r": 0.686,
-    "plane_mae": 23.379,
-    "elbow_pos_cm": 17.48,
-    "wrist_pos_cm": 23.498,
-    "elbow_mae": 17.75,
-    "elbow_bias": -15.253,
-    "elbow_r": 0.651
+    "minutes": 1.5,
+    "forearm_dir_deg": 25.962,
+    "forearm_incl_mae": 10.291,
+    "forearm_incl_r": 0.906,
+    "upper_arm_dir_deg": 34.965,
+    "elevation_mae": 24.732,
+    "elevation_r": 0.681,
+    "plane_mae": 23.189,
+    "elbow_pos_cm": 16.468,
+    "wrist_pos_cm": 22.038,
+    "elbow_mae": 16.162,
+    "elbow_bias": -12.811,
+    "elbow_r": 0.64
    }
   }
  },
@@ -1933,19 +1933,19 @@
     "elbow_r": 0.816
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 18.04,
-    "forearm_incl_mae": 8.395,
-    "forearm_incl_r": 0.835,
-    "upper_arm_dir_deg": 24.125,
-    "elevation_mae": 14.503,
-    "elevation_r": 0.764,
-    "plane_mae": 15.62,
-    "elbow_pos_cm": 10.386,
-    "wrist_pos_cm": 14.128,
-    "elbow_mae": 15.586,
-    "elbow_bias": 0.096,
-    "elbow_r": 0.562
+    "minutes": 0.8,
+    "forearm_dir_deg": 16.755,
+    "forearm_incl_mae": 7.408,
+    "forearm_incl_r": 0.79,
+    "upper_arm_dir_deg": 25.2,
+    "elevation_mae": 15.074,
+    "elevation_r": 0.734,
+    "plane_mae": 15.517,
+    "elbow_pos_cm": 10.841,
+    "wrist_pos_cm": 13.976,
+    "elbow_mae": 16.283,
+    "elbow_bias": 2.924,
+    "elbow_r": 0.596
    }
   }
  },
@@ -1967,19 +1967,19 @@
     "elbow_r": 0.554
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 34.427,
-    "forearm_incl_mae": 13.868,
-    "forearm_incl_r": 0.733,
-    "upper_arm_dir_deg": 54.458,
-    "elevation_mae": 36.139,
-    "elevation_r": 0.34,
-    "plane_mae": 40.289,
-    "elbow_pos_cm": 22.739,
-    "wrist_pos_cm": 28.712,
-    "elbow_mae": 29.618,
-    "elbow_bias": 16.009,
-    "elbow_r": -0.001
+    "minutes": 0.8,
+    "forearm_dir_deg": 32.373,
+    "forearm_incl_mae": 12.844,
+    "forearm_incl_r": 0.654,
+    "upper_arm_dir_deg": 54.453,
+    "elevation_mae": 35.98,
+    "elevation_r": 0.281,
+    "plane_mae": 39.262,
+    "elbow_pos_cm": 22.737,
+    "wrist_pos_cm": 29.11,
+    "elbow_mae": 32.193,
+    "elbow_bias": 19.662,
+    "elbow_r": -0.011
    }
   },
   "tom": {
@@ -1999,19 +1999,19 @@
     "elbow_r": 0.737
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 27.115,
-    "forearm_incl_mae": 10.628,
+    "minutes": 1.5,
+    "forearm_dir_deg": 25.799,
+    "forearm_incl_mae": 10.59,
     "forearm_incl_r": 0.917,
-    "upper_arm_dir_deg": 34.291,
-    "elevation_mae": 24.607,
-    "elevation_r": 0.671,
-    "plane_mae": 23.907,
-    "elbow_pos_cm": 16.161,
-    "wrist_pos_cm": 22.418,
-    "elbow_mae": 15.54,
-    "elbow_bias": -9.655,
-    "elbow_r": 0.569
+    "upper_arm_dir_deg": 32.483,
+    "elevation_mae": 23.241,
+    "elevation_r": 0.666,
+    "plane_mae": 23.687,
+    "elbow_pos_cm": 15.332,
+    "wrist_pos_cm": 21.057,
+    "elbow_mae": 14.264,
+    "elbow_bias": -7.153,
+    "elbow_r": 0.574
    }
   }
  },
@@ -2033,19 +2033,19 @@
     "elbow_r": 0.413
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 42.678,
-    "forearm_incl_mae": 14.702,
-    "forearm_incl_r": 0.695,
-    "upper_arm_dir_deg": 53.285,
-    "elevation_mae": 36.488,
-    "elevation_r": 0.539,
-    "plane_mae": 42.702,
-    "elbow_pos_cm": 22.285,
-    "wrist_pos_cm": 31.194,
-    "elbow_mae": 25.995,
-    "elbow_bias": 17.857,
-    "elbow_r": 0.114
+    "minutes": 0.8,
+    "forearm_dir_deg": 38.336,
+    "forearm_incl_mae": 14.609,
+    "forearm_incl_r": 0.626,
+    "upper_arm_dir_deg": 52.698,
+    "elevation_mae": 37.873,
+    "elevation_r": 0.507,
+    "plane_mae": 39.024,
+    "elbow_pos_cm": 22.058,
+    "wrist_pos_cm": 30.233,
+    "elbow_mae": 30.156,
+    "elbow_bias": 24.457,
+    "elbow_r": 0.097
    }
   },
   "tom": {
@@ -2065,19 +2065,19 @@
     "elbow_r": 0.665
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 29.275,
-    "forearm_incl_mae": 11.382,
-    "forearm_incl_r": 0.908,
-    "upper_arm_dir_deg": 35.725,
-    "elevation_mae": 23.98,
-    "elevation_r": 0.669,
-    "plane_mae": 25.936,
-    "elbow_pos_cm": 16.815,
-    "wrist_pos_cm": 23.692,
-    "elbow_mae": 17.876,
-    "elbow_bias": -13.085,
-    "elbow_r": 0.469
+    "minutes": 1.5,
+    "forearm_dir_deg": 28.736,
+    "forearm_incl_mae": 11.236,
+    "forearm_incl_r": 0.913,
+    "upper_arm_dir_deg": 34.329,
+    "elevation_mae": 22.776,
+    "elevation_r": 0.659,
+    "plane_mae": 25.232,
+    "elbow_pos_cm": 16.178,
+    "wrist_pos_cm": 22.92,
+    "elbow_mae": 16.786,
+    "elbow_bias": -10.77,
+    "elbow_r": 0.474
    }
   }
  },
@@ -2099,19 +2099,19 @@
     "elbow_r": 0.871
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 59.706,
-    "forearm_incl_mae": 21.286,
-    "forearm_incl_r": 0.718,
-    "upper_arm_dir_deg": 81.745,
-    "elevation_mae": 19.754,
-    "elevation_r": 0.808,
-    "plane_mae": 93.278,
-    "elbow_pos_cm": 32.521,
-    "wrist_pos_cm": 51.256,
-    "elbow_mae": 19.989,
-    "elbow_bias": -15.918,
-    "elbow_r": 0.658
+    "minutes": 0.8,
+    "forearm_dir_deg": 58.934,
+    "forearm_incl_mae": 21.047,
+    "forearm_incl_r": 0.683,
+    "upper_arm_dir_deg": 81.37,
+    "elevation_mae": 21.42,
+    "elevation_r": 0.809,
+    "plane_mae": 91.264,
+    "elbow_pos_cm": 32.398,
+    "wrist_pos_cm": 50.848,
+    "elbow_mae": 19.823,
+    "elbow_bias": -13.496,
+    "elbow_r": 0.583
    }
   },
   "tom": {
@@ -2131,19 +2131,19 @@
     "elbow_r": 0.859
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 44.235,
-    "forearm_incl_mae": 14.422,
-    "forearm_incl_r": 0.913,
-    "upper_arm_dir_deg": 42.242,
-    "elevation_mae": 11.375,
-    "elevation_r": 0.749,
-    "plane_mae": 73.7,
-    "elbow_pos_cm": 19.753,
-    "wrist_pos_cm": 37.357,
-    "elbow_mae": 17.947,
-    "elbow_bias": -17.882,
-    "elbow_r": 0.889
+    "minutes": 1.5,
+    "forearm_dir_deg": 44.708,
+    "forearm_incl_mae": 13.882,
+    "forearm_incl_r": 0.918,
+    "upper_arm_dir_deg": 45.938,
+    "elevation_mae": 11.861,
+    "elevation_r": 0.745,
+    "plane_mae": 75.973,
+    "elbow_pos_cm": 21.392,
+    "wrist_pos_cm": 38.27,
+    "elbow_mae": 17.835,
+    "elbow_bias": -17.7,
+    "elbow_r": 0.885
    }
   }
  },
@@ -2165,19 +2165,19 @@
     "elbow_r": 0.871
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 59.706,
-    "forearm_incl_mae": 21.286,
-    "forearm_incl_r": 0.718,
-    "upper_arm_dir_deg": 81.745,
-    "elevation_mae": 19.754,
-    "elevation_r": 0.808,
-    "plane_mae": 93.278,
-    "elbow_pos_cm": 32.521,
-    "wrist_pos_cm": 51.256,
-    "elbow_mae": 13.809,
-    "elbow_bias": 2.082,
-    "elbow_r": 0.658
+    "minutes": 0.8,
+    "forearm_dir_deg": 58.934,
+    "forearm_incl_mae": 21.047,
+    "forearm_incl_r": 0.683,
+    "upper_arm_dir_deg": 81.37,
+    "elevation_mae": 21.42,
+    "elevation_r": 0.809,
+    "plane_mae": 91.264,
+    "elbow_pos_cm": 32.398,
+    "wrist_pos_cm": 50.848,
+    "elbow_mae": 15.505,
+    "elbow_bias": 4.504,
+    "elbow_r": 0.583
    }
   },
   "tom": {
@@ -2197,19 +2197,19 @@
     "elbow_r": 0.859
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 44.235,
-    "forearm_incl_mae": 14.422,
-    "forearm_incl_r": 0.913,
-    "upper_arm_dir_deg": 42.242,
-    "elevation_mae": 11.375,
-    "elevation_r": 0.749,
-    "plane_mae": 73.7,
-    "elbow_pos_cm": 19.753,
-    "wrist_pos_cm": 37.357,
-    "elbow_mae": 8.333,
-    "elbow_bias": 0.118,
-    "elbow_r": 0.889
+    "minutes": 1.5,
+    "forearm_dir_deg": 44.708,
+    "forearm_incl_mae": 13.882,
+    "forearm_incl_r": 0.918,
+    "upper_arm_dir_deg": 45.938,
+    "elevation_mae": 11.861,
+    "elevation_r": 0.745,
+    "plane_mae": 75.973,
+    "elbow_pos_cm": 21.392,
+    "wrist_pos_cm": 38.27,
+    "elbow_mae": 8.246,
+    "elbow_bias": 0.3,
+    "elbow_r": 0.885
    }
   }
  },
@@ -2231,19 +2231,19 @@
     "elbow_r": 0.249
    },
    "swing": {
-    "minutes": 0.44,
-    "forearm_dir_deg": 69.707,
-    "forearm_incl_mae": 14.291,
-    "forearm_incl_r": 0.767,
-    "upper_arm_dir_deg": 94.477,
-    "elevation_mae": 18.509,
-    "elevation_r": 0.603,
-    "plane_mae": 104.601,
-    "elbow_pos_cm": 36.487,
-    "wrist_pos_cm": 57.674,
-    "elbow_mae": 45.26,
-    "elbow_bias": 36.894,
-    "elbow_r": -0.095
+    "minutes": 0.64,
+    "forearm_dir_deg": 52.078,
+    "forearm_incl_mae": 13.776,
+    "forearm_incl_r": 0.766,
+    "upper_arm_dir_deg": 97.161,
+    "elevation_mae": 17.092,
+    "elevation_r": 0.657,
+    "plane_mae": 106.665,
+    "elbow_pos_cm": 37.267,
+    "wrist_pos_cm": 55.187,
+    "elbow_mae": 47.403,
+    "elbow_bias": 43.445,
+    "elbow_r": -0.174
    }
   },
   "tom": {
@@ -2263,19 +2263,19 @@
     "elbow_r": 0.866
    },
    "swing": {
-    "minutes": 0.99,
-    "forearm_dir_deg": 73.468,
-    "forearm_incl_mae": 14.894,
-    "forearm_incl_r": 0.906,
-    "upper_arm_dir_deg": 48.52,
-    "elevation_mae": 9.723,
-    "elevation_r": 0.78,
-    "plane_mae": 101.069,
-    "elbow_pos_cm": 22.524,
-    "wrist_pos_cm": 48.79,
-    "elbow_mae": 18.847,
-    "elbow_bias": -17.375,
-    "elbow_r": 0.697
+    "minutes": 1.31,
+    "forearm_dir_deg": 79.271,
+    "forearm_incl_mae": 13.565,
+    "forearm_incl_r": 0.912,
+    "upper_arm_dir_deg": 50.604,
+    "elevation_mae": 9.537,
+    "elevation_r": 0.784,
+    "plane_mae": 103.097,
+    "elbow_pos_cm": 23.429,
+    "wrist_pos_cm": 51.853,
+    "elbow_mae": 17.967,
+    "elbow_bias": -14.836,
+    "elbow_r": 0.645
    }
   }
  },
@@ -2288,10 +2288,10 @@
     "forearm_incl_r": 0.815
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 46.011,
-    "forearm_incl_mae": 14.705,
-    "forearm_incl_r": 0.778
+    "minutes": 0.8,
+    "forearm_dir_deg": 46.86,
+    "forearm_incl_mae": 14.749,
+    "forearm_incl_r": 0.703
    }
   },
   "tom": {
@@ -2302,10 +2302,10 @@
     "forearm_incl_r": 0.905
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 33.408,
-    "forearm_incl_mae": 13.781,
-    "forearm_incl_r": 0.926
+    "minutes": 1.5,
+    "forearm_dir_deg": 30.754,
+    "forearm_incl_mae": 13.217,
+    "forearm_incl_r": 0.931
    }
   }
  },
@@ -2318,10 +2318,10 @@
     "forearm_incl_r": 0.863
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 44.241,
-    "forearm_incl_mae": 15.345,
-    "forearm_incl_r": 0.823
+    "minutes": 0.8,
+    "forearm_dir_deg": 44.792,
+    "forearm_incl_mae": 15.005,
+    "forearm_incl_r": 0.769
    }
   },
   "tom": {
@@ -2332,10 +2332,10 @@
     "forearm_incl_r": 0.937
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 31.083,
-    "forearm_incl_mae": 15.466,
-    "forearm_incl_r": 0.925
+    "minutes": 1.5,
+    "forearm_dir_deg": 29.216,
+    "forearm_incl_mae": 14.399,
+    "forearm_incl_r": 0.932
    }
   }
  },
@@ -2357,19 +2357,19 @@
     "elbow_r": 0.559
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 38.289,
-    "forearm_incl_mae": 13.072,
-    "forearm_incl_r": 0.694,
-    "upper_arm_dir_deg": 40.788,
-    "elevation_mae": 23.24,
-    "elevation_r": 0.278,
-    "plane_mae": 27.116,
-    "elbow_pos_cm": 17.318,
-    "wrist_pos_cm": 28.382,
-    "elbow_mae": 28.399,
-    "elbow_bias": 5.496,
-    "elbow_r": 0.174
+    "minutes": 0.8,
+    "forearm_dir_deg": 40.424,
+    "forearm_incl_mae": 13.407,
+    "forearm_incl_r": 0.651,
+    "upper_arm_dir_deg": 42.71,
+    "elevation_mae": 25.516,
+    "elevation_r": 0.176,
+    "plane_mae": 26.705,
+    "elbow_pos_cm": 18.097,
+    "wrist_pos_cm": 29.449,
+    "elbow_mae": 31.408,
+    "elbow_bias": 9.933,
+    "elbow_r": 0.107
    }
   },
   "tom": {
@@ -2389,19 +2389,19 @@
     "elbow_r": 0.723
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 32.537,
-    "forearm_incl_mae": 11.2,
-    "forearm_incl_r": 0.857,
-    "upper_arm_dir_deg": 27.352,
-    "elevation_mae": 17.018,
-    "elevation_r": 0.591,
-    "plane_mae": 20.07,
-    "elbow_pos_cm": 12.961,
-    "wrist_pos_cm": 19.12,
-    "elbow_mae": 26.484,
-    "elbow_bias": -21.411,
-    "elbow_r": 0.701
+    "minutes": 1.5,
+    "forearm_dir_deg": 31.277,
+    "forearm_incl_mae": 11.074,
+    "forearm_incl_r": 0.866,
+    "upper_arm_dir_deg": 26.059,
+    "elevation_mae": 17.001,
+    "elevation_r": 0.562,
+    "plane_mae": 16.979,
+    "elbow_pos_cm": 12.359,
+    "wrist_pos_cm": 18.534,
+    "elbow_mae": 26.232,
+    "elbow_bias": -18.895,
+    "elbow_r": 0.697
    }
   }
  },
@@ -2423,19 +2423,19 @@
     "elbow_r": 0.448
    },
    "swing": {
-    "minutes": 0.55,
-    "forearm_dir_deg": 52.464,
-    "forearm_incl_mae": 13.545,
-    "forearm_incl_r": 0.729,
-    "upper_arm_dir_deg": 39.545,
-    "elevation_mae": 21.356,
-    "elevation_r": 0.524,
-    "plane_mae": 28.114,
-    "elbow_pos_cm": 16.812,
-    "wrist_pos_cm": 30.136,
-    "elbow_mae": 27.946,
-    "elbow_bias": 18.519,
-    "elbow_r": 0.191
+    "minutes": 0.8,
+    "forearm_dir_deg": 53.664,
+    "forearm_incl_mae": 13.329,
+    "forearm_incl_r": 0.657,
+    "upper_arm_dir_deg": 42.197,
+    "elevation_mae": 23.012,
+    "elevation_r": 0.448,
+    "plane_mae": 29.1,
+    "elbow_pos_cm": 17.89,
+    "wrist_pos_cm": 31.13,
+    "elbow_mae": 29.834,
+    "elbow_bias": 20.189,
+    "elbow_r": 0.122
    }
   },
   "tom": {
@@ -2455,19 +2455,19 @@
     "elbow_r": 0.737
    },
    "swing": {
-    "minutes": 1.2,
-    "forearm_dir_deg": 62.596,
-    "forearm_incl_mae": 10.829,
-    "forearm_incl_r": 0.864,
-    "upper_arm_dir_deg": 51.953,
-    "elevation_mae": 22.053,
-    "elevation_r": 0.539,
-    "plane_mae": 57.407,
-    "elbow_pos_cm": 24.011,
-    "wrist_pos_cm": 37.718,
-    "elbow_mae": 19.84,
-    "elbow_bias": -9.323,
-    "elbow_r": 0.649
+    "minutes": 1.5,
+    "forearm_dir_deg": 62.661,
+    "forearm_incl_mae": 10.389,
+    "forearm_incl_r": 0.868,
+    "upper_arm_dir_deg": 50.127,
+    "elevation_mae": 21.159,
+    "elevation_r": 0.524,
+    "plane_mae": 54.355,
+    "elbow_pos_cm": 23.222,
+    "wrist_pos_cm": 36.986,
+    "elbow_mae": 18.926,
+    "elbow_bias": -6.285,
+    "elbow_r": 0.645
    }
   }
  },
@@ -2489,7 +2489,7 @@
     "elbow_r": 1.0
    },
    "swing": {
-    "minutes": 0.55,
+    "minutes": 0.8,
     "forearm_dir_deg": 0.0,
     "forearm_incl_mae": 0.0,
     "forearm_incl_r": 1.0,
@@ -2521,7 +2521,7 @@
     "elbow_r": 1.0
    },
    "swing": {
-    "minutes": 1.2,
+    "minutes": 1.5,
     "forearm_dir_deg": 0.0,
     "forearm_incl_mae": 0.0,
     "forearm_incl_r": 1.0,

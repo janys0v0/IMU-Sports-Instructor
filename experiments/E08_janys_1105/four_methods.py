@@ -11,6 +11,8 @@ import json
 
 import numpy as np
 
+from experiments.E07_pose_methods.colors import anonymize
+
 from .data import OUT
 from .figures import FIG, GRID, INK, INK2, METRICS, style
 
@@ -60,6 +62,7 @@ def main():
     fig.suptitle("Janys 11/05, Watch + phone: four methods vs OpenCap", x=0.01, ha="left",
                  color=INK, fontsize=11.5)  # fmt: skip
     FIG.mkdir(exist_ok=True)
+    anonymize(fig)
     fig.savefig(FIG / "four_methods.png", dpi=130, bbox_inches="tight")
     plt.close(fig)
 

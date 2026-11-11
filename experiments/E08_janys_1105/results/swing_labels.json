@@ -1,0 +1,456 @@
+{
+ "what": "Janys 11/05, IMG_0021 frames -0.35..+0.25 s around each time, labelled by eye (11/11): did Janys hit the ball (1) or not (0); null = cannot tell.",
+ "strata": {
+  "both": "old Watch peak (|w| > 15 rad/s) and a logger 2DA6 hit within 0.5 s (156)",
+  "ours_only": "old Watch peak, no logger hit (122)",
+  "logger_only": "logger 2DA6 hit, no old Watch peak (90)",
+  "low_only": "Watch peak 5-15 rad/s, neither (271)",
+  "impact_only": "Watch impact > 2 g, in none of the above (22)"
+ },
+ "labels": [
+  {
+   "t_unix": 1793901372.678,
+   "stratum": "both",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793901414.431,
+   "stratum": "both",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793902193.586,
+   "stratum": "both",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793902300.134,
+   "stratum": "both",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793902722.633,
+   "stratum": "both",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793902805.67,
+   "stratum": "both",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793902927.351,
+   "stratum": "both",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793904034.019,
+   "stratum": "both",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793901108.617,
+   "stratum": "ours_only",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793902341.992,
+   "stratum": "ours_only",
+   "hit": 0,
+   "note": "standing"
+  },
+  {
+   "t_unix": 1793902367.231,
+   "stratum": "ours_only",
+   "hit": 0,
+   "note": "standing"
+  },
+  {
+   "t_unix": 1793902558.49,
+   "stratum": "ours_only",
+   "hit": 0,
+   "note": "standing, racket twirl"
+  },
+  {
+   "t_unix": 1793902915.921,
+   "stratum": "ours_only",
+   "hit": 0,
+   "note": "standing, racket twirl"
+  },
+  {
+   "t_unix": 1793903060.371,
+   "stratum": "ours_only",
+   "hit": 0,
+   "note": "swing without a ball"
+  },
+  {
+   "t_unix": 1793903100.993,
+   "stratum": "ours_only",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793904372.558,
+   "stratum": "ours_only",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793904381.362,
+   "stratum": "ours_only",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793904382.963,
+   "stratum": "ours_only",
+   "hit": 0,
+   "note": "swing without a ball"
+  },
+  {
+   "t_unix": 1793904481.05,
+   "stratum": "ours_only",
+   "hit": 1,
+   "note": "pink racket"
+  },
+  {
+   "t_unix": 1793904530.707,
+   "stratum": "ours_only",
+   "hit": 1,
+   "note": "pink racket"
+  },
+  {
+   "t_unix": 1793904564.69,
+   "stratum": "ours_only",
+   "hit": 1,
+   "note": "pink racket"
+  },
+  {
+   "t_unix": 1793904570.562,
+   "stratum": "ours_only",
+   "hit": 1,
+   "note": "pink racket"
+  },
+  {
+   "t_unix": 1793904792.284,
+   "stratum": "ours_only",
+   "hit": 1,
+   "note": "pink racket"
+  },
+  {
+   "t_unix": 1793904859.027,
+   "stratum": "ours_only",
+   "hit": 1,
+   "note": "pink racket"
+  },
+  {
+   "t_unix": 1793900965.119,
+   "stratum": "logger_only",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793900989.153,
+   "stratum": "logger_only",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793900995.001,
+   "stratum": "logger_only",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793901089.034,
+   "stratum": "logger_only",
+   "hit": 0,
+   "note": "ball bounced on racket"
+  },
+  {
+   "t_unix": 1793901389.198,
+   "stratum": "logger_only",
+   "hit": 0,
+   "note": "ball pickup with racket"
+  },
+  {
+   "t_unix": 1793901390.47,
+   "stratum": "logger_only",
+   "hit": 0,
+   "note": "ball scooped with racket"
+  },
+  {
+   "t_unix": 1793902213.262,
+   "stratum": "logger_only",
+   "hit": 0,
+   "note": "standing"
+  },
+  {
+   "t_unix": 1793902429.822,
+   "stratum": "logger_only",
+   "hit": 1,
+   "note": "gentle volley"
+  },
+  {
+   "t_unix": 1793902489.971,
+   "stratum": "logger_only",
+   "hit": 1,
+   "note": "high volley"
+  },
+  {
+   "t_unix": 1793902741.831,
+   "stratum": "logger_only",
+   "hit": 0,
+   "note": "ball bounce"
+  },
+  {
+   "t_unix": 1793902762.728,
+   "stratum": "logger_only",
+   "hit": 0,
+   "note": "walking"
+  },
+  {
+   "t_unix": 1793903191.144,
+   "stratum": "logger_only",
+   "hit": 0,
+   "note": "picking up balls"
+  },
+  {
+   "t_unix": 1793903723.899,
+   "stratum": "logger_only",
+   "hit": null,
+   "note": "out of frame"
+  },
+  {
+   "t_unix": 1793903726.616,
+   "stratum": "logger_only",
+   "hit": 0,
+   "note": "ball drop"
+  },
+  {
+   "t_unix": 1793903763.399,
+   "stratum": "logger_only",
+   "hit": 0,
+   "note": "standing with ball"
+  },
+  {
+   "t_unix": 1793903892.0,
+   "stratum": "logger_only",
+   "hit": 0,
+   "note": "standing"
+  },
+  {
+   "t_unix": 1793901324.178,
+   "stratum": "low_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793901362.433,
+   "stratum": "low_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793902269.885,
+   "stratum": "low_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793902301.84,
+   "stratum": "low_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793902699.418,
+   "stratum": "low_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793902767.376,
+   "stratum": "low_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793902829.698,
+   "stratum": "low_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793903873.359,
+   "stratum": "low_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793904243.927,
+   "stratum": "low_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793904497.664,
+   "stratum": "low_only",
+   "hit": null,
+   "note": "out of frame"
+  },
+  {
+   "t_unix": 1793904621.224,
+   "stratum": "low_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793904772.668,
+   "stratum": "low_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793900971.704,
+   "stratum": "impact_only",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793900974.634,
+   "stratum": "impact_only",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793901094.766,
+   "stratum": "impact_only",
+   "hit": 1,
+   "note": ""
+  },
+  {
+   "t_unix": 1793901378.312,
+   "stratum": "impact_only",
+   "hit": null,
+   "note": "unclear"
+  },
+  {
+   "t_unix": 1793902597.022,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": "racket tap"
+  },
+  {
+   "t_unix": 1793902832.609,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": "ball pickup"
+  },
+  {
+   "t_unix": 1793902840.097,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": "racket swung down"
+  },
+  {
+   "t_unix": 1793902872.463,
+   "stratum": "impact_only",
+   "hit": null,
+   "note": "out of frame"
+  },
+  {
+   "t_unix": 1793903803.241,
+   "stratum": "impact_only",
+   "hit": null,
+   "note": "OpenCap on the wrong person"
+  },
+  {
+   "t_unix": 1793903900.207,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": "picking up balls"
+  },
+  {
+   "t_unix": 1793904101.781,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793904336.19,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793904434.964,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": "ball bounced on racket"
+  },
+  {
+   "t_unix": 1793904500.2,
+   "stratum": "impact_only",
+   "hit": null,
+   "note": "out of frame"
+  },
+  {
+   "t_unix": 1793904524.188,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": "swing without a ball"
+  },
+  {
+   "t_unix": 1793904527.254,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793904547.781,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": "ball bounced on racket"
+  },
+  {
+   "t_unix": 1793904573.753,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": "walking"
+  },
+  {
+   "t_unix": 1793904606.289,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": "scooping balls"
+  },
+  {
+   "t_unix": 1793904774.161,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793904869.238,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": ""
+  },
+  {
+   "t_unix": 1793904882.225,
+   "stratum": "impact_only",
+   "hit": 0,
+   "note": ""
+  }
+ ]
+}

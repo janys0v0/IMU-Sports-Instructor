@@ -10,6 +10,7 @@ Inputs per variant: Watch; Watch + phone; Watch + phone + AirPods. Models: ridge
 bidirectional GRU, unchanged from `experiments/E07_pose_methods/learned_own.py`.
 
     .venv/bin/python -m experiments.E08_janys_1105.run [ridge] [gru]    # writes results/scores.json
+    .venv/bin/python -m experiments.E08_janys_1105.run rescore          # rescore saved predictions
 """
 
 import json
@@ -75,7 +76,20 @@ def run(model, train, variant, te, old):
     return name, score(te, m)
 
 
+def rescore():
+    """Recompute results/scores.json from the saved predictions (no retraining)."""
+    te = load()
+    path = OUT / "scores.json"
+    scores = json.loads(path.read_text())
+    for name in scores:
+        z = np.load(OUT / "janys" / f"method_{name}.npz")
+        scores[name] = score(te, {k: z[k] for k in ("hum", "fore", "elbow", "valid")})
+    path.write_text(json.dumps(scores, indent=1) + "\n")
+
+
 def main():
+    if "rescore" in sys.argv:
+        return rescore()
     models = [x for x in ("ridge", "gru") if x in sys.argv] or ["ridge", "gru"]
     te = load()
     old = {p: load07(p, full=True) for p in ("janys", "tom")}

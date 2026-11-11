@@ -1,5 +1,5 @@
 """11/05 test set in E07's dataset layout: Janys's iPhone, Watch and AirPods on a 30 Hz grid over
-every OpenCap segment, with OpenCap's arm targets and the Watch-detected swings.
+every OpenCap segment, with OpenCap's arm targets and the Watch-detected ball contacts.
 
 Inputs: session 20261105-124805-P01 (phone + Watch + AirPods, 67 min), OpenCap rebuilt by
 `opencap_gt.py`, clip -> unix offsets from `align.py`. Each OpenCap segment (~25 s) is one `seg`.
@@ -20,8 +20,8 @@ from experiments.E07_pose_methods.data import (
     SWING_HALF_S,
     arm_targets,
     elevation_plane,
+    hits,
     on_grid,
-    swings,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -117,7 +117,9 @@ def build():
     mot = mot[np.argsort(mot[:, 0])]
     b2u = hf[0].header.get("boot_to_unix", w.boot_to_unix)
     tw, ww = mot[:, 0] + b2u, np.linalg.norm(mot[:, 11:14], axis=1)
-    sw = swings(tw, ww)
+    acc = np.concatenate([c.accel for c in hf])
+    acc = acc[np.argsort(acc[:, 0])]
+    sw = hits(acc[:, 0] + b2u, acc[:, 1:4], tw, ww)  # ball contacts (data.py `hits`)
     j = np.clip(np.searchsorted(g, sw), 1, len(g) - 1)
     inside = np.minimum(np.abs(g[j] - sw), np.abs(g[j - 1] - sw)) < 1 / FS  # on a covered segment
     d["swing_t"] = sw[inside]

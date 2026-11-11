@@ -9,15 +9,15 @@ scoring; only the model and training (sections 4 and 5) differ.
 Abbreviations (each defined once):
 
 - **IMU**: inertial measurement unit (gyroscope + accelerometer, here with the device's own
-  orientation filter).
+orientation filter).
 - **OpenCap**: video motion capture from phone videos. It fits an OpenSim body model and gives
-  segment rotations and joint angles. It is our ground truth.
+segment rotations and joint angles. It is our ground truth.
 - **GT**: ground truth (OpenCap).
 - **GRU**: gated recurrent unit, a recurrent neural network layer.
 - **6D**: a rotation written as the first two columns of its 3×3 matrix (6 numbers).
 - **MAE**: in this project, the *median* absolute error in degrees (not the mean), see section 7.
 - **xplayer**: train on the other player only. **personal**: also train on the test player's own
-  minutes from the same session.
+minutes from the same session.
 
 ## 1. Purpose and summary
 
@@ -74,8 +74,8 @@ user acceleration and gravity, all in the device's own frame
 | `gravity` | (N, 3) | g (unit length) | gravity direction in the device frame, pointing down |
 
 Delivered rates (measured in E03, `docs/research/device-research.md:12`): iPhone 33.5 Hz, Watch
-66.4 Hz, AirPods 50 Hz. The Watch's separate 200 Hz stream is used only to find swings
-(section 6.4), not as a model input.
+66.4 Hz, AirPods 50 Hz. The Watch's separate 200 Hz motion and ~800 Hz accelerometer streams are used only to
+find swings (section 6.4), not as model inputs.
 
 For the all-sensor variant only, the commercial msense sensors on the chest (`2F5A`) and right
 upper arm (`1D03`) (`experiments/E07_pose_methods/data.py:30`) are turned into the same four
@@ -94,6 +94,7 @@ spacing $1/30$ s (`FS = 30.0`, `data.py:28`):
 3. Orientation: spherical linear interpolation (slerp) of the quaternions.
 4. Rotation rate, user acceleration, gravity: linear interpolation per axis.
 5. `valid` = a raw sample lies within 0.05 s of the grid time (stored, but the model does not
+
    use it).
 
 On 10/28 the grid covers the E06 Calibrate segments (`data.py:122-125`): one segment per
@@ -113,7 +114,9 @@ order Watch, phone, AirPods, at each frame $t$:
 If the phone is in the variant, add the Watch's orientation relative to the phone
 (`learned_own.py:39-42`):
 
-$$R_{pw}(t) = R_p(t)^\top R_w(t), \qquad \text{6D}(R_{pw}) = [R_{00}, R_{01}, R_{10}, R_{11}, R_{20}, R_{21}]$$
+$$
+R_{pw}(t) = R_p(t)^\top R_w(t), \qquad \text{6D}(R_{pw}) = [R_{00}, R_{01}, R_{10}, R_{11}, R_{20}, R_{21}]
+$$
 
 where $R_p, R_w$ are the world-from-device rotation matrices of the phone and Watch. `r6()`
 (`learned_own.py:31-32`) takes the first two columns and flattens them row by row. Both
@@ -123,7 +126,7 @@ All-sensor variant (`all_sensor_features`, `learned_own.py:205-226`): the Watch 
 AirPods features plus 36 extra columns:
 
 - 6D of $R_{trunk}^\top R_{upper}$, $R_{trunk}^\top R_{watch}$, $R_{upper}^\top R_{watch}$
-  (from `align.py`'s heading-corrected segment rotations `trunk_R`, `upper_R`, `watch_R`);
+(from `align.py`'s heading-corrected segment rotations `trunk_R`, `upper_R`, `watch_R`);
 - upper-arm sensor gravity, gyro/10, user acceleration;
 - chest sensor gravity, gyro/10, user acceleration.
 
@@ -141,9 +144,13 @@ No unit conversion beyond gyro/10; the scale differences are removed by standard
 `context(X, seg, half=15)` (`learned_own.py:138-148`) adds, for every feature, its moving mean
 and moving standard deviation over a 31-frame box window ($\pm 15$ frames $= \pm 0.5$ s):
 
-$$m_t = \frac{1}{31}\sum_{j=-15}^{15} x_{t+j}, \qquad s_t = \sqrt{\max\Big(\frac{1}{31}\sum_{j=-15}^{15} x_{t+j}^2 - m_t^2,\ 0\Big)}$$
+$$
+m_t = \frac{1}{31}\sum_{j=-15}^{15} x_{t+j}, \qquad s_t = \sqrt{\max\Big(\frac{1}{31}\sum_{j=-15}^{15} x_{t+j}^2 - m_t^2,\ 0\Big)}
+$$
 
-$$\tilde x_t = [\,x_t,\ m_t,\ s_t\,] \in \mathbb R^{3D}$$
+$$
+\tilde x_t = [\,x_t,\ m_t,\ s_t\,] \in \mathbb R^{3D}
+$$
 
 It uses `scipy.ndimage.uniform_filter1d` with `mode="nearest"` (edge values repeated), run on
 each segment separately, so windows never cross a segment boundary or mix sessions.
@@ -153,7 +160,9 @@ each segment separately, so windows never cross a segment boundary or mix sessio
 Inside `ridge_fit_predict` (`learned_own.py:149-155`), on the training rows that have valid GT
 only:
 
-$$\mu = \text{mean}(\tilde X_{tr}), \quad \sigma = \text{std}(\tilde X_{tr}) + 10^{-6}, \quad A = \Big[\frac{\tilde X_{tr}-\mu}{\sigma},\ \mathbf 1\Big]$$
+$$
+\mu = \text{mean}(\tilde X_{tr}), \quad \sigma = \text{std}(\tilde X_{tr}) + 10^{-6}, \quad A = \Big[\frac{\tilde X_{tr}-\mu}{\sigma},\ \mathbf 1\Big]
+$$
 
 The test rows use the same $\mu, \sigma$ from training. (The `mu`, `sd` computed in
 `run_split`, `learned_own.py:187-188`, are only used by the GRU.)
@@ -163,7 +172,7 @@ The test rows use the same $\mu, \sigma$ from training. (The `mu`, `sd` computed
 ### 4.1 What is predicted
 
 Six numbers per frame (`targets()`, `learned_own.py:48-49`):
-$y = [\,\mathbf h,\ \mathbf f\,]$ where $\mathbf h$ is the unit vector along the right upper arm
+$y = [\mathbf h,\ \mathbf f]$ where $\mathbf h$ is the unit vector along the right upper arm
 (shoulder → elbow) and $\mathbf f$ the unit vector along the right forearm (elbow → wrist), both in
 OpenCap's trunk (torso) frame: x forward, y up, z to the body's right
 (`experiments/E07_pose_methods/common.py:3-9`).
@@ -172,9 +181,11 @@ OpenCap's trunk (torso) frame: x forward, y up, z to the body's right
 
 `arm_targets(R, bn)` (`data.py:67-72`). OpenCap gives each body's world rotation $R_b$. In the
 OpenSim model a body's y axis points from the distal joint towards the proximal one, so the
-distal direction is $-R_b\,\mathbf e_y$:
+distal direction is $-R_b\mathbf e_y$:
 
-$$\mathbf h = \frac{R_{torso}^\top(-R_{humerus\_r}\,\mathbf e_y)}{\|\cdot\|}, \qquad \mathbf f = \frac{R_{torso}^\top(-R_{radius\_r}\,\mathbf e_y)}{\|\cdot\|}$$
+$$
+\mathbf h = \frac{R_{torso}^\top(-R_{humerus\_r}\,\mathbf e_y)}{\|\cdot\|}, \qquad \mathbf f = \frac{R_{torso}^\top(-R_{radius\_r}\,\mathbf e_y)}{\|\cdot\|}
+$$
 
 The OpenCap frame nearest each grid time is used (`data.py:161-168`). A frame has valid GT
 (`gt_valid`) if that OpenCap frame is within 0.02 s and OpenCap has no gap ≥ 0.2 s around it
@@ -185,7 +196,7 @@ The OpenCap frame nearest each grid time is used (`data.py:161-168`). A frame ha
 
 The ridge output $\hat y$ has no length constraint. `unit_pair()` (`learned_own.py:158-162`)
 normalises each half:
-$\hat{\mathbf h} = \hat y_{0:3}/\|\hat y_{0:3}\|$, $\hat{\mathbf f} = \hat y_{3:6}/\|\hat y_{3:6}\|$.
+$\hat{\mathbf h} = \hat y_{0:3}/\hat y_{0:3}$, $\hat{\mathbf f} = \hat y_{3:6}/\hat y_{3:6}$.
 Then:
 
 | Quantity | Formula | Code |
@@ -220,9 +231,13 @@ Each frame is predicted on its own; the only temporal information is the ±0.5 s
 With $A \in \mathbb R^{N\times(3D+1)}$ the standardised training rows (valid GT only) and
 $Y \in \mathbb R^{N\times 6}$ the targets, ridge minimises squared error plus an L2 penalty:
 
-$$\mathcal L(W) = \|AW - Y\|_F^2 + \lambda \|W\|_F^2, \qquad \lambda = 10$$
+$$
+\mathcal L(W) = \|AW - Y\|_F^2 + \lambda \|W\|_F^2, \qquad \lambda = 10
+$$
 
-$$W^\star = (A^\top A + \lambda I)^{-1} A^\top Y$$
+$$
+W^\star = (A^\top A + \lambda I)^{-1} A^\top Y
+$$
 
 solved with `np.linalg.solve` (`learned_own.py:153`). The six outputs are independent least
 squares problems sharing $A$. The identity also covers the bias column, so the bias is
@@ -259,11 +274,11 @@ No hyperparameter search is in the code; λ and the context width are fixed.
 
 | Dataset | File | Grid minutes | Valid-GT minutes | Segments | Swings |
 |---|---|---|---|---|---|
-| Janys 10/28 block (all sensors) | `E07…/results/janys/dataset.npz` | 8.1 | 6.4 | 2 | 36 |
-| Tom 10/28 block (all sensors) | `E07…/results/tom/dataset.npz` | 12.6 | 8.9 | 2 | 92 |
-| Janys 10/28 full (Apple only) | `E07…/results/janys/dataset_full.npz` | 26.8 | 17.0 | 7 | 114 |
-| Tom 10/28 full (Apple only) | `E07…/results/tom/dataset_full.npz` | 12.0 | 8.9 | 2 | 92 |
-| Janys 11/05 (Apple only) | `E08…/results/janys/dataset.npz` | 35.8 | 35.8 | 97 | 278 |
+| Janys 10/28 block (all sensors) | `E07…/results/janys/dataset.npz` | 8.1 | 6.4 | 2 | 51 |
+| Tom 10/28 block (all sensors) | `E07…/results/tom/dataset.npz` | 12.6 | 8.9 | 2 | 114 |
+| Janys 10/28 full (Apple only) | `E07…/results/janys/dataset_full.npz` | 26.8 | 17.0 | 7 | 151 |
+| Tom 10/28 full (Apple only) | `E07…/results/tom/dataset_full.npz` | 12.0 | 8.9 | 2 | 114 |
+| Janys 11/05 (Apple only) | `E08…/results/janys/dataset.npz` | 35.8 | 35.8 | 97 | 264 |
 
 (Counts read from the saved `.npz` files on 11/10.) "Block" = the E06 segments where the
 commercial sensors were worn; "full" = every Calibrate segment OpenCap covers.
@@ -274,14 +289,14 @@ Test set: the test player's **block**. Players: `janys`, `tom` (`data.py:29`).
 
 - **xplayer**: train on the other player's `dataset_full` only.
 - **personal**: also add the test player's own `dataset_full` frames that are more than 10 s
-  outside the block's time span (`split_mask`, `learned_own.py:52-56`). Skipped if under 1
-  minute of valid GT remains (`learned_own.py:171-174`). For Tom the full dataset *is* the
-  block, so his personal split is skipped (Tom shows "–" in the tables). For Janys it adds
-  18.4 min of grid (10.5 min valid GT).
+outside the block's time span (`split_mask`, `learned_own.py:52-56`). Skipped if under 1
+minute of valid GT remains (`learned_own.py:171-174`). For Tom the full dataset *is* the
+block, so his personal split is skipped (Tom shows "–" in the tables). For Janys it adds
+18.4 min of grid (10.5 min valid GT).
 - **all sensors** (`run_all_sensors`, `learned_own.py:229-265`): commercial sensors exist only in
-  the blocks, so xplayer trains on the other player's block; personal splits the test block in
-  two folds at the median time, trains on the other half (minus ±10 s around the median) plus
-  the other player's block, and predicts each half with the model that did not see it.
+the blocks, so xplayer trains on the other player's block; personal splits the test block in
+two folds at the median time, trains on the other half (minus ±10 s around the median) plus
+the other player's block, and predicts each half with the model that did not see it.
 
 ### 6.3 E08 training sets, tested on Janys 11/05 (`experiments/E08_janys_1105/run.py:27-75`)
 
@@ -306,9 +321,9 @@ Test sets are 10/28 `dataset_full` (Tom 8.9 valid min, Janys 17.0 valid min).
 
 ### 6.5 Swings
 
-Swings are peaks of the Watch's 200 Hz rotation speed above 15 rad/s, peaks closer than 1.5 s
-merged; a frame is "in swing" if within ±0.5 s of a peak (`data.py:31`, `data.py:55-64`,
-`data.py:175-186`). Swings are used only for scoring.
+Swings are ball contacts detected from the Watch's accelerometer impact and rotation speed
+(`shared_pipeline.md` [§6](shared_pipeline.md#6-swing-detection-ball-contacts)); a frame is "in
+swing" if within ±0.5 s of a contact. Swings are used only for scoring.
 
 ## 7. Evaluation
 
@@ -331,18 +346,18 @@ skipped):
 
 | Ridge variant | Split | Elbow | Elevation | Forearm incl. | Forearm dir. | Upper-arm dir. |
 |---|---|---|---|---|---|---|
-| Watch | xplayer | 26 / 18 | 36 / 24 | 15 / 11 | 43 / 29 | 53 / 36 |
-| Watch | personal | 16 / – | 15 / – | 9 / – | 22 / – | 28 / – |
-| Watch+phone | xplayer | 30 / 16 | 36 / 25 | 14 / 11 | 34 / 27 | 55 / 34 |
-| Watch+phone | personal | 16 / – | 15 / – | 8 / – | 18 / – | 24 / – |
-| Watch+phone+AirPods | xplayer | 33 / 18 | 41 / 26 | 15 / 10 | 36 / 27 | 57 / 37 |
-| Watch+phone+AirPods | personal | 15 / – | 14 / – | 8 / – | 17 / – | 24 / – |
-| All sensors | xplayer | 21 / 29 | 33 / 79 | 23 / 24 | 43 / 66 | 46 / 102 |
-| All sensors | personal (other half) | 13 / 9 | 10 / 7 | 8 / 6 | 17 / 14 | 20 / 13 |
+| Watch | xplayer | 30 / 17 | 38 / 23 | 15 / 11 | 38 / 29 | 53 / 34 |
+| Watch | personal | 16 / – | 16 / – | 8 / – | 18 / – | 28 / – |
+| Watch+phone | xplayer | 32 / 14 | 36 / 23 | 13 / 11 | 32 / 26 | 54 / 32 |
+| Watch+phone | personal | 16 / – | 15 / – | 7 / – | 17 / – | 25 / – |
+| Watch+phone+AirPods | xplayer | 33 / 16 | 41 / 25 | 13 / 10 | 34 / 26 | 56 / 35 |
+| Watch+phone+AirPods | personal | 16 / – | 15 / – | 7 / – | 16 / – | 25 / – |
+| All sensors | xplayer | 19 / 29 | 33 / 81 | 24 / 24 | 43 / 62 | 44 / 103 |
+| All sensors | personal (other half) | 13 / 9 | 12 / 7 | 7 / 6 | 17 / 14 | 21 / 13 |
 
 Whole blocks, same order of rows, elbow / elevation (Janys / Tom): Watch xplayer 20/14, 8/8;
 Watch+phone personal 11, 7 (Janys); all sensors personal 8/7, 6/6; all sensors xplayer 35/68,
-92/122. For comparison the GRU, all sensors, personal reaches 10/9 elbow and 7/7 elevation in
+92/122. For comparison the GRU, all sensors, personal reaches 10/8 elbow and 7/6 elevation in
 swings (`E07…/results/summary.md`).
 
 ### 7.2 E08 results, tested on Janys 11/05
@@ -351,45 +366,45 @@ From `experiments/E08_janys_1105/results/summary.md`. Swings and all minutes, de
 
 | Ridge variant | Trained on | Elbow | Elevation | Forearm dir. | Elbow (all) | Elev. (all) |
 |---|---|---|---|---|---|---|
-| Watch | *E07 personal, tested on Janys 10/28* | 16 | 15 | 22 | 12 | 7 |
+| Watch | *E07 personal, tested on Janys 10/28* | 16 | 16 | 18 | 12 | 7 |
 | Watch | Janys 10/28 | 17 | 15 | 34 | 11 | 8 |
 | Watch | Janys + Tom 10/28 | 18 | 14 | 36 | 13 | 9 |
-| Watch | Tom 10/28 | 24 | 31 | 54 | 20 | 9 |
+| Watch | Tom 10/28 | 24 | 34 | 54 | 20 | 9 |
 | Watch | + half of 11/05 | 17 | 14 | 30 | 12 | 8 |
 | Watch+phone | Janys 10/28 | 17 | 15 | 29 | 13 | 8 |
 | Watch+phone | Janys + Tom 10/28 | 17 | 14 | 29 | 15 | 8 |
-| Watch+phone | Tom 10/28 | 26 | 38 | 29 | 20 | 10 |
+| Watch+phone | Tom 10/28 | 27 | 41 | 29 | 20 | 10 |
 | Watch+phone | + half of 11/05 | 16 | 13 | 21 | 12 | 8 |
-| Watch+phone+AirPods | Janys 10/28 | 18 | 15 | 30 | 12 | 8 |
+| Watch+phone+AirPods | Janys 10/28 | 17 | 15 | 29 | 12 | 8 |
 | Watch+phone+AirPods | Janys + Tom 10/28 | 17 | 14 | 29 | 14 | 8 |
-| Watch+phone+AirPods | Tom 10/28 | 27 | 43 | 30 | 20 | 10 |
-| Watch+phone+AirPods | + half of 11/05 | 16 | 13 | 21 | 12 | 8 |
+| Watch+phone+AirPods | Tom 10/28 | 28 | 48 | 30 | 20 | 10 |
+| Watch+phone+AirPods | + half of 11/05 | 16 | 13 | 20 | 12 | 8 |
 
 ### 7.3 Cross-session results, tested on 10/28
 
-From `experiments/E08_janys_1105/results/cross.json` (swings: 1.2 min Tom, 1.6 min Janys):
+From `experiments/E08_janys_1105/results/cross.json` (swings: 1.5 min Tom, 2.25 min Janys):
 
 | Ridge variant | Test | Trained on | Elbow | Elevation | Forearm dir. | Elbow (all) | Elev. (all) |
 |---|---|---|---|---|---|---|---|
-| Watch | Tom 10/28 | Janys 10/28 | 18 | 24 | 29 | 14 | 8 |
-| Watch | Tom 10/28 | Janys 10/28 + 11/05 | 15 | 20 | 29 | 15 | 7 |
-| Watch | Janys 10/28 | Tom 10/28 | 27 | 38 | 43 | 20 | 9 |
-| Watch | Janys 10/28 | Janys 11/05 | 20 | 20 | 24 | 11 | 9 |
-| Watch | Janys 10/28 | Janys 11/05 + Tom 10/28 | 22 | 22 | 24 | 12 | 9 |
-| Watch+phone | Tom 10/28 | Janys 10/28 | 16 | 25 | 27 | 15 | 9 |
-| Watch+phone | Tom 10/28 | Janys 10/28 + 11/05 | 14 | 20 | 24 | 16 | 9 |
-| Watch+phone | Janys 10/28 | Tom 10/28 | 27 | 37 | 37 | 20 | 9 |
-| Watch+phone | Janys 10/28 | Janys 11/05 | 17 | 19 | 27 | 12 | 11 |
-| Watch+phone | Janys 10/28 | Janys 11/05 + Tom 10/28 | 17 | 23 | 27 | 15 | 10 |
-| Watch+phone+AirPods | Tom 10/28 | Janys 10/28 | 18 | 26 | 27 | 18 | 10 |
-| Watch+phone+AirPods | Tom 10/28 | Janys 10/28 + 11/05 | 14 | 22 | 23 | 17 | 8 |
-| Watch+phone+AirPods | Janys 10/28 | Tom 10/28 | 29 | 42 | 38 | 19 | 10 |
-| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 | 16 | 19 | 26 | 13 | 11 |
-| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 + Tom 10/28 | 16 | 22 | 27 | 15 | 10 |
+| Watch | Tom 10/28 | Janys 10/28 | 17 | 23 | 29 | 14 | 8 |
+| Watch | Tom 10/28 | Janys 10/28 + 11/05 | 15 | 19 | 29 | 15 | 7 |
+| Watch | Janys 10/28 | Tom 10/28 | 30 | 39 | 43 | 20 | 9 |
+| Watch | Janys 10/28 | Janys 11/05 | 23 | 22 | 23 | 11 | 9 |
+| Watch | Janys 10/28 | Janys 11/05 + Tom 10/28 | 25 | 25 | 24 | 12 | 9 |
+| Watch+phone | Tom 10/28 | Janys 10/28 | 14 | 23 | 26 | 15 | 9 |
+| Watch+phone | Tom 10/28 | Janys 10/28 + 11/05 | 13 | 20 | 23 | 16 | 9 |
+| Watch+phone | Janys 10/28 | Tom 10/28 | 30 | 37 | 36 | 20 | 9 |
+| Watch+phone | Janys 10/28 | Janys 11/05 | 18 | 20 | 25 | 12 | 11 |
+| Watch+phone | Janys 10/28 | Janys 11/05 + Tom 10/28 | 18 | 24 | 26 | 15 | 10 |
+| Watch+phone+AirPods | Tom 10/28 | Janys 10/28 | 16 | 25 | 26 | 18 | 10 |
+| Watch+phone+AirPods | Tom 10/28 | Janys 10/28 + 11/05 | 13 | 21 | 23 | 17 | 8 |
+| Watch+phone+AirPods | Janys 10/28 | Tom 10/28 | 31 | 41 | 37 | 19 | 10 |
+| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 | 18 | 21 | 26 | 13 | 11 |
+| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 + Tom 10/28 | 18 | 24 | 26 | 15 | 10 |
 
-Summary: ridge stays at 16-20° on the elbow in swings when trained on the same player, on any date;
-another player's data costs about 10° on the elbow and 15-25° on elevation in swings. Adding a
-second Janys day helps on Tom (elbow 16-18 → 14-15°). Adding Tom to Janys 11/05 does not help on
+Summary: ridge stays at 16-23° on the elbow in swings when trained on the same player, on any date;
+another player's data costs about 10° on the elbow and 15-20° on elevation in swings. Adding a
+second Janys day helps on Tom (elbow 14-17 → 13-15°). Adding Tom to Janys 11/05 does not help on
 Janys 10/28.
 
 ## 8. Rebuild recipe
@@ -446,16 +461,16 @@ elbow = np.degrees(np.arccos(np.clip((hum * fore).sum(1), -1, 1)))
 ## 9. Limitations and caveats
 
 - **Two players, two dates.** About 20 min of Janys + Tom on 10/28 and 36 min of Janys on 11/05.
-  Cross-player error stays 10-25° worse than same-player.
+Cross-player error stays 10-25° worse than same-player.
 - **Personal splits are within one session**, minutes apart; they are a best case.
 - **Linear, frame-wise.** The model cannot represent the swing's dynamics beyond the ±0.5 s
-  mean and std, so in swings it is 3-12° worse than the GRU trained on the same data.
+mean and std, so in swings it is 3-12° worse than the GRU trained on the same data.
 - **Loss is not angular.** The squared error on 6 raw numbers is minimised, then normalised; a
-  short predicted vector can flip direction after normalisation.
+short predicted vector can flip direction after normalisation.
 - **Bias is regularised** along with the weights (the identity covers the ones column).
 - **Elbow mismatch.** The prediction's elbow is the angle between two axes; OpenCap's elbow is
-  an IK joint angle. They are close but not identical.
+an IK joint angle. They are close but not identical.
 - **GT quality.** OpenCap's own error is about 15° and it sometimes tracks the wrong person
-  (E07 and E08 READMEs); those frames stay in the scores.
-- **All-sensor variant fails across players** (elevation 79° for Tom): 20 min from two people
-  is too little for 207 inputs.
+(E07 and E08 READMEs); those frames stay in the scores.
+- **All-sensor variant fails across players** (elevation 81° for Tom): 20 min from two people
+is too little for 207 inputs.

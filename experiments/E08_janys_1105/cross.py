@@ -11,6 +11,7 @@ Calibrate segment): Tom 10/28 (8.9 min) and Janys 10/28 (17.0 min).
 
     .venv/bin/python -m experiments.E08_janys_1105.cross [ridge] [gru]   # writes results/cross.json
     .venv/bin/python -m experiments.E08_janys_1105.cross figures   # figures/cross_*.png, results/cross.md
+    .venv/bin/python -m experiments.E08_janys_1105.cross rescore   # rescore saved predictions
 
 Colors follow the training set: Janys 10/28 and Tom 10/28 as in `figures.TRAIN`.
 """
@@ -21,6 +22,7 @@ import sys
 import numpy as np
 
 from experiments.E07_pose_methods import learned_own as L
+from experiments.E07_pose_methods.colors import anonymize
 from experiments.E07_pose_methods.common import elbow_from_dirs
 from experiments.E07_pose_methods.data import load as load07
 from experiments.E07_pose_methods.evaluate import score
@@ -44,6 +46,7 @@ TRAINED_ON = {  # training sessions -> (label, color)
     "j1105+tom": ("Janys 11/05 + Tom 10/28", "#7a2e8f"),
 }
 TESTS = {"tom": "Tom 10/28", "j1028": "Janys 10/28"}
+PRED = OUT / "cross"  # saved predictions, so a scoring change needs no retraining (not committed)
 
 
 def run(model, variant, train, test, sessions):
@@ -62,6 +65,8 @@ def run(model, variant, train, test, sessions):
     hum, fore = L.unit_pair(P)
     m = {"hum": hum, "fore": fore, "elbow": elbow_from_dirs(hum, fore)}
     m["valid"] = np.isfinite(fore).all(1)
+    PRED.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(PRED / f"{model}_{variant}_{'_'.join(train)}_to_{test}.npz", **m)
     return score(te, m)
 
 
@@ -105,6 +110,7 @@ def figure(scores, part):
     fig.suptitle(f"Cross-session tests on 10/28, median error vs OpenCap {what}", x=0.01, ha="left",
                  color=INK, fontsize=11.5)  # fmt: skip
     FIG.mkdir(exist_ok=True)
+    anonymize(fig)
     fig.savefig(FIG / f"cross_{part}.png", dpi=130, bbox_inches="tight")
     plt.close(fig)
 
@@ -135,6 +141,21 @@ def main():
         table(scores)
         return
     models = [x for x in ("ridge", "gru") if x in sys.argv] or ["ridge", "gru"]
+    if "rescore" in sys.argv:  # from the saved predictions
+        sessions = {"j1028": load07("janys", full=True), "tom": load07("tom", full=True)}
+        path = OUT / "cross.json"
+        scores = json.loads(path.read_text())
+        for name in scores:
+            model, rest = name.split("_", 1)
+            split = rest.rsplit("_", 1)[1]
+            variant = rest.rsplit("_", 1)[0]
+            train, test = SPLITS[split]
+            z = np.load(PRED / f"{model}_{variant}_{'_'.join(train)}_to_{test}.npz")
+            scores[name] = score(
+                sessions[test], {k: z[k] for k in ("hum", "fore", "elbow", "valid")}
+            )
+        path.write_text(json.dumps(scores, indent=1) + "\n")
+        return
     sessions = {
         "j1028": load07("janys", full=True),
         "tom": load07("tom", full=True),

@@ -70,7 +70,7 @@ Citations:
 |---|---|---|---|---|---|
 | iPhone 16 | right front trouser pocket, screen towards the leg | thigh; defines body "forward" and the body frame | Core Motion device motion (quaternion, rotation rate, user acceleration, gravity) | ~33.5 Hz delivered (`docs/research/device-research.md:12`) | |
 | Apple Watch | right wrist | **forearm** | device motion | ~66 Hz delivered | Apple keeps its heading (magnetometer fused by Apple) |
-| Apple Watch HF | right wrist | none (swing detection only) | `CMBatchedSensorManager` device motion | 200 Hz | `data.py:176-187` |
+| Apple Watch HF | right wrist | none (swing detection only) | `CMBatchedSensorManager` device motion + accelerometer | 200 Hz + ~800 Hz | `data.py` `build` |
 | AirPods | head | trunk, in `watch_airpods_trunk` only | headphone motion | ~50 Hz | |
 | msense 2F5A | chest | trunk | raw acc + gyro (+ mag) → VQF | ~199 Hz IMU, 50 Hz mag (measured on the 10/28 IMU1 log) | 10/28 only |
 | msense 1D03 | right upper arm | upper arm | same | same | 10/28 only |
@@ -87,7 +87,7 @@ Sensor names: `COMMERCIAL = {"trunk": "msense_2F5A", "upper_arm": "msense_1D03",
 | | E07 (10/28) | E08 (11/05) |
 |---|---|---|
 | Players | Janys (`janys-IMU1`), Tom (`tom-IMU4`) (`data.py:29`) | Janys only |
-| Data | 8.1 min / 12.6 min of play blocks with every sensor | 35.8 min with OpenCap in 97 segments of ~25 s, 278 swings |
+| Data | 8.1 min / 12.6 min of play blocks with every sensor | 35.8 min with OpenCap in 97 segments of ~25 s, 264 ball contacts |
 | Ground truth | OpenCap, 2 phone cameras, 60 fps | OpenCap, 3 cameras (HRNet), 30 fps |
 | Builder | `experiments/E07_pose_methods/data.py` | `experiments/E08_janys_1105/data.py` |
 | Calibrate hold per segment | the hold that starts the E06 block | the latest hold before each segment (six holds, every 8-10 min) (`E08 data.py:100-105`) |
@@ -452,19 +452,19 @@ seconds. E08's full `frame_methods` takes ~30 min, almost all of it OpenSense an
 
 ## 6. Results
 
-Median absolute error vs OpenCap in degrees. Swings = ±0.5 s around each peak of the Watch's 200 Hz
-rotation speed above 15 rad/s.
+Median absolute error vs OpenCap in degrees. Swings = ±0.5 s around each ball contact
+detected from the Watch ([`shared_pipeline.md` §6](shared_pipeline.md#6-swing-detection-ball-contacts)).
 
 ### E07, 10/28 (mean of two players, Janys / Tom in brackets; `experiments/E07_pose_methods/results/summary.md`)
 
 | Method | Elbow | Shoulder elev. | Forearm incl. | Forearm dir. | Upper-arm dir. |
 |---|---|---|---|---|---|
 | **Swings** | | | | | |
-| Watch, trunk fixed | – | – | 15 (15 / 15) | 38 (44 / 31) | – |
-| Chest + upper arm + Watch, raw headings | 43 (63 / 23) | 15 (20 / 10) | 13 (13 / 14) | 81 (80 / 82) | 75 (92 / 59) |
-| same, constraint-aligned | 21 (23 / 18) | 15 (19 / 11) | 18 (21 / 14) | 52 (60 / 44) | 62 (84 / 41) |
-| same, qmt heading | 19 (20 / 18) | 16 (20 / 11) | 18 (21 / 14) | 52 (60 / 44) | 62 (82 / 42) |
-| same, rest 18° | **11** (14 / 8) | 16 | 18 | 52 | 62 |
+| Watch, trunk fixed | – | – | 15 (15 / 14) | 37 (45 / 29) | – |
+| Chest + upper arm + Watch, raw headings | 46 (72 / 21) | 15 (20 / 10) | 13 (12 / 13) | 79 (71 / 88) | 78 (101 / 55) |
+| same, constraint-aligned | 20 (22 / 18) | 16 (21 / 12) | 17 (21 / 14) | 52 (59 / 45) | 63 (83 / 43) |
+| same, qmt heading | 19 (20 / 18) | 17 (21 / 12) | 17 (21 / 14) | 52 (59 / 45) | 64 (81 / 46) |
+| same, rest 18° | **12** (16 / 8) | 17 | 17 | 52 | 64 |
 | **Whole blocks** | | | | | |
 | Watch, trunk fixed | – | – | 19 (24 / 14) | 39 (49 / 29) | – |
 | Chest + upper arm + Watch, raw headings | 25 (34 / 17) | 9 (11 / 8) | 14 (17 / 11) | 67 (70 / 63) | 34 (44 / 24) |
@@ -473,18 +473,18 @@ rotation speed above 15 rad/s.
 | same, rest 18° | **7** (7 / 7) | 10 | 15 | 56 | 30 |
 
 Variants not in the summary table (from `results/scores.json`, swings, Janys / Tom): AirPods as trunk,
-forearm incl. 15 / 14, forearm dir. 46 / 33; `hinge_trunk_upper_watch` elbow 81 / 25;
-`upper_bound_mounting_fit` elbow 45 / 19, elevation 19 / 10. Elbow correlation with OpenCap: qmt
+forearm incl. 15 / 13, forearm dir. 47 / 31; `hinge_trunk_upper_watch` elbow 87 / 25;
+`upper_bound_mounting_fit` elbow 47 / 18, elevation 17 / 10. Elbow correlation with OpenCap: qmt
 r = 0.87 / 0.86 (whole block), aligned 0.78 / 0.80, raw −0.20 / 0.56.
 
 ### E08, Janys 11/05 (`experiments/E08_janys_1105/results/scores_all.json`; in brackets Janys 10/28)
 
 | Method | Forearm incl. (swing) | Forearm dir. (swing) | Forearm incl. (all) | Forearm dir. (all) |
 |---|---|---|---|---|
-| Watch, trunk fixed | 24 (15) | 65 (44) | 28 (24) | 56 (49) |
-| Watch, AirPods as trunk | 26 (15) | 69 (46) | 27 (27) | 58 (47) |
+| Watch, trunk fixed | 24 (15) | 64 (45) | 28 (24) | 56 (49) |
+| Watch, AirPods as trunk | 26 (15) | 69 (47) | 27 (27) | 58 (47) |
 
-Swing minutes scored: 4.6 on 11/05, vs 0.55 (Janys) and 1.2 (Tom) on 10/28.
+Swing minutes scored: 4.4 on 11/05, vs 0.8 (Janys) and 1.5 (Tom) on 10/28.
 
 Figures: `experiments/E07_pose_methods/figures/errors_swing.png`, `traces_janys.png`, `traces_tom.png`;
 `experiments/E08_janys_1105/figures/methods_swing.png`, `methods_all.png`.
@@ -505,7 +505,7 @@ Figures: `experiments/E07_pose_methods/figures/errors_swing.png`, `traces_janys.
 
 - **Heading drift.** The commercial sensors run 6-axis: heading drifts 15-20°/min. `align.py` and qmt fix
   the elbow (relative heading of upper arm vs Watch) but not the arm's direction relative to the trunk:
-  forearm direction stays 44-60° off in E07 swings, 58-76° on 11/05.
+  forearm direction stays 45-59° off in E07 swings, 56-78° on 11/05.
 - **Magnetic disturbance.** The court's field is too disturbed for the commercial magnetometers (VQF
   9-axis 60-120° drift); the Madgwick MARG filter was not adopted. Apple's own fusion keeps the Watch
   and phone heading within 15-20° of OpenCap's forearm.

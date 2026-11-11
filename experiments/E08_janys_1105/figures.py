@@ -11,6 +11,7 @@ from pathlib import Path
 
 import numpy as np
 
+from experiments.E07_pose_methods.colors import anonymize
 from experiments.E07_pose_methods.data import elevation_plane
 
 from .data import OUT, load
@@ -86,6 +87,7 @@ def bars(scores, ref, part):
     fig.suptitle(
         f"Janys, median error vs OpenCap {what}", x=0.01, ha="left", color=INK, fontsize=11.5
     )
+    anonymize(fig)
     fig.savefig(FIG / f"errors_{part}.png", dpi=130, bbox_inches="tight")
     plt.close(fig)
 
@@ -113,7 +115,7 @@ def traces(d, model="gru", variant="watch_phone", n=4, width=3.0):
         for r in range(2):
             ax[r, c].axvline(0, color=GRID, lw=1)
             ax[r, c].grid(axis="y", color=GRID)
-        ax[1, c].set_xlabel("s from swing peak")
+        ax[1, c].set_xlabel("s from ball contact")
         ax[0, c].set_title(f"Janys 11/05, swing {c + 1}", loc="left", color=INK, fontsize=10)
     ax[0, 0].set_ylabel("elbow flexion (deg)")
     ax[1, 0].set_ylabel("shoulder elevation (deg)")
@@ -122,6 +124,7 @@ def traces(d, model="gru", variant="watch_phone", n=4, width=3.0):
     fig.suptitle(
         f"{model.upper()}, {VLABEL[variant]}: four Janys 11/05 swings", x=0.01, ha="left", color=INK
     )
+    anonymize(fig)
     fig.savefig(FIG / f"traces_{model}_{variant}.png", dpi=130, bbox_inches="tight")
     plt.close(fig)
 
@@ -160,6 +163,7 @@ def over_the_day(d, model="gru", variant="watch_phone"):
         loc="left",
         color=INK,
     )
+    anonymize(fig)
     fig.savefig(FIG / "error_over_session.png", dpi=130)
     plt.close(fig)
 
@@ -268,6 +272,7 @@ def methods_bars(scores, ref, part):
         "(for our models: E07's model of that kind, tested on Janys 10/28). Colors as in E07; trained models in their training-set color.",
         x=0.01, ha="left", color=INK, fontsize=10.5,
     )  # fmt: skip
+    anonymize(fig)
     fig.savefig(FIG / f"methods_{part}.png", dpi=130)
     plt.close(fig)
 

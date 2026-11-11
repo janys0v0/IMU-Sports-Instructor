@@ -30,7 +30,7 @@ flowchart TD
     MIO --> GRID[on_grid: 30 Hz unix grid per segment]
     COM --> GRID
     OC --> TGT[arm_targets on the grid]
-    HF --> SW[swings: peaks > 15 rad/s]
+    HF --> SW[swings: ball contacts, impact + arm speed]
     GRID --> DS[(dataset.npz)]
     TGT --> DS
     SW --> DS
@@ -185,27 +185,53 @@ $g = \{t_0, t_0+\tfrac1{30}, \dots\}$ unix seconds per segment (`data.py:125`; 1
 Output keys per device: `<dev>_quat` (x, y, z, w), `<dev>_gyro` (rad/s), `<dev>_acc` (g),
 `<dev>_grav` (g), `<dev>_valid`.
 
-## 6. Swing detection
+## 6. Swing detection (ball contacts)
 
-`experiments/E07_pose_methods/data.py:31, 55-64, 175-186`; reused unchanged in
-`experiments/E08_janys_1105/data.py:115-127`.
+`hits` in `experiments/E07_pose_methods/data.py`; called by E07 `build` and by
+`experiments/E08_janys_1105/data.py`. A "swing" is a ball contact by the Watch wearer.
 
 ```mermaid
 flowchart LR
-    HF[Watch 200 Hz motion] --> N["‖ω‖ = norm of columns 11-13"]
-    N --> T{"‖ω‖ > 15 rad/s?"}
-    T -- yes --> G{"within 1.5 s of the<br/>last kept peak?"}
+    ACC["Watch accelerometer<br/>~800 Hz, g"] --> HP["high-pass 60 Hz<br/>(4th-order Butterworth, per gap-free run)"]
+    HP --> N["‖a_hp‖"]
+    N --> T{"> 3.5 g?"}
+    T -- yes --> G{"within 1 s of the<br/>last kept impact?"}
     G -- yes --> MX[keep the larger one]
-    G -- no --> NEW[new swing]
-    MX & NEW --> WIN["in_swing = |t − t_swing| ≤ 0.5 s<br/>on the 30 Hz grid"]
+    G -- no --> NEW[new impact]
+    MX & NEW --> W{"Watch ‖ω‖ ≥ 10 rad/s<br/>within −0.25..+0.1 s?"}
+    W -- yes --> HIT["contact time = impact sample"]
+    HIT --> WIN["in_swing = |t − t_contact| ≤ 0.5 s<br/>on the 30 Hz grid"]
 ```
 
-| Parameter | Value | Line |
+| Parameter | Value |
+|---|---|
+| High-pass `HIT_HP_HZ` | 60 Hz |
+| Impact threshold `HIT_IMPACT_G` | 3.5 g |
+| Arm speed `HIT_MIN_RAD_S` | 10 rad/s, within −0.25..+0.1 s of the impact |
+| Merge gap `HIT_GAP_S` | 1 s |
+| Half window `SWING_HALF_S` | 0.5 s |
+
+Why: a ball impact makes the wrist ring above 60 Hz (labelled hits 3.7–28 g); swings, racket
+twirls and walking stay under 1 g. The arm-speed check removes racket contacts that are not
+strokes (bouncing the ball on the racket, scooping balls, tapping the racket on a leg).
+
+**Checked against video** (11/11, Janys 11/05, IMG_0021; labels in
+`experiments/E08_janys_1105/results/swing_labels.json`; 74 events sampled from five strata):
+
+| Detector | Est. precision | Est. recall |
 |---|---|---|
-| Threshold `SWING_RAD_S` | 15 rad/s (≈ 860°/s) | `data.py:31` |
-| Merge gap `SWING_GAP_S` | 1.5 s | `data.py:31` |
-| Half window `SWING_HALF_S` | 0.5 s | `data.py:31` |
-| Kept swings | 10/28: inside the dataset span; 11/05: within one grid step of a covered frame | `data.py:182`; E08 `data.py:121-123` |
+| This one (impact + arm speed) | 0.99 | 0.94 |
+| Before 11/11: Watch ‖ω‖ peaks > 15 rad/s, merged within 1.5 s | 0.84 | 0.87 |
+| Commercial logger's `hit` flag (msense 2DA6 on one racket) | 0.76 | 0.70 |
+
+Estimates weight each stratum's labelled share by its size; the thresholds were chosen on the
+same labels, so the first row is optimistic. The old peaks were ~180 ms after contact and missed
+gentle strokes (< 15 rad/s); the logger misses every hit with the other racket and flags ball
+bounces and pickups. On 10/28 (phone1 video), 10 of 10 sampled newly found contacts were hits; of
+the dropped old peaks, Janys's were not hits and one of Tom's was.
+
+Counts (old → new): Janys 10/28 blocks 36 → 51, full 114 → 151; Tom 10/28 92 → 114; Janys 11/05
+278 → 264.
 
 ## 7. Frames
 
@@ -290,7 +316,7 @@ point of every model-free method (`experiments/E07_pose_methods/README.md:49-54`
 | Span | E06 commercial blocks: Janys 8.1 min, Tom 12.6 min, 2 segments each | every Calibrate segment OpenCap covers: Janys 26.8 min (7 segments), Tom 12.0 min | 97 OpenCap segments, 35.8 min (64 382 frames) |
 | Sensors | phone, Watch, AirPods + commercial trunk, upper arm, wrist | phone, Watch, AirPods | phone, Watch, AirPods |
 | GT coverage | 79 % / 70 % | Janys 64 % | 100 % of grid frames (grid built from OpenCap segments) |
-| Swings | 128 total (Janys 36) | Janys 114 | 278 |
+| Swings (ball contacts) | 165 total (Janys 51) | Janys 151, Tom 114 | 264 |
 | Used for | scoring every E07 method | training our models (E07 personal split, E08) | scoring every E08 method |
 | Extra keys | `hf_t`, `hf_w` (200 Hz speed), `gt_P`, `unix0` | same as blocks, no commercial | `seg_name`, `calibrations_s` |
 

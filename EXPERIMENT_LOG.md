@@ -364,4 +364,24 @@ Checked which published models could run on head + one wrist + thigh data:
   For comparing with published papers, which report joint positions in cm.
 - Janys 11/05 swings, Watch + phone: GRU 8 / 12 cm (elbow / wrist), ridge 11 / 17, MobilePoser
   29 / 47, OpenSense 32 / 47. WearMoCap: 18 / 30 here vs 2.6 cm in its paper (its own data).
-- Cross-session scores (`cross.json`) are not rescored: `cross.py` keeps no predictions.
+- Cross-session scores (`cross.json`) got cm metrics with the swing change below (retrained).
+- Commercial sensors on 11/05: four msense streamed (D0E5, 2DA6, 2F5A, 1D03), not one as the E08
+  README said; corrected there. E08 doesn't use them yet.
+
+### Swings are now ball contacts, checked against video (E07, E08)
+
+- Our old swings (Watch rotation peaks > 15 rad/s) vs the logger's `hit` flag (msense 2DA6) on
+  11/05: 156 of 278 peaks matched a hit. 74 events labelled by eye on IMG_0021
+  (`experiments/E08_janys_1105/results/swing_labels.json`):
+  - old peaks: est. precision 0.84, recall 0.87; ~180 ms after contact; missed gentle strokes,
+    counted racket twirls and swings without a ball;
+  - logger `hit`: 0.76 / 0.70; blind to Janys's second (pink) racket, flags ball bounces and
+    pickups.
+- New detector (`hits` in E07 `data.py`): Watch accelerometer > 60 Hz above 3.5 g (ball impact;
+  hits 3.7–28 g, non-hits < 1 g) with the arm ≥ 10 rad/s. Est. 0.99 / 0.94 on the same labels
+  (tuned on them, so optimistic). On 10/28 (phone1 video) 10 of 10 sampled new contacts were hits.
+- Swing scores barely move: E08 within 0–3°, E07 0–6° (Janys's swing time 0.55 → 0.8 min). No
+  conclusion changes. `cross.py` now saves predictions, and `run.py` / `cross.py` can `rescore`.
+- Cross-session, retrained (Watch GRU, swings): Tom trained on Janys 10/28 26° / 24° (elbow /
+  elevation), + Janys 11/05 18° / 19°; Janys 10/28 trained on Tom 26° / 38°, on Janys 11/05
+  10° / 9°. Figures now say Player A (Janys) and Player B (Tom) (`colors.anonymize`).
