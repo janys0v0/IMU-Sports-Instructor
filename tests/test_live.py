@@ -56,6 +56,8 @@ def test_only_one_render_runs_at_a_time(tmp_path, monkeypatch):
 
     monkeypatch.setattr(receiver.subprocess, "Popen", Running)
     monkeypatch.setattr(receiver, "_render", None)
+    monkeypatch.setattr(receiver, "VENV_PYTHON", tmp_path / "python")  # CI has no .venv
+    (tmp_path / "python").touch()
     for k in range(5):
         (tmp_path / f"s{k}").mkdir()
         receiver.start_render(tmp_path / f"s{k}")
