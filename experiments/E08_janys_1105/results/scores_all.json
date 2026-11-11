@@ -9,6 +9,8 @@
    "elevation_mae": 15.295,
    "elevation_r": 0.2,
    "plane_mae": 76.801,
+   "elbow_pos_cm": 13.716,
+   "wrist_pos_cm": 31.714,
    "elbow_mae": 31.878,
    "elbow_bias": -26.148,
    "elbow_r": 0.433
@@ -22,6 +24,8 @@
    "elevation_mae": 47.149,
    "elevation_r": -0.023,
    "plane_mae": 68.161,
+   "elbow_pos_cm": 29.647,
+   "wrist_pos_cm": 45.643,
    "elbow_mae": 34.28,
    "elbow_bias": 22.28,
    "elbow_r": 0.104
@@ -37,6 +41,8 @@
    "elevation_mae": 15.989,
    "elevation_r": 0.32,
    "plane_mae": 74.18,
+   "elbow_pos_cm": 15.228,
+   "wrist_pos_cm": 31.81,
    "elbow_mae": 32.21,
    "elbow_bias": -26.095,
    "elbow_r": 0.4
@@ -50,6 +56,8 @@
    "elevation_mae": 40.801,
    "elevation_r": -0.004,
    "plane_mae": 60.968,
+   "elbow_pos_cm": 28.225,
+   "wrist_pos_cm": 41.472,
    "elbow_mae": 33.554,
    "elbow_bias": 20.27,
    "elbow_r": 0.067
@@ -65,6 +73,8 @@
    "elevation_mae": 5.547,
    "elevation_r": 0.91,
    "plane_mae": 12.014,
+   "elbow_pos_cm": 4.369,
+   "wrist_pos_cm": 6.679,
    "elbow_mae": 8.651,
    "elbow_bias": -4.353,
    "elbow_r": 0.855
@@ -78,6 +88,8 @@
    "elevation_mae": 7.603,
    "elevation_r": 0.902,
    "plane_mae": 12.218,
+   "elbow_pos_cm": 6.774,
+   "wrist_pos_cm": 10.025,
    "elbow_mae": 11.727,
    "elbow_bias": -1.348,
    "elbow_r": 0.734
@@ -93,6 +105,8 @@
    "elevation_mae": 6.758,
    "elevation_r": 0.892,
    "plane_mae": 14.266,
+   "elbow_pos_cm": 5.315,
+   "wrist_pos_cm": 8.006,
    "elbow_mae": 9.233,
    "elbow_bias": -4.245,
    "elbow_r": 0.829
@@ -106,6 +120,8 @@
    "elevation_mae": 10.267,
    "elevation_r": 0.867,
    "plane_mae": 15.811,
+   "elbow_pos_cm": 8.521,
+   "wrist_pos_cm": 12.85,
    "elbow_mae": 13.193,
    "elbow_bias": -5.624,
    "elbow_r": 0.694
@@ -121,6 +137,8 @@
    "elevation_mae": 6.251,
    "elevation_r": 0.89,
    "plane_mae": 15.207,
+   "elbow_pos_cm": 5.232,
+   "wrist_pos_cm": 7.877,
    "elbow_mae": 9.088,
    "elbow_bias": -4.162,
    "elbow_r": 0.824
@@ -134,6 +152,8 @@
    "elevation_mae": 10.833,
    "elevation_r": 0.876,
    "plane_mae": 16.265,
+   "elbow_pos_cm": 8.936,
+   "wrist_pos_cm": 13.599,
    "elbow_mae": 14.485,
    "elbow_bias": -8.166,
    "elbow_r": 0.665
@@ -149,6 +169,8 @@
    "elevation_mae": 5.805,
    "elevation_r": 0.909,
    "plane_mae": 12.41,
+   "elbow_pos_cm": 4.366,
+   "wrist_pos_cm": 6.527,
    "elbow_mae": 8.477,
    "elbow_bias": -3.661,
    "elbow_r": 0.85
@@ -162,6 +184,8 @@
    "elevation_mae": 7.453,
    "elevation_r": 0.906,
    "plane_mae": 11.771,
+   "elbow_pos_cm": 6.756,
+   "wrist_pos_cm": 9.949,
    "elbow_mae": 11.493,
    "elbow_bias": -2.769,
    "elbow_r": 0.73
@@ -177,6 +201,8 @@
    "elevation_mae": 6.624,
    "elevation_r": 0.881,
    "plane_mae": 14.631,
+   "elbow_pos_cm": 4.848,
+   "wrist_pos_cm": 7.861,
    "elbow_mae": 11.239,
    "elbow_bias": -8.781,
    "elbow_r": 0.815
@@ -190,6 +216,8 @@
    "elevation_mae": 10.144,
    "elevation_r": 0.869,
    "plane_mae": 13.808,
+   "elbow_pos_cm": 8.187,
+   "wrist_pos_cm": 12.111,
    "elbow_mae": 14.995,
    "elbow_bias": -8.706,
    "elbow_r": 0.648
@@ -205,6 +233,8 @@
    "elevation_mae": 6.556,
    "elevation_r": 0.874,
    "plane_mae": 13.693,
+   "elbow_pos_cm": 5.065,
+   "wrist_pos_cm": 7.871,
    "elbow_mae": 9.64,
    "elbow_bias": -4.439,
    "elbow_r": 0.772
@@ -218,6 +248,8 @@
    "elevation_mae": 11.513,
    "elevation_r": 0.853,
    "plane_mae": 14.506,
+   "elbow_pos_cm": 8.851,
+   "wrist_pos_cm": 12.657,
    "elbow_mae": 15.574,
    "elbow_bias": -8.104,
    "elbow_r": 0.619
@@ -233,6 +265,8 @@
    "elevation_mae": 9.653,
    "elevation_r": 0.623,
    "plane_mae": 29.868,
+   "elbow_pos_cm": 6.944,
+   "wrist_pos_cm": 13.003,
    "elbow_mae": 19.964,
    "elbow_bias": -15.7,
    "elbow_r": 0.666
@@ -246,6 +280,8 @@
    "elevation_mae": 41.444,
    "elevation_r": 0.473,
    "plane_mae": 31.736,
+   "elbow_pos_cm": 21.421,
+   "wrist_pos_cm": 29.376,
    "elbow_mae": 25.192,
    "elbow_bias": 11.599,
    "elbow_r": 0.317
@@ -261,6 +297,8 @@
    "elevation_mae": 5.522,
    "elevation_r": 0.907,
    "plane_mae": 11.285,
+   "elbow_pos_cm": 4.177,
+   "wrist_pos_cm": 6.504,
    "elbow_mae": 8.248,
    "elbow_bias": -3.567,
    "elbow_r": 0.844
@@ -274,6 +312,8 @@
    "elevation_mae": 7.728,
    "elevation_r": 0.903,
    "plane_mae": 11.076,
+   "elbow_pos_cm": 6.46,
+   "wrist_pos_cm": 9.871,
    "elbow_mae": 11.892,
    "elbow_bias": -3.348,
    "elbow_r": 0.716
@@ -289,6 +329,8 @@
    "elevation_mae": 6.614,
    "elevation_r": 0.883,
    "plane_mae": 13.104,
+   "elbow_pos_cm": 4.698,
+   "wrist_pos_cm": 7.631,
    "elbow_mae": 12.238,
    "elbow_bias": -9.977,
    "elbow_r": 0.819
@@ -302,6 +344,8 @@
    "elevation_mae": 10.692,
    "elevation_r": 0.858,
    "plane_mae": 13.969,
+   "elbow_pos_cm": 8.438,
+   "wrist_pos_cm": 12.329,
    "elbow_mae": 14.803,
    "elbow_bias": -8.368,
    "elbow_r": 0.656
@@ -317,6 +361,8 @@
    "elevation_mae": 6.37,
    "elevation_r": 0.866,
    "plane_mae": 13.627,
+   "elbow_pos_cm": 5.059,
+   "wrist_pos_cm": 7.857,
    "elbow_mae": 9.983,
    "elbow_bias": -4.286,
    "elbow_r": 0.765
@@ -330,6 +376,8 @@
    "elevation_mae": 10.763,
    "elevation_r": 0.871,
    "plane_mae": 14.674,
+   "elbow_pos_cm": 8.596,
+   "wrist_pos_cm": 12.307,
    "elbow_mae": 14.867,
    "elbow_bias": -8.384,
    "elbow_r": 0.659
@@ -345,6 +393,8 @@
    "elevation_mae": 9.881,
    "elevation_r": 0.686,
    "plane_mae": 29.598,
+   "elbow_pos_cm": 6.703,
+   "wrist_pos_cm": 12.064,
    "elbow_mae": 19.427,
    "elbow_bias": -15.494,
    "elbow_r": 0.682
@@ -358,6 +408,8 @@
    "elevation_mae": 37.358,
    "elevation_r": 0.615,
    "plane_mae": 32.297,
+   "elbow_pos_cm": 20.81,
+   "wrist_pos_cm": 27.792,
    "elbow_mae": 25.758,
    "elbow_bias": 9.545,
    "elbow_r": 0.344
@@ -373,6 +425,8 @@
    "elevation_mae": 11.775,
    "elevation_r": 0.523,
    "plane_mae": 30.353,
+   "elbow_pos_cm": 7.815,
+   "wrist_pos_cm": 13.562,
    "elbow_mae": 17.969,
    "elbow_bias": -13.481,
    "elbow_r": 0.637
@@ -386,6 +440,8 @@
    "elevation_mae": 34.757,
    "elevation_r": 0.408,
    "plane_mae": 34.127,
+   "elbow_pos_cm": 20.611,
+   "wrist_pos_cm": 29.031,
    "elbow_mae": 24.356,
    "elbow_bias": 9.28,
    "elbow_r": 0.222
@@ -401,6 +457,8 @@
    "elevation_mae": 17.106,
    "elevation_r": 0.482,
    "plane_mae": 71.523,
+   "elbow_pos_cm": 16.045,
+   "wrist_pos_cm": 33.233,
    "elbow_mae": 28.58,
    "elbow_bias": -24.389,
    "elbow_r": 0.436
@@ -414,6 +472,8 @@
    "elevation_mae": 32.251,
    "elevation_r": 0.178,
    "plane_mae": 75.771,
+   "elbow_pos_cm": 31.51,
+   "wrist_pos_cm": 47.863,
    "elbow_mae": 25.171,
    "elbow_bias": -10.795,
    "elbow_r": 0.218
@@ -429,6 +489,8 @@
    "elevation_mae": 15.24,
    "elevation_r": 0.174,
    "plane_mae": 77.411,
+   "elbow_pos_cm": 13.571,
+   "wrist_pos_cm": 28.059,
    "elbow_mae": 26.507,
    "elbow_bias": -14.793,
    "elbow_r": 0.3
@@ -442,6 +504,8 @@
    "elevation_mae": 47.615,
    "elevation_r": 0.193,
    "plane_mae": 93.276,
+   "elbow_pos_cm": 28.687,
+   "wrist_pos_cm": 46.899,
    "elbow_mae": 24.421,
    "elbow_bias": 4.7,
    "elbow_r": 0.209
@@ -457,6 +521,8 @@
    "elevation_mae": 15.193,
    "elevation_r": 0.149,
    "plane_mae": 72.357,
+   "elbow_pos_cm": 13.66,
+   "wrist_pos_cm": 27.258,
    "elbow_mae": 26.455,
    "elbow_bias": -13.927,
    "elbow_r": 0.311
@@ -470,6 +536,8 @@
    "elevation_mae": 47.526,
    "elevation_r": 0.185,
    "plane_mae": 89.407,
+   "elbow_pos_cm": 28.47,
+   "wrist_pos_cm": 45.428,
    "elbow_mae": 24.902,
    "elbow_bias": 6.927,
    "elbow_r": 0.177
@@ -485,6 +553,8 @@
    "elevation_mae": 36.037,
    "elevation_r": -0.018,
    "plane_mae": 78.765,
+   "elbow_pos_cm": 24.057,
+   "wrist_pos_cm": 35.45,
    "elbow_mae": 26.501,
    "elbow_bias": -5.404,
    "elbow_r": 0.084
@@ -498,6 +568,8 @@
    "elevation_mae": 39.385,
    "elevation_r": -0.077,
    "plane_mae": 83.855,
+   "elbow_pos_cm": 32.0,
+   "wrist_pos_cm": 47.175,
    "elbow_mae": 29.277,
    "elbow_bias": 21.528,
    "elbow_r": 0.176
@@ -513,6 +585,8 @@
    "elevation_mae": 8.239,
    "elevation_r": 0.815,
    "plane_mae": 25.688,
+   "elbow_pos_cm": 6.301,
+   "wrist_pos_cm": 10.743,
    "elbow_mae": 12.212,
    "elbow_bias": -6.589,
    "elbow_r": 0.703
@@ -526,6 +600,8 @@
    "elevation_mae": 13.678,
    "elevation_r": 0.745,
    "plane_mae": 24.466,
+   "elbow_pos_cm": 12.362,
+   "wrist_pos_cm": 20.206,
    "elbow_mae": 17.263,
    "elbow_bias": -4.715,
    "elbow_r": 0.475
@@ -541,6 +617,8 @@
    "elevation_mae": 8.658,
    "elevation_r": 0.812,
    "plane_mae": 27.532,
+   "elbow_pos_cm": 6.524,
+   "wrist_pos_cm": 11.538,
    "elbow_mae": 13.331,
    "elbow_bias": -9.126,
    "elbow_r": 0.697
@@ -554,6 +632,8 @@
    "elevation_mae": 14.447,
    "elevation_r": 0.734,
    "plane_mae": 27.838,
+   "elbow_pos_cm": 13.276,
+   "wrist_pos_cm": 22.237,
    "elbow_mae": 18.13,
    "elbow_bias": -9.288,
    "elbow_r": 0.464
@@ -569,6 +649,8 @@
    "elevation_mae": 8.468,
    "elevation_r": 0.825,
    "plane_mae": 24.777,
+   "elbow_pos_cm": 6.589,
+   "wrist_pos_cm": 11.141,
    "elbow_mae": 11.133,
    "elbow_bias": -5.359,
    "elbow_r": 0.711
@@ -582,6 +664,8 @@
    "elevation_mae": 14.946,
    "elevation_r": 0.749,
    "plane_mae": 22.807,
+   "elbow_pos_cm": 12.322,
+   "wrist_pos_cm": 20.141,
    "elbow_mae": 17.209,
    "elbow_bias": -7.958,
    "elbow_r": 0.459
@@ -597,6 +681,8 @@
    "elevation_mae": 7.642,
    "elevation_r": 0.842,
    "plane_mae": 16.891,
+   "elbow_pos_cm": 5.666,
+   "wrist_pos_cm": 8.684,
    "elbow_mae": 11.638,
    "elbow_bias": -6.004,
    "elbow_r": 0.765
@@ -610,6 +696,8 @@
    "elevation_mae": 12.728,
    "elevation_r": 0.787,
    "plane_mae": 16.987,
+   "elbow_pos_cm": 10.156,
+   "wrist_pos_cm": 14.953,
    "elbow_mae": 16.135,
    "elbow_bias": -3.497,
    "elbow_r": 0.548
@@ -625,6 +713,8 @@
    "elevation_mae": 8.083,
    "elevation_r": 0.818,
    "plane_mae": 18.326,
+   "elbow_pos_cm": 5.872,
+   "wrist_pos_cm": 10.275,
    "elbow_mae": 13.628,
    "elbow_bias": -9.84,
    "elbow_r": 0.749
@@ -638,6 +728,8 @@
    "elevation_mae": 14.12,
    "elevation_r": 0.75,
    "plane_mae": 18.609,
+   "elbow_pos_cm": 10.878,
+   "wrist_pos_cm": 17.35,
    "elbow_mae": 17.302,
    "elbow_bias": -6.444,
    "elbow_r": 0.539
@@ -653,6 +745,8 @@
    "elevation_mae": 7.854,
    "elevation_r": 0.838,
    "plane_mae": 18.337,
+   "elbow_pos_cm": 6.318,
+   "wrist_pos_cm": 10.936,
    "elbow_mae": 12.069,
    "elbow_bias": -5.789,
    "elbow_r": 0.737
@@ -666,6 +760,8 @@
    "elevation_mae": 14.768,
    "elevation_r": 0.773,
    "plane_mae": 17.275,
+   "elbow_pos_cm": 10.874,
+   "wrist_pos_cm": 16.288,
    "elbow_mae": 17.939,
    "elbow_bias": -4.024,
    "elbow_r": 0.475
@@ -681,6 +777,8 @@
    "elevation_mae": 10.222,
    "elevation_r": 0.619,
    "plane_mae": 35.764,
+   "elbow_pos_cm": 7.399,
+   "wrist_pos_cm": 12.365,
    "elbow_mae": 20.135,
    "elbow_bias": -14.983,
    "elbow_r": 0.613
@@ -694,6 +792,8 @@
    "elevation_mae": 43.49,
    "elevation_r": 0.502,
    "plane_mae": 39.611,
+   "elbow_pos_cm": 22.673,
+   "wrist_pos_cm": 30.003,
    "elbow_mae": 26.908,
    "elbow_bias": 12.822,
    "elbow_r": 0.147
@@ -709,6 +809,8 @@
    "elevation_mae": 7.66,
    "elevation_r": 0.834,
    "plane_mae": 17.271,
+   "elbow_pos_cm": 5.76,
+   "wrist_pos_cm": 8.777,
    "elbow_mae": 11.808,
    "elbow_bias": -6.832,
    "elbow_r": 0.765
@@ -722,6 +824,8 @@
    "elevation_mae": 13.051,
    "elevation_r": 0.78,
    "plane_mae": 17.744,
+   "elbow_pos_cm": 10.259,
+   "wrist_pos_cm": 15.311,
    "elbow_mae": 16.021,
    "elbow_bias": -3.639,
    "elbow_r": 0.551
@@ -737,6 +841,8 @@
    "elevation_mae": 8.107,
    "elevation_r": 0.812,
    "plane_mae": 18.816,
+   "elbow_pos_cm": 5.898,
+   "wrist_pos_cm": 10.544,
    "elbow_mae": 15.018,
    "elbow_bias": -12.052,
    "elbow_r": 0.747
@@ -750,6 +856,8 @@
    "elevation_mae": 14.206,
    "elevation_r": 0.743,
    "plane_mae": 19.118,
+   "elbow_pos_cm": 10.959,
+   "wrist_pos_cm": 17.468,
    "elbow_mae": 17.193,
    "elbow_bias": -6.939,
    "elbow_r": 0.527
@@ -765,6 +873,8 @@
    "elevation_mae": 7.847,
    "elevation_r": 0.834,
    "plane_mae": 19.288,
+   "elbow_pos_cm": 6.246,
+   "wrist_pos_cm": 10.857,
    "elbow_mae": 12.589,
    "elbow_bias": -7.109,
    "elbow_r": 0.744
@@ -778,6 +888,8 @@
    "elevation_mae": 15.383,
    "elevation_r": 0.774,
    "plane_mae": 18.233,
+   "elbow_pos_cm": 11.13,
+   "wrist_pos_cm": 16.354,
    "elbow_mae": 17.413,
    "elbow_bias": -5.109,
    "elbow_r": 0.503
@@ -793,6 +905,8 @@
    "elevation_mae": 9.685,
    "elevation_r": 0.658,
    "plane_mae": 34.387,
+   "elbow_pos_cm": 7.002,
+   "wrist_pos_cm": 11.736,
    "elbow_mae": 19.877,
    "elbow_bias": -15.364,
    "elbow_r": 0.624
@@ -806,6 +920,8 @@
    "elevation_mae": 38.163,
    "elevation_r": 0.522,
    "plane_mae": 39.305,
+   "elbow_pos_cm": 21.95,
+   "wrist_pos_cm": 28.612,
    "elbow_mae": 26.401,
    "elbow_bias": 11.527,
    "elbow_r": 0.133
@@ -821,6 +937,8 @@
    "elevation_mae": 8.797,
    "elevation_r": 0.725,
    "plane_mae": 48.917,
+   "elbow_pos_cm": 7.741,
+   "wrist_pos_cm": 16.924,
    "elbow_mae": 20.099,
    "elbow_bias": -15.717,
    "elbow_r": 0.595
@@ -834,6 +952,8 @@
    "elevation_mae": 31.464,
    "elevation_r": 0.578,
    "plane_mae": 51.135,
+   "elbow_pos_cm": 21.66,
+   "wrist_pos_cm": 35.017,
    "elbow_mae": 23.862,
    "elbow_bias": 4.438,
    "elbow_r": 0.147
@@ -877,6 +997,8 @@
    "elevation_mae": 25.187,
    "elevation_r": 0.407,
    "plane_mae": 32.702,
+   "elbow_pos_cm": 16.902,
+   "wrist_pos_cm": 23.762,
    "elbow_mae": 23.638,
    "elbow_bias": -17.07,
    "elbow_r": 0.501
@@ -890,6 +1012,8 @@
    "elevation_mae": 25.632,
    "elevation_r": 0.398,
    "plane_mae": 26.786,
+   "elbow_pos_cm": 17.982,
+   "wrist_pos_cm": 30.363,
    "elbow_mae": 34.67,
    "elbow_bias": -11.24,
    "elbow_r": 0.123
@@ -905,6 +1029,8 @@
    "elevation_mae": 28.195,
    "elevation_r": 0.462,
    "plane_mae": 41.05,
+   "elbow_pos_cm": 19.057,
+   "wrist_pos_cm": 24.874,
    "elbow_mae": 22.382,
    "elbow_bias": -14.069,
    "elbow_r": 0.463
@@ -918,6 +1044,8 @@
    "elevation_mae": 23.234,
    "elevation_r": 0.505,
    "plane_mae": 37.19,
+   "elbow_pos_cm": 19.74,
+   "wrist_pos_cm": 36.158,
    "elbow_mae": 34.231,
    "elbow_bias": 0.156,
    "elbow_r": 0.026

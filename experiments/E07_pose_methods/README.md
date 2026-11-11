@@ -66,6 +66,10 @@ Survey and links: the research notes in the report.
   forearm 13° in swings). Caveat: training and test are minutes apart in the same session; this
   is the best case, not a new-player number.
 
+- **In cm** (elbow / wrist position, shoulder-anchored, swings, mean of the two players): WearMoCap
+  15 / 24, MobilePoser 23 / 31, Watch GRU other player 18 / 23, all-sensor GRU personal 6 / 9.
+  WearMoCap's own paper reports 2.6 cm on its data; our tennis swings are far harder.
+
 **Limits:** two players, one session; OpenCap's own error (~15°, and it follows the wrong person
 at times) bounds every number; the commercial sensors are only on the right arm and chest; the
 personal splits are within one session.
