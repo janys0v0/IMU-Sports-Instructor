@@ -101,7 +101,7 @@ IDs are stable so failures can be referenced. "Pass" is what must be true.
 
 | ID | Test | Pass |
 |---|---|---|
-| C1 | **Timer bug regression:** Stop during the countdown, Start, Calibrate | Calibration runs (it fails today) |
+| C1 | **Timer bug regression:** Stop during a calibration, Start, Calibrate | The new calibration runs to the end |
 | C2 | Still standing + arms-out (synthetic, all devices) | ✅ pass; windows start 0.3 s after "now" finishes speaking |
 | C3 | Moving during a hold | "You moved. Hold still." spoken once, hold restarts; after 2 failed retries the final message |
 | C4 | Arms not level after 6 s | C8 prompt spoken, then proceeds when level |
@@ -190,8 +190,8 @@ The Watch app's high-rate stream (`CMBatchedSensorManager`) also needs real hard
 |---|---|---|
 | E1 | Paired iPhone + Watch simulators: Setup → Go/No-Go → Start → Calibrate → 3 trials → Stop | UI tests (XCUITest) complete; spoken phrases logged in order |
 | E2 | Kill the phone app mid-session, relaunch, Resume | Session recovered (J4) through the real UI |
-| E3 | Watch → phone chunk transfer over real WatchConnectivity in the simulator | All chunks arrive. **If file transfer isn't supported in the simulator, cover W1-W6 with the fake link only and mark W for device testing.** |
-| E4 | HealthKit workout start/end on the Watch simulator | W7 behaviour through the real UI (verify the simulator supports workout sessions) |
+| E3 | Watch → phone chunk transfer over real WatchConnectivity | **Device only** (stage 9, with T2); W1-W10 cover the logic with the fake link |
+| E4 | HealthKit workout start/end on the Watch | **Device only** (stage 9, with T13); W7 covers the logic |
 | E5 | Review screen with a 10-min replayed session | P1-P4 through the real UI |
 
 ### L: Endurance (L5)
@@ -210,9 +210,37 @@ The Watch app's high-rate stream (`CMBatchedSensorManager`) also needs real hard
 - V1 lint clean, and V9 listen-through signed off by both team members.
 - S4 / I7 contract fixtures: Swift and Python agree on every fixture.
 
+## 3a. Where the exit criteria stand (2026-10-16)
+
+| Criterion | Result |
+|---|---|
+| L1-L6 green twice | ✅ `tools/check.sh` (Swift + Python) |
+| Coverage: core ≥ 85 %, recorder/journal/recovery ≥ 95 % | ✅ 91.5 % and 98.8 % (`tools/coverage.sh`) |
+| J3 (1,000 crashes), L3 (fault storm): zero silent loss | ✅ |
+| S4 / I7 contract fixtures agree | ✅ |
+| V1 lint clean | ✅ |
+| V9 listen-through signed off by both of you | ⏳ people (`data/voice/voice_sample.m4a`) |
+
 ## 4. Device tests (L7)
 
 Run only after L1-L6 pass, on the current build (free Apple ID builds expire after 7 days).
+Before every device session: phone unplugged, and AirPods setting *Connect to This iPhone → When
+Last Connected to This iPhone* (otherwise a Mac or iPad can take the AirPods mid-session).
+
+**How to run a device round**
+1. Rebuild and install on the iPhone (Xcode, `MotionStreamer` scheme; the Watch app comes with it).
+   Then **quit Xcode's debugger** (Product → Stop) and launch from the Home screen.
+   First time with a Watch: Developer Mode on (Watch Settings → Privacy & Security), wait until Xcode's
+   Devices window shows it connected, then run the `MotionStreamerWatch` scheme on it once. Until then the
+   iPhone's Watch app says "could not be installed" (the signing profile lacks the Watch).
+2. **Stage 0b first = T6:** Go/No-Go → Start → calibrate from the Watch → **press the side button**
+   to lock the phone (the app keeps the screen on and pocket mode only blanks it), pocket it, walk or
+   sit 20 min → Stop → keep the Watch near the phone until every chunk is on the iPhone. Unplugged.
+3. Copy the session (Finder → iPhone → Files → MotionStreamer → `sessions/<id>`) to
+   `data/recordings/field/`, then: `.venv/bin/python -m pipeline.analysis.device_check data/recordings/field/<id>`.
+   It prints PASS/FAIL for each T6 condition and the battery used.
+4. Record the result and the keep-alive decision in `EXPERIMENT_LOG.md` and [`decisions.md`](decisions.md#open).
+5. The other tests (T1-T19, T21) follow the table; ingest each session with `pipeline.ingest.ingest_field`.
 **Launch from the Home screen with Xcode detached** for anything involving the background.
 When: **0b** = early device check, **9** = stage 9 device round, **F** = after the first field session.
 
@@ -223,7 +251,7 @@ When: **0b** = early device check, **9** = stage 9 device round, **F** = after t
 | T3 | Take the AirPods out for 30 s | Gap bracketed by disconnect / connect events | 9 |
 | T4 | Hard power-off of the phone mid-session | ≤ 1 s lost; open chunk recovered | 9 |
 | T5 | Phone locked in pocket mode, 20 min | No gap | 9 |
-| T6 | Phone locked in a pocket with the chosen keep-alive (design §5), 20 min, plus speech every 30 s and the Watch high-rate stream | Phone and AirPods ≥ 95 % while locked; AirPods rate unchanged around speech; Watch ≈ 800 + 200 samples/s; battery % noted | **0b**, again in 9 |
+| T6 | Phone locked in a pocket with the chosen keep-alive (design §5), 20 min, plus speech every 2 min (shortest reminder setting) and the Watch high-rate stream | Phone and AirPods ≥ 95 % while locked; AirPods rate unchanged around speech; Watch ≈ 800 + 200 samples/s; battery % noted | **0b**, again in 9 |
 | T7 | Full 60 min tennis rehearsal | Ingest PASS; phone and Watch > 99 %, AirPods > 95 %; battery, heat and accelerometer saturation noted | 9 |
 | T8 | Flip 1 byte in a copied chunk | Ingest FAILs that chunk | 9 |
 | T9 | After T1 and T3, open the review screen | Gaps shown with their causes | 9 |

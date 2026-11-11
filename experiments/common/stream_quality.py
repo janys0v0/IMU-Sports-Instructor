@@ -83,9 +83,15 @@ def load(session) -> Recording:
     folder = paths.session_dir(session)
     with open(folder / "mac_stream.jsonl") as f:
         packets = [json.loads(line) for line in f]
+    # Early recordings (2026-09-30) have no Start event: start at the first phone sample instead.
     start = next(
-        p["t_phone"] for p in packets if p.get("type") == "event" and p.get("name") == "start"
+        (p["t_phone"] for p in packets if p.get("type") == "event" and p.get("name") == "start"),
+        None,
     )
+    if start is None:
+        start = min(
+            p["s"][0][0] for p in packets if p.get("type") == "imu" and p.get("device") == "phone"
+        )
     phone_boot = next(
         p["boot_to_unix"] for p in packets if p.get("type") == "imu" and p.get("device") == "phone"
     )

@@ -1,3 +1,4 @@
+import MotionStreamerCore
 import SwiftUI
 
 @main
@@ -16,14 +17,23 @@ struct ContentView: View {
     @EnvironmentObject private var controller: StreamController
     @EnvironmentObject private var headphones: HeadphoneMonitor
     @State private var pocketMode = false
+    @State private var lastSession = ""
+    @State private var checkReview: ReviewData?
+    @State private var showReview = false
+    @State private var showGoNoGo = false
 
     var body: some View {
         NavigationStack {
             Form {
-                setupSection
+                // While recording the (locked) setup moves to the bottom so the live plot is in view.
+                if !controller.isRecording { setupSection }
                 controlSection
+                if controller.isRecording, !controller.liveMotion.isEmpty {
+                    Section { LiveMotionPanel(rows: controller.liveMotion) }
+                }
                 statusSection
                 airPodsSection
+                if controller.isRecording { setupSection }
                 if !controller.recentEvents.isEmpty {
                     Section("Events") {
                         ForEach(controller.recentEvents, id: \.self) { Text($0).font(.footnote) }
@@ -33,6 +43,44 @@ struct ContentView: View {
             .navigationTitle("MotionStreamer")
         }
         .overlay { if pocketMode { pocketOverlay } }
+        .alert(
+            "Recording was interrupted",
+            isPresented: Binding(
+                get: { controller.interrupted != nil && !controller.isRecording },
+                set: { _ in })
+        ) {
+            Button("Resume") { controller.resumeInterrupted() }
+            Button("Close it", role: .cancel) { controller.closeInterrupted() }
+        } message: {
+            Text(
+                "Session \(controller.interrupted?.id ?? "") stopped at \(controller.interrupted?.at.formatted(date: .omitted, time: .standard) ?? ""). Resume it as a new segment?"
+            )
+        }
+        .onAppear {
+            if ReplaySettings.autoStart { controller.start() }
+            for step in ReplaySettings.script {
+                DispatchQueue.main.asyncAfter(deadline: .now() + step.at) {
+                    switch step.action {
+                    case "gonogo":
+                        controller.preflight(plannedMinutes: 10, required: ["phone"], heardVoice: nil) {
+                            controller.lastGoNoGo = $0
+                        }
+                    case "start": controller.start()
+                    case "calibrate": controller.startCalibration()
+                    case "trial": controller.markTrial()
+                    case "stop": controller.stop()
+                    default: break
+                    }
+                }
+            }
+            if let delay = ReplaySettings.openReviewAfter {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) { showReview = true }
+            }
+        }
+        .sheet(isPresented: $showGoNoGo) { GoNoGoView().environmentObject(controller) }
+        .sheet(isPresented: $showReview) {
+            NavigationStack { ReviewContainer(sessionID: controller.sessionID) }.environmentObject(controller)
+        }
         .alert(
             "Cannot start",
             isPresented: Binding(
@@ -48,7 +96,7 @@ struct ContentView: View {
     private var setupSection: some View {
         Section("Setup") {
             LabeledContent("Mac IP") {
-                TextField("192.168.1.20", text: $controller.macHost)
+                TextField("none: record on phone", text: $controller.macHost)
                     .keyboardType(.numbersAndPunctuation)
                     .multilineTextAlignment(.trailing)
             }
@@ -67,6 +115,18 @@ struct ContentView: View {
                 ForEach(WatchWrist.allCases) { Text($0.rawValue.capitalized).tag($0) }
             }
             .pickerStyle(.segmented)
+            LabeledContent("Face at calibration") {
+                TextField("the net", text: $controller.landmark).multilineTextAlignment(.trailing)
+            }
+            Stepper(
+                "Recalibrate every \(Int(controller.reminderMinutes)) min", value: $controller.reminderMinutes,
+                in: 2...60,
+                step: 1)
+            Picker("Keep recording in pocket", selection: $controller.keepAliveMethod) {
+                Text("Location (recommended)").tag(KeepAlivePolicy.Method.location)
+                Text("Workout mirroring").tag(KeepAlivePolicy.Method.mirroring)
+                Text("Pocket mode only").tag(KeepAlivePolicy.Method.pocketMode)
+            }
             Picker("Phone screen faces", selection: $controller.pocketScreen) {
                 Text("Leg").tag(PocketScreen.leg)
                 Text("Outward").tag(PocketScreen.outward)
@@ -81,7 +141,16 @@ struct ContentView: View {
     private var controlSection: some View {
         Section {
             Button {
-                controller.isRecording ? controller.stop() : controller.start()
+                if controller.isRecording {
+                    lastSession = controller.sessionID
+                    controller.stop()
+                    // The session check reads the closed chunks once Stop has written them.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        controller.loadReview(lastSession) { checkReview = $0 }
+                    }
+                } else {
+                    showGoNoGo = true
+                }
             } label: {
                 Label(
                     controller.isRecording ? "Stop" : "Start",
@@ -91,20 +160,36 @@ struct ContentView: View {
                 .font(.headline)
             }
             .tint(controller.isRecording ? .red : .green)
+            if controller.isRecording || !lastSession.isEmpty {
+                NavigationLink("Review saved data") {
+                    ReviewContainer(sessionID: controller.isRecording ? controller.sessionID : lastSession)
+                }
+            }
+            if let checkReview, !controller.isRecording {
+                SessionCheckCard(data: checkReview)
+            }
+            if let status = controller.trialStatus, controller.isRecording {
+                Text(status).font(.headline)
+            }
+            if let verdict = controller.courtExit, !controller.isRecording {
+                CourtExitCard(verdict: verdict)
+            }
             if controller.isRecording {
                 Text("\(controller.sessionID) · \(formatDuration(controller.elapsed))")
                     .font(.footnote.monospaced())
+                // The same session buttons as the Watch (ControlState.buttons); Start / Stop is above.
+                let control = controller.controlState
                 HStack {
-                    Button("Calibrate") {
-                        controller.startCalibration()
-                        pocketMode = true
-                        controller.setPocketMode(true)
-                    }
-                    .buttonStyle(.bordered)
-                    .disabled(controller.calibrationStatus != nil)
-                    Spacer()
-                    Button("Trial marker") { controller.markTrial() }
+                    ForEach(control.buttons.filter { $0 != .start && $0 != .stop }, id: \.self) { command in
+                        Button(control.label(command)) {
+                            controller.perform(command)
+                            if command == .calibrate {
+                                pocketMode = true
+                                controller.setPocketMode(true)
+                            }
+                        }
                         .buttonStyle(.bordered)
+                    }
                     Spacer()
                     Button("Pocket mode") {
                         pocketMode = true
@@ -112,11 +197,9 @@ struct ContentView: View {
                     }
                     .buttonStyle(.bordered)
                 }
-                Text(
-                    "Calibrate: tap, pocket the phone within 10 s and stand straight. One buzz: hold still 3 s. Two buzzes: done."
-                )
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+                Text("Calibrate: follow the voice (start it from the Watch while the phone is in your pocket).")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -128,6 +211,7 @@ struct ContentView: View {
             LabeledContent("Watch model", value: controller.watchInfo)
             streamRow("iPhone stream", controller.phone)
             streamRow("Watch stream", controller.watch)
+            LabeledContent("Watch", value: controller.watchTransfer)
             LabeledContent("AirPods", value: controller.airPodsConnected ? "Connected" : "Not connected")
             streamRow("AirPods stream", controller.head)
         }
@@ -166,7 +250,10 @@ struct ContentView: View {
 
     private func streamRow(_ title: String, _ s: StreamSnapshot) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(title).font(.subheadline.bold())
+            HStack {
+                if controller.isRecording { LiveDotView(dots: LiveDots(snapshot: s, baselineHz: s.nominalHz)) }
+                Text(title).font(.subheadline.bold())
+            }
             Text(
                 String(
                     format: "%.1f Hz (device %.1f) · %d samples · coverage %.0f%%",
@@ -205,5 +292,47 @@ struct ContentView: View {
     private func formatDuration(_ seconds: Double) -> String {
         let s = Int(seconds)
         return String(format: "%d:%02d", s / 60, s % 60)
+    }
+}
+
+/// Loads the review from disk and refreshes it every 10 s while the session records.
+struct ReviewContainer: View {
+    @EnvironmentObject private var controller: StreamController
+    let sessionID: String
+    @State private var review: ReviewData?
+    private let refresh = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        ScrollView {
+            if let review {
+                ReviewScreen(data: review)
+            } else {
+                ProgressView("Reading saved chunks…").padding()
+            }
+        }
+        .navigationTitle("Review")
+        .onAppear(perform: load)
+        .onReceive(refresh) { _ in if controller.isRecording { load() } }
+    }
+
+    private func load() { controller.loadReview(sessionID) { review = $0 } }
+}
+
+/// The court-exit check after Stop (design §8 ④).
+struct CourtExitCard: View {
+    let verdict: CourtExitCheck.Verdict
+
+    var body: some View {
+        switch verdict {
+        case .safe:
+            Label("Safe to leave", systemImage: "checkmark.seal.fill").foregroundStyle(.green).font(.headline)
+        case .redo(let trials):
+            Label(
+                "Redo trials \(trials.map(String.init).joined(separator: ", "))", systemImage: "arrow.counterclockwise"
+            )
+            .foregroundStyle(.orange).font(.headline)
+        case .waiting(let why):
+            Label("Not yet: \(why)", systemImage: "hourglass").foregroundStyle(.secondary)
+        }
     }
 }

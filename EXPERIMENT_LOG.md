@@ -13,6 +13,9 @@ method and full results.
 | E01 | How much does each device (phone, Watch, AirPods) contribute to MobilePoser? | [`experiments/E01_mobileposer_device_ablation/`](experiments/E01_mobileposer_device_ablation/README.md) | Done 2026-10-08 |
 | E02 | MobilePoser vs IMUCoCo on the same inputs | [`experiments/E02_imucoco_comparison/`](experiments/E02_imucoco_comparison/README.md) | Done 2026-10-08 |
 | E03 | Data consistency of each sensor stream (rate, missingness, delay) vs motion | [`experiments/E03_stream_quality/`](experiments/E03_stream_quality/README.md) | Done 2026-10-14 |
+| E04 | How closely do IMU joint angles match a single-camera video? | [`experiments/E04_video_validation/`](experiments/E04_video_validation/README.md) | First run 2026-10-19 |
+| E07 | Which method gives the best arm angles during swings (geometry, OpenSense, constraints, published and own models)? | [`experiments/E07_pose_methods/`](experiments/E07_pose_methods/README.md) | Done 2026-11-05 |
+| E08 | Do arm models trained on Janys + Tom 10/28 work on Janys 11/05? | [`experiments/E08_janys_1105/`](experiments/E08_janys_1105/README.md) | Done 2026-11-10 |
 
 ## Reference recordings
 
@@ -180,3 +183,174 @@ Checked which published models could run on head + one wrist + thigh data:
 - Orientation drift where devices return to the reference pose: head 9.7 vs 4.5 deg/min, thigh 7.5
   vs 6.6 deg/min (MobilePoser vs IMUCoCo). Forearm not measurable: the Watch never returns to its
   calibration pose (E03 open question).
+
+## 2026-10-17
+
+### Device check T6, first runs (stage 0b)
+
+- **Smoke test `20261017-170818-P01` (2 min):** found three bugs, all fixed: the Watch's high-rate
+  stream started before its workout (CMError 109), the Watch opened its own `-W` session, and the
+  Watch's buttons failed silently.
+- **Sitting run `20261017-173115-P01` (22 min, phone in pocket):** ingest PASS; phone 100 %, AirPods
+  99.99 % (one 0.12 s gap), AirPods 50 Hz unchanged around 47 spoken phrases, Watch high-rate
+  797 / 199 Hz, Watch clock fit 16 ms RMS. **Not a valid T6:** the app never went to the background
+  (no `app_background` event), so the phone was never locked, and it was charging (battery 90 → 95 %).
+  `device_check.py` now fails T6 unless the app is in the background ≥ 80 % of the run.
+- **Second 20-min run `20261017-180838-P01` (unplugged):** same stream results, phone battery 5 %
+  in 20 min (~15 %/h). Again no `app_background` event: the phone was not locked.
+- **Lock test `20261017-193310-P01` (7 min):** locking is logged (`app_background` at 2:01,
+  `app_foreground` at 6:46). During the 285 s locked: phone 33.5 Hz and AirPods 50 Hz, same as
+  unlocked, longest gap 0.03 s. **The location keep-alive holds a locked phone for at least
+  4.75 min**; the 20-min locked run is still needed for T6.
+
+## 2026-10-18
+
+### Device check T6, 31-min locked run `20261018-221445-P01`
+
+- **Locked keep-alive works:** the app was in the background for 99 % of the run (30.7 min). Phone
+  100 % at 33.5 Hz (longest gap 0.03 s), Watch 60 Hz 100 %, Watch high-rate 797 / 199 Hz.
+- **AirPods lost at 15.7 min:** the audio route moved to another Apple device (automatic switching)
+  and head motion stopped for the remaining 914 s (coverage 50.8 %). The app raised a red alert at
+  once and every 30 s after, but cannot take the AirPods back. Fix: AirPods setting *Connect to This
+  iPhone → When Last Connected to This iPhone* before every session (runbook).
+- Battery unchanged (75 %): the phone was probably charging; no drain figure.
+- **T6:** FAIL on AirPods only. Rerun with the AirPods setting changed to close it.
+
+## 2026-10-19
+
+### E04: IMU joint angles vs single-camera video, `20261019-000116-P01`
+
+- **Recording:** 2 min 17 s indoors, Mac camera (Photo Booth, mirrored, 30 fps, 150 s), Watch
+  right wrist, phone right pocket, AirPods. Routine: calibration, knee lifts, jumping jacks,
+  walking, 3 squats, ready position, shadow strokes. No trials, hops or claps; activity windows
+  set by hand from the video (`experiments/annotations/20261019-000116-P01.json`).
+- **Command:** `.venv/bin/python -m experiments.E04_video_validation.run field/20261019-000116-P01`
+- **Alignment:** −0.85 s from the file's creation time; Watch motion r 0.67 and phone motion
+  r 0.63 agree within 0.02 s (a bystander at the frame's left edge had to be masked). Knee peaks
+  line up within a frame in the plot.
+- **Video pose:** Apple Vision 3D, 2202 of 2256 frames (15 fps). It reads the arms-out pose as
+  ~67° (expected ~90°) and a straight standing knee as ~27°: its own bias is 15-25°.
+- **Results (IMU − video, Watch calibrated standing as in E01-E03):** knees agree best, RMSE
+  ~19° and r 0.67 (right) / 0.71 (left); the 3 squats reach ~100° in both. Arms are poor: elbow
+  RMSE 34° (r 0.24), shoulder elevation 30° (r −0.31). The model barely raises the arms in
+  jumping jacks (video 50-120°, IMU < 40°) and bends the elbows ~50° in the ready position where
+  the video shows ~115°.
+- **Watch calibrated in the arms-out pose** (new option `load_session(wrist_pose="arms_out")`,
+  the models' T-pose reference): fixes the arms-out window (shoulder 56° → 13° RMSE) but makes
+  elbows worse elsewhere (overall 41°, walking 21° → 55°). Neither calibration gives usable arm
+  angles. Likely causes: forearm twist is not set by either pose (the shortened prompt no longer
+  says "palms down"), and one wrist sensor cannot fix the upper arm.
+- **Next:** record again with the E04 checklist (whole body, nobody else in frame, claps and
+  trials); test the arms-out calibration with palms down; add Vision's own error on known poses
+  (standing, arms out) as a baseline before reading arm numbers.
+
+### E04 diagnosis: why the arms disagree, and the Watch hand-off fix
+
+- **Not the data, not the sample rate.** Coverage ≥ 99.8 %, one 0.1-0.2 s gap before
+  calibration; Watch 66 Hz, model input 30 Hz. Static poses were as wrong as fast ones
+  (ready position: video 127°, model 31° forearm-from-down), which sampling cannot explain.
+- **The Watch measured the forearm correctly.** Its orientation after the standing calibration,
+  without the model, matches the video forearm: r 0.80, RMSE 28° (ready position 126° vs 127°,
+  walking 25° vs 27°).
+- **The model was handed the wrong rest pose.** It reads a wrist bone's identity as the T-pose
+  (arm out), but the standing calibration made "arm hanging" the identity (the E02 finding).
+  Fix: `with_standing_rest()` in `calibration.py` starts the wrist bone as a hanging arm (90°
+  about the forward axis); used by `experiments/common/session.py`, `render_session.py` and
+  the live viewer.
+- **After the fix:** model forearm vs video r −0.39 → 0.67, RMSE 55° → 36°; ready position
+  128° vs 127°, standing 20° vs 20°. E04 angles (standing calibration): right elbow r 0.24 →
+  0.48, right shoulder r −0.31 → 0.13; the leftover lag dropped from the ±1 s search limit to
+  0.06-0.16 s. RMSE stays ~34° (elbow) and ~27° (shoulder).
+- **What remains is the model, not the sensor:** with one wrist sensor it cannot tell a raised
+  upper arm from a bent elbow. Arms out: forearm level, upper arm down, elbow bent 73°
+  (video 41°). Jumping jacks are the worst case (shoulder RMSE 48°).
+- **Arms-out Watch calibration** (option): still worse than the fixed standing calibration;
+  kept only for comparison.
+- E01-E03 results predate this fix (their arm numbers used the wrong rest pose).
+
+## 2026-10-25
+
+### E05: our IMUs vs commercial IMUs (10/19 sessions)
+
+- Logger exports from the shared Drive folder `es224/20261019_test_run`: three `msense_*` sensors at
+  200 Hz plus the logging phone's IMU. Reported placements: wrist sensor with the Watch; waist sensor
+  on a belt loop (Janys) or in the pocket with the phone (Tom).
+- **Watch ≈ msense_D0E5** (same forearm): rotation-speed r 0.95–0.97, per-axis 0.88–0.97, RMSE
+  67–79 °/s at peaks of ~700 °/s. **iPhone ≈ waist sensor in the same pocket** (Tom, r 0.89); on
+  a belt loop (Janys) it rotates differently from the thigh (0.63), as expected. Details: [`experiments/E05_commercial_imu/`](experiments/E05_commercial_imu/README.md).
+- No OpenCap results yet (10/24 has raw videos and an `opensim.log` only): no ground-truth comparison.
+
+## 2026-10-28
+
+### Tennis sessions, Janys and Tom (shared commercial IMUs, phone videos for OpenCap)
+
+- Our app: Janys 10:41:20–11:28:13 (46 min 53 s; the Watch recorded under its own ID, merged),
+  Tom 11:31:21–12:11:42 (40 min 21 s; the Watch's battery died before sending, its own copy read off
+  the Watch and merged): ingest PASS for both apart from the Watch's first 17 s for Janys.
+- Commercial IMUs (es224/20261028Janys Tom): 5 blocks of 4 sensors, ~21 of Janys's and ~30 of Tom's
+  minutes. The wrist sensor worn with the Watch matches it at r 0.95–0.98 in every block until it
+  rebooted at 12:00 (clock jump 1.9 s). OpenCap: only Janys's neutral trial is processed so far.
+
+### E06: Apple vs commercial reconstruction side by side
+
+- Same holds and body heading for both; commercial orientation from a Madgwick filter with a
+  magnetometer heading. Median joint-angle difference between the two: 9–16° for legs, spine and
+  head, 29–47° for the elbows, 24–38° at the root (waist sensor in the pocket slot). Videos with an
+  OpenCap slot and rolling rotation-speed charts. Details: [`experiments/E06_side_by_side/`](experiments/E06_side_by_side/README.md).
+
+## 2026-11-04
+
+### E06 with OpenCap: camera + OpenCap skeleton in the third panel
+
+- OpenCap results for the 10/28 trials (`janys` 11:00:32–11:28:03, `tom` 11:32:56–11:45:45,
+  `tom3` 11:47:10–12:04:38) placed on our clock from the Watch (offset steady within ±0.07 s).
+- Rotation speed vs OpenCap: Watch r 0.57 / 0.68 (Janys / Tom), commercial wrist 0.58 / 0.67,
+  iPhone vs OpenCap thigh 0.46 / 0.49. Videos now show phone1's footage with OpenCap's skeleton
+  projected onto it and OpenCap's segment rotation speed as the reference line.
+- Phone1 synced by sound against the logger audio; its camera (not one of OpenCap's two) fitted
+  by DLT from OpenCap markers vs the player's feet and head: 7.2 px median. OpenCap sometimes
+  tracks the wrong person (Tom beside Janys).
+
+## 2026-11-05
+
+### E07: arm pose methods compared against OpenCap (swings)
+
+- Shared 30 Hz dataset per player (every sensor + OpenCap), 22 methods in 5 families scored on
+  elbow, shoulder elevation, forearm inclination and arm directions, block and swings.
+- Best without training: chest + upper arm + Watch geometry with qmt's heading correction and a
+  fixed 18° hanging-elbow angle (swings: elbow 11°, elevation 16°). Published models (WearMoCap,
+  MobilePoser, IMUCoCo) and Watch-only methods: elevation 20-40° off in swings. Our GRU trained on
+  the other player: forearm direction 25° (best cross-player); with the player's own minutes
+  (same session) the all-sensor GRU reaches elbow 9°, elevation 7°.
+- Found: commercial magnetometers unusable near the court (VQF 6-axis drifts least, 15-20°/min
+  heading); body forward from the pocket phone's screen was ~110° off for Tom; MPS returns NaN
+  for the GRU (trained on CPU); the shared session loader drops a merged session's Watch stored
+  as `wrist` (worked around in E07). Details: [`experiments/E07_pose_methods/`](experiments/E07_pose_methods/README.md).
+
+## 2026-11-10
+
+### E08: 10/28-trained arm models tested on 11/05 (Janys)
+
+- 11/05 ground truth: jtchen's 3-camera HRNet OpenCap (100 segments of about 25 s), turned into
+  body rotations with OpenSim and aligned to the Watch per recording (unambiguous peaks, no drift).
+  Test set: 35.8 min, 278 swings, session `20261105-124805-P01`.
+- E07's GRU and ridge, unchanged, trained on 10/28. Swings, Janys:
+  - Watch-only GRU: elbow 14°, elevation 11° on Janys 11/05 (vs 10° / 9° on Janys 10/28).
+  - Trained on Tom only: 24° / 35°.
+  - With half of 11/05 added to training: 12° / 8°.
+  - Phone and AirPods add nothing.
+- Five segments where all models jump together look like OpenCap errors (two are documented
+  wrong-person segments). Details: [`experiments/E08_janys_1105/`](experiments/E08_janys_1105/README.md).
+- Added: every Apple-only E07 method on 11/05 (frame-based Watch orientation, constraints,
+  OpenSense Watch + phone, WearMoCap, MobilePoser, IMUCoCo), with the latest Calibrate hold per
+  segment. All are 23–48° off on elbow or elevation in swings. The 10/28-trained GRU is best by
+  10–20°. Most get worse than on 10/28: the 11/05 ground truth is noisier (Watch vs OpenCap
+  forearm tilt in ground 7° vs 4°), and the trunk leaned slightly more.
+- Cross-session (`cross.py`), Watch GRU, swings, tested on whole 10/28 sessions:
+  - Tom 10/28: trained on Janys 10/28, elbow 27° / elevation 26°; adding Janys 11/05, 19° / 20°.
+  - Janys 10/28: trained on Tom, 25° / 38°; on Janys 11/05, 10° / 9°; Janys 11/05 + Tom, 10° / 9°.
+  - Another day of the same player is as good as same-session minutes; more days of one player
+    also help on a new one.
+- Fixed: `GRU.predict` left dropout on at test time. Every E07/E08 GRU retrained and rescored
+  (numbers above are the fixed ones). Janys's scores moved by about 1°; cross-player swing scores
+  moved by up to 6° (E07 Watch GRU, other player: elbow 21° -> 24°, elevation 25° -> 30°).

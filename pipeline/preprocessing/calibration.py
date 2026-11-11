@@ -18,7 +18,7 @@ Apple's userAcceleration is minus the physical acceleration (its accelerometer
 reports the gravity vector, not specific force), hence the -9.81.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -38,6 +38,24 @@ class Calibration:
     window: tuple  # (t0, t1) device clock
     pocket_screen: str
     checks: dict = field(default_factory=dict)
+
+
+# The pose models' bone frames (SMPL: y up, x to the body's left, z forward) read a bone's
+# identity as the T-pose, arm straight out to the side. After a standing calibration the arm
+# hangs instead: start the wrist bone there, a 90° turn about the forward axis (E04).
+STANDING_REST = {
+    "right_wrist": Rotation.from_euler("z", 90, degrees=True).as_matrix(),
+    "left_wrist": Rotation.from_euler("z", -90, degrees=True).as_matrix(),
+}
+
+
+def with_standing_rest(cal: Calibration, loc: str) -> Calibration:
+    """The calibration with the bone's standing rest pose built in (wrists only), so to_body
+    returns the model's bone orientation: arm down at calibration, not out to the side."""
+    rest = STANDING_REST.get(loc)
+    if rest is None:
+        return cal
+    return replace(cal, device2bone=cal.device2bone @ rest)
 
 
 def event_window(recording, hold_s=CAL_HOLD_S):
@@ -156,3 +174,103 @@ def mediolateral_check(cal: Calibration, stream: DeviceStream, min_rot=1.0):
     _, _, vt = np.linalg.svd(horiz - horiz.mean(axis=0), full_matrices=False)
     axis = vt[0]
     return round(float(np.degrees(np.arccos(min(1.0, abs(axis[0]))))), 1)
+
+
+# ── Many calibrations per session (docs/plan/design.md §7) ──────────────────────────────
+
+
+def calibration_windows(recording, name="calibrate", hold_s=CAL_HOLD_S):
+    """Every hold window of one kind, in time order (phone clock).
+    `calibrate` = standing pose (phone, AirPods); `calibrate_arms` = arms-out pose (Watch)."""
+    windows = [
+        (e["t_phone"] + 0.3, e["t_phone"] + e.get("hold_s", hold_s))
+        for e in recording.events
+        if e.get("name") == name and "t_phone" in e
+    ]
+    return sorted(windows)
+
+
+def arms_window(events, standing_hold, segment_end, hold_s=CAL_HOLD_S):
+    """The arms-out hold (phone clock) that follows a standing hold, before `segment_end`.
+
+    Wrist sensors are calibrated here, not in the standing pose: the pose models' forearm
+    reference (identity) is the T-pose, arm straight out to the side (E04). None when the
+    calibration had no arms-out step; callers then fall back to the standing hold."""
+    for e in events:
+        if e.get("name") == "calibrate_arms" and "t_phone" in e:
+            start = e["t_phone"] + 0.3
+            if standing_hold[1] <= start < segment_end:
+                return (start, e["t_phone"] + e.get("hold_s", hold_s))
+    return None
+
+
+def calibrate_all(stream: DeviceStream, windows, **kwargs) -> list:
+    """One Calibration per window that has data and passes its checks; others are skipped."""
+    cals = []
+    for window in windows:
+        try:
+            cal = calibrate(stream, window, **kwargs)
+        except ValueError:
+            continue
+        if cal.checks.get("passed"):
+            cals.append(cal)
+    return cals
+
+
+def calibration_at(cals: list, t: np.ndarray, segments=None, mode="blend"):
+    """Per-frame (R_MI, device2bone) from many calibrations.
+
+    blend (default): slerp between the two calibrations around each frame, which removes steady
+        drift (e.g. a heading that creeps a few degrees a minute).
+    piecewise: the last calibration before each frame.
+    Blending never crosses a segment break (`segments` = [(start, end), ...]); there, and before
+    the first or after the last calibration, the nearest earlier calibration is held.
+    """
+    if not cals:
+        raise ValueError("no calibrations")
+    t = np.asarray(t, dtype=float)
+    centres = np.array([(c.window[0] + c.window[1]) / 2 for c in cals])
+    order = np.argsort(centres)
+    cals, centres = [cals[i] for i in order], centres[order]
+    r_mi = Rotation.from_matrix(np.stack([c.R_MI for c in cals]))
+    d2b = Rotation.from_matrix(np.stack([c.device2bone for c in cals]))
+
+    def segment_of(x):
+        if not segments:
+            return 0
+        for k, (a, b) in enumerate(segments):
+            if a <= x < b:
+                return k
+        return len(segments) - 1
+
+    seg_cal = np.array([segment_of(c) for c in centres])
+    out_mi = np.empty((len(t), 3, 3))
+    out_d2b = np.empty((len(t), 3, 3))
+    for n, x in enumerate(t):
+        before = np.nonzero(centres <= x)[0]
+        i = before[-1] if len(before) else 0
+        j = i + 1
+        if (
+            mode == "blend"
+            and len(before)
+            and j < len(cals)
+            and seg_cal[i] == seg_cal[j] == segment_of(x)
+        ):
+            w = (x - centres[i]) / (centres[j] - centres[i])
+            out_mi[n] = _slerp(r_mi[i], r_mi[j], w).as_matrix()
+            out_d2b[n] = _slerp(d2b[i], d2b[j], w).as_matrix()
+        else:
+            out_mi[n] = r_mi[i].as_matrix()
+            out_d2b[n] = d2b[i].as_matrix()
+    return out_mi, out_d2b
+
+
+def _slerp(a: Rotation, b: Rotation, w: float) -> Rotation:
+    return a * Rotation.from_rotvec(w * (a.inv() * b).as_rotvec())
+
+
+def bone_orientation(cals: list, t: np.ndarray, quat: np.ndarray, segments=None, mode="blend"):
+    """Per-frame bone orientation (N, 3, 3) using every calibration (see calibration_at)."""
+    r_mi, d2b = calibration_at(cals, t, segments, mode)
+    R_IS = Rotation.from_quat(quat).as_matrix()
+    return r_mi @ R_IS @ d2b

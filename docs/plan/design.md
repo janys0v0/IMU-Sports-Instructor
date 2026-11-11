@@ -105,6 +105,8 @@ free on the phone and 2 GB on the Watch.**
 - **High-rate chunks are sent after the session**, not during play (radio time and battery).
   Keep the Watch near the phone with the app open, ideally charging; the phone shows
   "High-rate: N / M sent". Expect several minutes per hour of data.
+- At Stop the Watch also sends a snapshot of its journal (`watch_journal.jsonl`) and a summary
+  message with its chunk counts, so the phone can show "N / M" and the Mac sees the Watch's side.
 - The Watch keeps every chunk until the **Mac has verified** the session. A "Resend session"
   button sends everything again; duplicates are harmless.
 - Move each received file out of the WatchConnectivity inbox before the delegate returns (the
@@ -136,12 +138,14 @@ Core Motion doesn't keep an app awake; the app must stay awake through a backgro
 
 | Device | How | Status |
 |---|---|---|
-| Watch | `HKWorkoutSession` (+ `audio` background mode for speech and haptics) | ✅ workout exists; `audio` mode to add |
-| iPhone | **Pending decision** after the stage 0b device check. Recommended: background location at 3 km accuracy (Apple-confirmed to keep motion flowing) | ⏳ |
-| iPhone, optional | Workout mirroring, started after the Watch session is prepared (works around an iOS 26 bug) | Not relied on |
+| Watch | `HKWorkoutSession` (+ `audio` background mode for speech and haptics); workout recovered after a crash | ✅ |
+| iPhone | Background location at 3 km accuracy (Apple-confirmed to keep motion flowing); the default setting until the stage 0b check decides | ✅ built; 🧪 T6 |
+| iPhone, optional | Workout mirroring, started after the Watch session is prepared (works around an iOS 26 bug) | ✅ built (setting); not relied on |
 | iPhone, fallback | Pocket mode: app in the foreground, screen off by the proximity sensor | ✅ exists |
 | AirPods | Head motion through the phone app; the Watch can't read it | ❓ background behaviour checked in stage 0b |
 
+- If the app goes to the background with no keep-alive running, or AirPods motion stops there for
+  3 s, the phone says "Heads up: keep the app open in your pocket." and logs `pocket_mode_needed`.
 - **Background tests must run with Xcode detached** (launched from the Home screen): with the
   debugger attached, iOS never suspends the app.
 
@@ -150,6 +154,7 @@ Core Motion doesn't keep an app awake; the app must stay awake through a backgro
 | Level | When | Shows | Source |
 |---|---|---|---|
 | ① Live strip | While recording | Hz, last-sample age, 🟢🟡🔴 per stream | Memory |
+| ① Live motion plot | While recording, at the top of the screen | Rotation speed of each device over the last 10 s, updated twice a second; "no data" in red after 1.5 s of silence (`LiveMotionPanel`) | Memory (samples by device clock) |
 | ② Review screen | Any time | Whole-session timeline (gaps, calibrations) + last 60 s plots per device | **Closed chunks on disk** |
 | ③ Session check | After Stop | PASS / WARN / FAIL card | Journal + chunks |
 
@@ -196,37 +201,42 @@ skipped later.
 the phone shifts in the pocket); the Watch strap slides; the AirPods' heading is arbitrary and
 resets on reconnect. E02 measured ~5-10°/min of model orientation drift for head and thigh.
 
-**The routine** (~20 s, started from the Watch, every step spoken):
+**The routine** (~17 s, started from the Watch, every step spoken; prompts kept short so a returning player hears only the cue):
 
 ```
  Tap Calibrate on the Watch (or accept a reminder)
-   ▼ "Calibration. Face {landmark} and stand still."  "Starting in three, two, one."
+   ▼ "Calibrating. Face {landmark}."  "Three, two, one."
  ① Standing pose, arms down, facing the landmark ── hold 3 s ──▶ phone + AirPods
    ▼ "Good."
  ② Arms-out pose, arms straight out to the sides, palms down ── hold 3 s ──▶ Watch
    ▼ "Arms down."
- "Calibration complete. You can start."  or  "Calibration didn't work: {reason}. Let's try again."
+ "Calibration done."  or  "Calibration didn't work: {reason}. Let's try again."
 ```
 
-**Script** (`Shared/voice_prompts.json`; `{landmark}` is set in Setup, e.g. "the net"):
+**Script** (`MotionStreamerCore/Resources/voice_prompts.json`, with every alert phrase; generate a listening copy with `tools/make_voice_sample.py`; `{landmark}` is set in Setup, e.g. "the net"):
 
 | # | Spoken (exactly) | Data |
 |---|---|---|
-| C1 | "Calibration. Face {landmark} and stand still." | `prompt` events with start/finish time (all prompts) |
-| C2 | "Starting in three, two, one." (one number per second) | |
-| C3 | "Stand up straight. Feet hip-width apart. Arms relaxed at your sides. Look straight ahead." | |
-| C4 | "Hold still… now." | hold window starts 0.3 s after "now" finishes |
+| C1 | "Calibrating. Face {landmark}." | `prompt` events with start/finish time (all prompts) |
+| C2 | "Three, two, one." (one number per second) | |
+| C3 | "Stand tall, arms down." | |
+| C4 | "Hold still… now." | hold window starts 0.3 s after "now" finishes; `calibrate` event (`t_phone` + 0.3 = window start, `hold_s` 3.3) |
 | C5 | "You moved. Hold still." (once; the hold restarts) | |
 | C6 | "Good." | `cal_hold_end` |
-| C7 | "Now raise both arms straight out to the sides, at shoulder height, palms facing down." | |
-| C8 | "Raise your arms a little higher, level with your shoulders." (if not level after 6 s) | |
-| C9 | "Hold still… now." | as C4 |
+| C7 | "Arms out, shoulder height." | |
+| C8 | "Arms a bit higher." (if not level after 6 s) | |
+| C9 | "Hold still… now." | as C4; `calibrate_arms` event |
 | C10 | "Arms down." | `cal_hold_end` |
-| C11 | "Calibration complete. You can start." | `calibrate_result: pass` |
-| C12 | "Calibration didn't work: {reason}. Let's try again." (at most 2 retries, then "Please check the devices, then tap Calibrate.") | `calibrate_result: fail` |
+| C11 | "Calibration done." | `calibrate_result: pass` |
+| C12 | "Calibration didn't work: {reason}." then "Let's try again." (at most 2 retries, then "Please check the devices, then tap Calibrate.") | `calibrate_result: fail` |
 
 Reasons: "you moved" · "the phone isn't upright in your pocket" · "your arms weren't level" ·
 "the AirPods aren't connected" · "the watch isn't sending data".
+
+**Devices checked:** the ones planned at Go / No-Go (§8) that are there. AirPods outside the plan
+are ignored even when connected, so a Watch + phone session calibrates with AirPods in their case
+or worn for music; planned AirPods that aren't connected are skipped; the arms-out pose runs once
+the Watch streams.
 
 **Check on the phone right after the holds**
 
@@ -240,7 +250,7 @@ Reasons: "you moved" · "the phone isn't upright in your pocket" · "your arms w
 
 **When:** start of session · before each trial · after an AirPods reconnect, strap adjustment,
 re-pocketing or crash resume · at the reminder interval (a setting, default 10 min until test T20
-measures it). Reminder: "Time to recalibrate. When you're ready, face {landmark} and tap the
+measures it). Reminder: "Time to recalibrate." then "When you're ready, face {landmark} and tap the
 watch." (repeats every 2 min until done or dismissed). The app also logs `still_upright` whenever
 the user stands still and upright for 2 s; these correct tilt, not heading.
 
@@ -263,7 +273,12 @@ more often. `pipeline/preprocessing/calibration.py` must handle many calibration
   of call mode. The iPhone app needs the `audio` background mode.
 - **Audibility check at Go/No-Go:** "Can you hear me? Tap the watch if you can." No tap in 10 s →
   raise the volume or switch output.
-- **Watch actions during a session** are one large button each: Calibrate, Trial, Repeat, Acknowledge.
+- **One control system:** the iPhone owns the session. Start, Stop, Calibrate, Trial, Repeat and OK
+  are commands to the iPhone from either device (Start from the Watch runs the same Go/No-Go with the
+  last plan). The iPhone sends its state to the Watch on every change and every 3 s; both screens
+  draw their buttons from it (`ControlState.buttons`), one large button each. With no state for
+  10 s the Watch shows "iPhone not reachable" and offers **Record on Watch only**; a later iPhone
+  Start makes the Watch join that session.
 
 ## 8. Problems in the field: detect, fix, alert
 
@@ -276,6 +291,10 @@ court, and **never leave the court with an incomplete trial.**
 | ② Watchdog | Every 1 s | Scenario tables below | Auto-fix, then alert |
 | ③ Trial check | After each trial | Required streams complete in `[start − 2 s, end + 2 s]` | ✅ Keep or 🔁 Redo |
 | ④ Court-exit check | Before Stop | Every trial ✅; 60 Hz Watch chunks on the phone; high-rate chunks closed on the Watch | "Safe to leave" or "Redo trials 3, 5" |
+
+**Devices held to account = the Go/No-Go plan** (`DevicePlan`, recorded as `required` in the `gonogo`
+event). A device outside the plan never alarms, fails a trial or fails the ingest, even if it connects
+on its own; it is still recorded and shown. The Watch counts once it streams.
 
 - **Required streams** default to phone + Watch (60 Hz and high-rate) + AirPods. Recording
   without one needs an explicit override, which is logged.
@@ -301,7 +320,7 @@ at most once per problem per minute; one Watch tap acknowledges (logged).
 
 | Scenario | Detect | Auto-fix | Alert |
 |---|---|---|---|
-| Low sample rate | 5 s rate < 80 % of the Go/No-Go rate | Shed load: stop UDP, pause plots | 🟡, 🔴 after 30 s, with the cause (heat / Low Power / CPU) |
+| Low sample rate (phone, AirPods) | 5 s rate < 80 % of the Go/No-Go rate; the Watch preview is excluded (it arrives in bursts) | Shed load: stop UDP, pause plots | 🟡, 🔴 after 30 s, with the cause (heat / Low Power / CPU) |
 | Low Power Mode | `isLowPowerModeEnabled` | — | Blocks Start; 🔴 mid-session |
 | Overheating | `thermalState` ≥ `.serious` | Shed load | 🟡 "Heads up: the phone is getting hot." |
 | Late or bursty delivery | Arrival gaps, sensor timestamps continuous | None needed | Logged |
@@ -347,7 +366,7 @@ at most once per problem per minute; one Watch tap acknowledges (logged).
 | 🟡 Warn | Once | 1 long tap, banner |
 | 🔴 Stop and fix | Every 30 s until fixed or acknowledged | 3 strong taps, banner + sound |
 | 🔁 Redo trial | Once | 2 taps, trial card turns red |
-| ✅ Recovered ("The watch is recording again.") | Once | — |
+| ✅ Recovered ("The watch is recording again.", "The AirPods are back.") | Once | — |
 
 **Trial check ③**
 
@@ -363,18 +382,22 @@ Watch data is checked from the live preview first, then again once its chunk arr
 
 ## 9. Trials and extra sensors
 
-- **Trial button** (Watch): logs a `marker` with trial number and time. Each trial starts with the
-  **sync gesture**: 2 s still · 3 hops · 3 head nods · 2 s still. It gives a shared time reference
+- **Trial button** (Watch, one large tap; also on the phone): the first tap starts trial N and logs
+  a `marker` (`edge: start`), the next tap ends it, logs `marker` (`edge: end`) and runs the trial
+  check (§8 ③) at once: ✅ keep, or 🔁 "Redo trial N. {reason}." spoken. Each trial starts with the
+  **sync gesture**: 2 s still · 3 hops · 3 head nods · 2 s still (the hops are detected from the
+  phone: three acceleration peaks above 1 g, 0.25-1.5 s apart). It gives a shared time reference
   across devices (and for OpenCap later: [`opencap.md`](../deferred/opencap.md)).
-- **Extra sensors** from the proposal, as new packet types (motion packets unchanged):
+- **Extra sensors** as new packet types (motion packets unchanged; `motion_io.py` ignores them,
+  `ingest_field.py` counts them). Each has a running index `i`, so gaps count like motion:
 
-| Sensor | Plan |
-|---|---|
-| Barometer (phone + Watch) | `CMAltimeter` pressure + relative altitude, ~1 Hz |
-| Magnetometer (phone + Watch) | Calibrated field + accuracy from device motion |
-| Audio (phone) | Level and onset times only, **no raw audio**; built-in microphone only |
-| Watch ↔ phone distance | Optional UWB (Nearby Interaction) |
-| Light | Not available to apps; dropped |
+| Packet `type` | Devices | Fields | Rate |
+|---|---|---|---|
+| `baro` | phone, Watch | `pressure_kpa`, `rel_alt_m` (`CMAltimeter`) | ~1 Hz |
+| `mag` | phone, Watch | `field_ut` (calibrated, device frame), `accuracy` (−1…2); low accuracy → 🟡 compass disturbed | 1 Hz |
+| `audio_level` | phone | `rms_db`, `peak_db`, `onset`; built-in microphone only, **no audio stored** | 20 Hz |
+| `uwb` | phone | `distance_m` (Nearby Interaction, optional; not built yet) | — |
+| Light | — | not available to apps; dropped | — |
 
 ## 10. After the session
 
@@ -387,6 +410,7 @@ Watch data is checked from the live preview first, then again once its chunk arr
                                   merged stream.jsonl → motion_io.py
 ```
 
+- `--phone-only` marks a session recorded without a Watch, so the missing Watch isn't a failure.
 - `watch_hf: PENDING` (not FAIL) while high-rate chunks are still on the Watch; the session can't
   be verified or cleared until they arrive.
 - **Never delete before ② says PASS and ③ is done.**

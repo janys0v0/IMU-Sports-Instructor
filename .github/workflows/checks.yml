@@ -1,13 +1,15 @@
 name: checks
 
 on:
+  # edited: fixing a PR's title or description re-runs pr-format.
   pull_request:
+    types: [opened, edited, synchronize, reopened]
   push:
     branches: [main]
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest (26.04) has no Python 3.9
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -21,7 +23,7 @@ jobs:
 
   pr-format:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest (26.04) has no Python 3.9
     steps:
       - uses: actions/checkout@v4
       # Branch, title and body come in through env vars, never inline in the script.
@@ -33,3 +35,20 @@ jobs:
         run: |
           printf '%s' "$PR_BODY" > "$RUNNER_TEMP/pr_body.md"
           python3 tools/check_format.py --pr "$PR_BRANCH" "$PR_TITLE" "$RUNNER_TEMP/pr_body.md"
+
+  swift-tests:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: tools/run_tests.sh --swift-only
+
+  python-tests:
+    runs-on: ubuntu-24.04  # ubuntu-latest (26.04) has no Python 3.9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      # Tests that need recordings or the models skip themselves; numpy/scipy/pandas/OpenCV cover the rest.
+      - run: pip install "numpy==1.23.0" "scipy==1.8.0" "pandas==2.1.4" "opencv-python-headless==4.8.1.78" pytest
+      - run: PYTHON=python tools/run_tests.sh --python-only

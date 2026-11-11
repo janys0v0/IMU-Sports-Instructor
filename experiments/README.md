@@ -15,7 +15,8 @@ experiments/
 │   ├── stream_quality.py             per-device rate, missing samples, gaps, delay (raw packets)
 │   └── render.py                     mesh videos (frame-count checked), side-by-side tiles
 ├── annotations/                  hand-made activity labels per session (data only)
-│   └── 20261008-153213-P01.json      reference routine: jumping jacks, swings, squats, head turns
+│   ├── 20261008-153213-P01.json      reference routine: jumping jacks, swings, squats, head turns
+│   └── 20261019-000116-P01.json      filmed routine for E04 (video mirrored, bystander masked)
 ├── E00_mobileposer_reproduction/  published MobilePoser on the IMUPoser dataset (setup notes, results)
 ├── E01_mobileposer_device_ablation/
 │   ├── README.md                     question, method, how to run, results
@@ -28,10 +29,44 @@ experiments/
 │   ├── make_videos.py                side-by-side videos from saved outputs
 │   ├── plot_agreement.py             model-sensor agreement + trajectories figure
 │   └── results/<session>/
-└── E03_stream_quality/
-    ├── README.md
-    ├── run.py                        data consistency + trajectories figure
-    └── results/<session>/
+├── E03_stream_quality/
+│   ├── README.md
+│   ├── run.py                        data consistency + trajectories figure
+│   └── results/<session>/
+├── E04_video_validation/         IMU joint angles vs single-camera video (Apple Vision 3D)
+│   ├── README.md                     question, recording checklist, limits
+│   ├── align.py                      video <-> IMU offset from on-screen vs sensor motion
+│   ├── vision_pose.swift             3D body pose per video frame
+│   ├── angles.py                     joint angles from both joint sets, agreement metrics
+│   ├── run.py
+│   ├── make_video.py                 camera + skeleton next to the IMU meshes
+│   └── results/<session>/
+├── E05_commercial_imu/          our phone / Watch / AirPods vs commercial IMUs (placement, agreement)
+│   ├── README.md
+│   ├── run.py
+│   └── results/<session>/
+├── E06_side_by_side/            Apple devices vs commercial IMUs, reconstructed side by side (+ OpenCap slot)
+│   ├── README.md
+│   ├── commercial.py                 commercial logs -> orientation streams (Madgwick + magnetometer heading)
+│   ├── run.py                        clock, shared calibration, MobilePoser on both input sets
+│   ├── make_video.py                 meshes + rolling rotation-speed charts
+│   └── results/<label>/
+├── E07_pose_methods/            arm pose methods vs OpenCap on 10/28
+│   ├── README.md                     methods, results, how to run each step
+│   ├── data.py, common.py            shared 30 Hz dataset and the method contract
+│   ├── align.py, geometric.py, qmt_heading.py, constraint.py, opensense*.py   model-free methods
+│   ├── wearmocap.py, learned_published.py, learned_own.py                    learned methods
+│   ├── evaluate.py, figures.py, video.py                                     scores, report figures, videos
+│   ├── colors.py                     one color per method, shared by figures, videos and the report
+│   └── figures/                      report PNGs (results/ holds data, not committed)
+└── E08_janys_1105/                 arm models trained on Janys + Tom 10/28, tested on Janys 11/05
+    ├── opencap_gt.py, align.py, data.py   11/05 OpenCap -> body rotations, clock, test set
+    ├── run.py                        trained models: 10/28 -> 11/05
+    ├── frame_methods.py, opensense_run.py   E07's other Apple-only methods on 11/05
+    ├── evaluate.py, figures.py       scores and figures
+    ├── cross.py, four_methods.py     cross-session tests; four methods side by side
+    ├── camera.py, vision2d.swift, video.py   IMG_0021 clip synced and fitted; comparison video
+    └── figures/
 ```
 
 ## Conventions

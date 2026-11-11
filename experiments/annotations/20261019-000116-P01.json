@@ -1,0 +1,83 @@
+{
+  "session": "20261019-000116-P01",
+  "description": "Indoor routine filmed with the Mac's camera (Photo Booth, mirrored, 30 fps): calibration, knee lifts, jumping jacks, walking, squats, ready position, shadow tennis strokes.",
+  "devices": {
+    "phone": "right front pocket",
+    "watch": "right wrist",
+    "airpods": "worn"
+  },
+  "watch_side": "right",
+  "reported_by": "windows set by hand from video frames every 2 s (2026-10-19)",
+  "window_source": "Times are seconds after Start. No trial markers were pressed; video time = Start time + 18.17 s (video/alignment.json). Windows are accurate to about 1 s.",
+  "video": {
+    "mirrored": true,
+    "notes": "A second person sits at the left edge of the frame; mask the left third for motion-based alignment and crop it out before sharing any frames.",
+    "mask_left": 0.34
+  },
+  "calibration": {
+    "calibrate_event_s": 49.2,
+    "hold_end_s": 52.6
+  },
+  "activities": [
+    {
+      "name": "standing_calibration",
+      "type": "standing",
+      "start": 48.0,
+      "end": 55.0
+    },
+    {
+      "name": "arms_out_calibration",
+      "type": "arms_out",
+      "start": 56.0,
+      "end": 61.0
+    },
+    {
+      "name": "knee_lifts",
+      "type": "knee_lifts",
+      "start": 63.0,
+      "end": 69.0
+    },
+    {
+      "name": "jumping_jacks",
+      "type": "jumping_jacks",
+      "start": 70.0,
+      "end": 75.0
+    },
+    {
+      "name": "walking",
+      "type": "walking",
+      "start": 78.0,
+      "end": 87.0,
+      "note": "Across the frame and back, partly side-on."
+    },
+    {
+      "name": "squats",
+      "type": "squats",
+      "start": 88.0,
+      "end": 96.0,
+      "reported_reps": 3,
+      "note": "Three deep squats (knee ~100° in video and IMU); looked like sitting in 2 s frames."
+    },
+    {
+      "name": "ready_position",
+      "type": "standing",
+      "start": 97.0,
+      "end": 105.0,
+      "note": "Hands together at the chest, as when holding a racket."
+    },
+    {
+      "name": "out_of_frame",
+      "type": "excluded",
+      "start": 106.0,
+      "end": 111.0,
+      "note": "Too close to the camera: Vision pose unreliable."
+    },
+    {
+      "name": "shadow_strokes",
+      "type": "tennis_swings",
+      "start": 112.0,
+      "end": 129.0,
+      "note": "Forehand and backhand shadow swings, often side-on."
+    }
+  ]
+}

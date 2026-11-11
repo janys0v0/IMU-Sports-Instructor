@@ -8,6 +8,10 @@ options:
     iOS: "17.0"
     watchOS: "10.0"
 
+packages:
+  MotionStreamerCore:
+    path: Core
+
 settings:
   base:
     BUNDLE_ID: edu.es224.jjl.motionstreamer
@@ -43,8 +47,12 @@ targets:
         NSLocalNetworkUsageDescription: Streams motion data to the receiver on your Mac.
         NSHealthShareUsageDescription: Starts a workout on Apple Watch so it can stream motion.
         NSHealthUpdateUsageDescription: Starts a workout on Apple Watch so it can stream motion.
+        UIBackgroundModes: [audio, location]
+        NSLocationWhenInUseUsageDescription: Keeps recording while the phone is locked in your pocket. Your location is not saved.
+        NSMicrophoneUsageDescription: Measures sound level only (ball strikes, claps). No audio is recorded or saved.
     dependencies:
       - target: MotionStreamerWatch
+      - package: MotionStreamerCore
 
   MotionStreamerWatch:
     type: application
@@ -65,6 +73,9 @@ targets:
         WKApplication: true
         WKCompanionAppBundleIdentifier: $(BUNDLE_ID)
         WKBackgroundModes: [workout-processing]
+        UIBackgroundModes: [audio]
         NSMotionUsageDescription: Records wrist motion for full-body pose estimation.
         NSHealthShareUsageDescription: Runs a workout session so wrist motion keeps streaming.
         NSHealthUpdateUsageDescription: Runs a workout session so wrist motion keeps streaming.
+    dependencies:
+      - package: MotionStreamerCore

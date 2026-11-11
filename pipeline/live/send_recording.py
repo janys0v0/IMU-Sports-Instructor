@@ -32,7 +32,8 @@ def main():
     for packet in packets:
         due = start + (packet.pop("recv_mac_unix") - t_first) / args.speed
         time.sleep(max(0.0, due - time.monotonic()))
-        packet["session"] = packet["session"] + "-REPLAY"
+        if packet.get("session"):  # sensor packets from older app builds have none
+            packet["session"] += "-REPLAY"
         sock.sendto(json.dumps(packet).encode(), (args.host, args.port))
     print(f"Sent {len(packets)} packets in {time.monotonic() - start:.1f} s")
 

@@ -1,7 +1,7 @@
 """Render a recording to <session>/reconstruction.mp4 with every device that was calibrated.
 
 Run in the project venv, from project/code:
-    .venv/bin/python -m pipeline.pose.render_session data/recordings/<session> [--no-tran | --full-tran] [--out NAME.mp4]
+    .venv/bin/python -m pipeline.pose.render_session data/recordings/<session> [--no-tran | --full-tran] [--out NAME.mp4] [--screen leg|outward]
 
 The root moves up and down only (squats lower the body); horizontal drift is removed so the
 body stays inside the fixed camera. --full-tran keeps it, --no-tran pins the root entirely.
@@ -21,7 +21,12 @@ from pathlib import Path
 import numpy as np
 
 from pipeline.pose.replay import MOBILEPOSER_DIR, model_input
-from pipeline.preprocessing.calibration import AIRPODS_FORWARD, calibrate, to_body
+from pipeline.preprocessing.calibration import (
+    AIRPODS_FORWARD,
+    calibrate,
+    to_body,
+    with_standing_rest,
+)
 from pipeline.preprocessing.motion_io import SLOTS, load_recording
 from pipeline.preprocessing.resample import MODEL_FPS, resample
 
@@ -32,7 +37,7 @@ STOP_MARGIN_S = 1.0  # drop the last second before Stop (hand reaching for the p
 
 def calibrate_shared(stream, window, R_MI):
     # Same as live_viewer.calibrate_shared; imported lazily there to avoid pulling in the viewer.
-    from live_viewer import calibrate_shared as shared
+    from pipeline.live.live_viewer import calibrate_shared as shared
 
     return shared(stream, window, R_MI)
 
@@ -70,7 +75,9 @@ def segment_input(rec, phone_loc, hold, t0, t1, screen):
                     stream, (hold[0] + shift, hold[1] + shift), forward_device=AIRPODS_FORWARD
                 )
             elif stream.ref_frame == phone.ref_frame:
-                cal = calibrate_shared(stream, (hold[0] + shift, hold[1] + shift), cal_p.R_MI)
+                cal = with_standing_rest(
+                    calibrate_shared(stream, (hold[0] + shift, hold[1] + shift), cal_p.R_MI), loc
+                )
             else:
                 continue
         except ValueError:
@@ -102,6 +109,11 @@ def main():
     parser.add_argument(
         "--out", default="reconstruction.mp4", help="file name inside the session folder"
     )
+    parser.add_argument(
+        "--screen",
+        choices=["leg", "outward"],
+        help="phone screen direction in the pocket (default: the app setting in the recording)",
+    )
     args = parser.parse_args()
 
     session = args.session.resolve()
@@ -109,7 +121,7 @@ def main():
     phone_loc = next((loc for loc, s in rec.streams.items() if s.device == "phone"), None)
     if phone_loc is None or phone_loc not in SLOTS:
         sys.exit(f"{session.name}: no pocket phone stream, nothing to render.")
-    screen = rec.setting("pocket_screen", "leg")
+    screen = args.screen or rec.setting("pocket_screen", "leg")
     segs = segments(rec, rec.streams[phone_loc])
     if not segs:
         sys.exit(

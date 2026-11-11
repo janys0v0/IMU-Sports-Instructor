@@ -1,0 +1,674 @@
+{
+ "ridge_watch_janys": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 19.134,
+   "forearm_incl_mae": 9.036,
+   "forearm_incl_r": 0.88,
+   "upper_arm_dir_deg": 15.538,
+   "elevation_mae": 8.468,
+   "elevation_r": 0.825,
+   "plane_mae": 24.777,
+   "elbow_mae": 11.133,
+   "elbow_bias": -5.359,
+   "elbow_r": 0.711
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 34.284,
+   "forearm_incl_mae": 12.288,
+   "forearm_incl_r": 0.741,
+   "upper_arm_dir_deg": 29.284,
+   "elevation_mae": 14.946,
+   "elevation_r": 0.749,
+   "plane_mae": 22.807,
+   "elbow_mae": 17.209,
+   "elbow_bias": -7.958,
+   "elbow_r": 0.459
+  }
+ },
+ "ridge_watch_both": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 20.63,
+   "forearm_incl_mae": 10.558,
+   "forearm_incl_r": 0.881,
+   "upper_arm_dir_deg": 15.383,
+   "elevation_mae": 8.658,
+   "elevation_r": 0.812,
+   "plane_mae": 27.532,
+   "elbow_mae": 13.331,
+   "elbow_bias": -9.126,
+   "elbow_r": 0.697
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 36.247,
+   "forearm_incl_mae": 12.949,
+   "forearm_incl_r": 0.71,
+   "upper_arm_dir_deg": 31.608,
+   "elevation_mae": 14.447,
+   "elevation_r": 0.734,
+   "plane_mae": 27.838,
+   "elbow_mae": 18.13,
+   "elbow_bias": -9.288,
+   "elbow_r": 0.464
+  }
+ },
+ "ridge_watch_tom": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 35.472,
+   "forearm_incl_mae": 16.795,
+   "forearm_incl_r": 0.84,
+   "upper_arm_dir_deg": 18.275,
+   "elevation_mae": 8.797,
+   "elevation_r": 0.725,
+   "plane_mae": 48.917,
+   "elbow_mae": 20.099,
+   "elbow_bias": -15.717,
+   "elbow_r": 0.595
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 53.835,
+   "forearm_incl_mae": 17.159,
+   "forearm_incl_r": 0.611,
+   "upper_arm_dir_deg": 52.761,
+   "elevation_mae": 31.464,
+   "elevation_r": 0.578,
+   "plane_mae": 51.135,
+   "elbow_mae": 23.862,
+   "elbow_bias": 4.438,
+   "elbow_r": 0.147
+  }
+ },
+ "ridge_watch_both+half": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 18.854,
+   "forearm_incl_mae": 9.375,
+   "forearm_incl_r": 0.881,
+   "upper_arm_dir_deg": 14.853,
+   "elevation_mae": 8.239,
+   "elevation_r": 0.815,
+   "plane_mae": 25.688,
+   "elbow_mae": 12.212,
+   "elbow_bias": -6.589,
+   "elbow_r": 0.703
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 29.958,
+   "forearm_incl_mae": 11.67,
+   "forearm_incl_r": 0.713,
+   "upper_arm_dir_deg": 29.38,
+   "elevation_mae": 13.678,
+   "elevation_r": 0.745,
+   "plane_mae": 24.466,
+   "elbow_mae": 17.263,
+   "elbow_bias": -4.715,
+   "elbow_r": 0.475
+  }
+ },
+ "ridge_watch_phone_janys": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 20.277,
+   "forearm_incl_mae": 10.881,
+   "forearm_incl_r": 0.879,
+   "upper_arm_dir_deg": 14.723,
+   "elevation_mae": 7.847,
+   "elevation_r": 0.834,
+   "plane_mae": 19.288,
+   "elbow_mae": 12.589,
+   "elbow_bias": -7.109,
+   "elbow_r": 0.744
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 29.447,
+   "forearm_incl_mae": 14.128,
+   "forearm_incl_r": 0.756,
+   "upper_arm_dir_deg": 26.397,
+   "elevation_mae": 15.383,
+   "elevation_r": 0.774,
+   "plane_mae": 18.233,
+   "elbow_mae": 17.413,
+   "elbow_bias": -5.109,
+   "elbow_r": 0.503
+  }
+ },
+ "ridge_watch_phone_both": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 19.626,
+   "forearm_incl_mae": 12.264,
+   "forearm_incl_r": 0.892,
+   "upper_arm_dir_deg": 13.899,
+   "elevation_mae": 8.107,
+   "elevation_r": 0.812,
+   "plane_mae": 18.816,
+   "elbow_mae": 15.018,
+   "elbow_bias": -12.052,
+   "elbow_r": 0.747
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 28.951,
+   "forearm_incl_mae": 14.327,
+   "forearm_incl_r": 0.752,
+   "upper_arm_dir_deg": 25.984,
+   "elevation_mae": 14.206,
+   "elevation_r": 0.743,
+   "plane_mae": 19.118,
+   "elbow_mae": 17.193,
+   "elbow_bias": -6.939,
+   "elbow_r": 0.527
+  }
+ },
+ "ridge_watch_phone_tom": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 22.091,
+   "forearm_incl_mae": 15.644,
+   "forearm_incl_r": 0.886,
+   "upper_arm_dir_deg": 16.516,
+   "elevation_mae": 9.685,
+   "elevation_r": 0.658,
+   "plane_mae": 34.387,
+   "elbow_mae": 19.877,
+   "elbow_bias": -15.364,
+   "elbow_r": 0.624
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 28.87,
+   "forearm_incl_mae": 16.902,
+   "forearm_incl_r": 0.705,
+   "upper_arm_dir_deg": 53.523,
+   "elevation_mae": 38.163,
+   "elevation_r": 0.522,
+   "plane_mae": 39.305,
+   "elbow_mae": 26.401,
+   "elbow_bias": 11.527,
+   "elbow_r": 0.133
+  }
+ },
+ "ridge_watch_phone_both+half": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 14.391,
+   "forearm_incl_mae": 8.046,
+   "forearm_incl_r": 0.9,
+   "upper_arm_dir_deg": 13.572,
+   "elevation_mae": 7.66,
+   "elevation_r": 0.834,
+   "plane_mae": 17.271,
+   "elbow_mae": 11.808,
+   "elbow_bias": -6.832,
+   "elbow_r": 0.765
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 21.441,
+   "forearm_incl_mae": 10.354,
+   "forearm_incl_r": 0.76,
+   "upper_arm_dir_deg": 24.299,
+   "elevation_mae": 13.051,
+   "elevation_r": 0.78,
+   "plane_mae": 17.744,
+   "elbow_mae": 16.021,
+   "elbow_bias": -3.639,
+   "elbow_r": 0.551
+  }
+ },
+ "ridge_watch_phone_airpods_janys": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 20.028,
+   "forearm_incl_mae": 10.427,
+   "forearm_incl_r": 0.884,
+   "upper_arm_dir_deg": 14.894,
+   "elevation_mae": 7.854,
+   "elevation_r": 0.838,
+   "plane_mae": 18.337,
+   "elbow_mae": 12.069,
+   "elbow_bias": -5.789,
+   "elbow_r": 0.737
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 30.002,
+   "forearm_incl_mae": 15.018,
+   "forearm_incl_r": 0.751,
+   "upper_arm_dir_deg": 25.78,
+   "elevation_mae": 14.768,
+   "elevation_r": 0.773,
+   "plane_mae": 17.275,
+   "elbow_mae": 17.939,
+   "elbow_bias": -4.024,
+   "elbow_r": 0.475
+  }
+ },
+ "ridge_watch_phone_airpods_both": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 18.356,
+   "forearm_incl_mae": 10.982,
+   "forearm_incl_r": 0.897,
+   "upper_arm_dir_deg": 13.837,
+   "elevation_mae": 8.083,
+   "elevation_r": 0.818,
+   "plane_mae": 18.326,
+   "elbow_mae": 13.628,
+   "elbow_bias": -9.84,
+   "elbow_r": 0.749
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 28.901,
+   "forearm_incl_mae": 14.279,
+   "forearm_incl_r": 0.763,
+   "upper_arm_dir_deg": 25.789,
+   "elevation_mae": 14.12,
+   "elevation_r": 0.75,
+   "plane_mae": 18.609,
+   "elbow_mae": 17.302,
+   "elbow_bias": -6.444,
+   "elbow_r": 0.539
+  }
+ },
+ "ridge_watch_phone_airpods_tom": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 22.439,
+   "forearm_incl_mae": 16.46,
+   "forearm_incl_r": 0.882,
+   "upper_arm_dir_deg": 17.461,
+   "elevation_mae": 10.222,
+   "elevation_r": 0.619,
+   "plane_mae": 35.764,
+   "elbow_mae": 20.135,
+   "elbow_bias": -14.983,
+   "elbow_r": 0.613
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 30.035,
+   "forearm_incl_mae": 18.838,
+   "forearm_incl_r": 0.686,
+   "upper_arm_dir_deg": 55.436,
+   "elevation_mae": 43.49,
+   "elevation_r": 0.502,
+   "plane_mae": 39.611,
+   "elbow_mae": 26.908,
+   "elbow_bias": 12.822,
+   "elbow_r": 0.147
+  }
+ },
+ "ridge_watch_phone_airpods_both+half": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 14.129,
+   "forearm_incl_mae": 7.679,
+   "forearm_incl_r": 0.907,
+   "upper_arm_dir_deg": 13.35,
+   "elevation_mae": 7.642,
+   "elevation_r": 0.842,
+   "plane_mae": 16.891,
+   "elbow_mae": 11.638,
+   "elbow_bias": -6.004,
+   "elbow_r": 0.765
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 20.733,
+   "forearm_incl_mae": 9.921,
+   "forearm_incl_r": 0.776,
+   "upper_arm_dir_deg": 24.05,
+   "elevation_mae": 12.728,
+   "elevation_r": 0.787,
+   "plane_mae": 16.987,
+   "elbow_mae": 16.135,
+   "elbow_bias": -3.497,
+   "elbow_r": 0.548
+  }
+ },
+ "gru_watch_janys": {
+  "all": {
+   "minutes": 35.62,
+   "forearm_dir_deg": 14.126,
+   "forearm_incl_mae": 7.862,
+   "forearm_incl_r": 0.902,
+   "upper_arm_dir_deg": 12.324,
+   "elevation_mae": 6.251,
+   "elevation_r": 0.89,
+   "plane_mae": 15.207,
+   "elbow_mae": 9.088,
+   "elbow_bias": -4.162,
+   "elbow_r": 0.824
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 22.679,
+   "forearm_incl_mae": 9.674,
+   "forearm_incl_r": 0.779,
+   "upper_arm_dir_deg": 21.126,
+   "elevation_mae": 10.833,
+   "elevation_r": 0.876,
+   "plane_mae": 16.265,
+   "elbow_mae": 14.485,
+   "elbow_bias": -8.166,
+   "elbow_r": 0.665
+  }
+ },
+ "gru_watch_both": {
+  "all": {
+   "minutes": 35.62,
+   "forearm_dir_deg": 14.234,
+   "forearm_incl_mae": 8.047,
+   "forearm_incl_r": 0.899,
+   "upper_arm_dir_deg": 12.518,
+   "elevation_mae": 6.758,
+   "elevation_r": 0.892,
+   "plane_mae": 14.266,
+   "elbow_mae": 9.233,
+   "elbow_bias": -4.245,
+   "elbow_r": 0.829
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 20.988,
+   "forearm_incl_mae": 9.702,
+   "forearm_incl_r": 0.782,
+   "upper_arm_dir_deg": 20.133,
+   "elevation_mae": 10.267,
+   "elevation_r": 0.867,
+   "plane_mae": 15.811,
+   "elbow_mae": 13.193,
+   "elbow_bias": -5.624,
+   "elbow_r": 0.694
+  }
+ },
+ "gru_watch_tom": {
+  "all": {
+   "minutes": 35.62,
+   "forearm_dir_deg": 26.37,
+   "forearm_incl_mae": 15.282,
+   "forearm_incl_r": 0.772,
+   "upper_arm_dir_deg": 18.451,
+   "elevation_mae": 11.775,
+   "elevation_r": 0.523,
+   "plane_mae": 30.353,
+   "elbow_mae": 17.969,
+   "elbow_bias": -13.481,
+   "elbow_r": 0.637
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 32.552,
+   "forearm_incl_mae": 14.581,
+   "forearm_incl_r": 0.588,
+   "upper_arm_dir_deg": 50.024,
+   "elevation_mae": 34.757,
+   "elevation_r": 0.408,
+   "plane_mae": 34.127,
+   "elbow_mae": 24.356,
+   "elbow_bias": 9.28,
+   "elbow_r": 0.222
+  }
+ },
+ "gru_watch_both+half": {
+  "all": {
+   "minutes": 35.62,
+   "forearm_dir_deg": 12.302,
+   "forearm_incl_mae": 7.083,
+   "forearm_incl_r": 0.915,
+   "upper_arm_dir_deg": 10.283,
+   "elevation_mae": 5.547,
+   "elevation_r": 0.91,
+   "plane_mae": 12.014,
+   "elbow_mae": 8.651,
+   "elbow_bias": -4.353,
+   "elbow_r": 0.855
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 17.259,
+   "forearm_incl_mae": 7.915,
+   "forearm_incl_r": 0.798,
+   "upper_arm_dir_deg": 15.976,
+   "elevation_mae": 7.603,
+   "elevation_r": 0.902,
+   "plane_mae": 12.218,
+   "elbow_mae": 11.727,
+   "elbow_bias": -1.348,
+   "elbow_r": 0.734
+  }
+ },
+ "gru_watch_phone_janys": {
+  "all": {
+   "minutes": 35.62,
+   "forearm_dir_deg": 14.716,
+   "forearm_incl_mae": 7.922,
+   "forearm_incl_r": 0.893,
+   "upper_arm_dir_deg": 11.914,
+   "elevation_mae": 6.37,
+   "elevation_r": 0.866,
+   "plane_mae": 13.627,
+   "elbow_mae": 9.983,
+   "elbow_bias": -4.286,
+   "elbow_r": 0.765
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 20.087,
+   "forearm_incl_mae": 9.596,
+   "forearm_incl_r": 0.787,
+   "upper_arm_dir_deg": 20.313,
+   "elevation_mae": 10.763,
+   "elevation_r": 0.871,
+   "plane_mae": 14.674,
+   "elbow_mae": 14.867,
+   "elbow_bias": -8.384,
+   "elbow_r": 0.659
+  }
+ },
+ "gru_watch_phone_both": {
+  "all": {
+   "minutes": 35.62,
+   "forearm_dir_deg": 14.31,
+   "forearm_incl_mae": 8.93,
+   "forearm_incl_r": 0.899,
+   "upper_arm_dir_deg": 11.062,
+   "elevation_mae": 6.614,
+   "elevation_r": 0.883,
+   "plane_mae": 13.104,
+   "elbow_mae": 12.238,
+   "elbow_bias": -9.977,
+   "elbow_r": 0.819
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 21.735,
+   "forearm_incl_mae": 11.163,
+   "forearm_incl_r": 0.786,
+   "upper_arm_dir_deg": 19.937,
+   "elevation_mae": 10.692,
+   "elevation_r": 0.858,
+   "plane_mae": 13.969,
+   "elbow_mae": 14.803,
+   "elbow_bias": -8.368,
+   "elbow_r": 0.656
+  }
+ },
+ "gru_watch_phone_tom": {
+  "all": {
+   "minutes": 35.62,
+   "forearm_dir_deg": 23.553,
+   "forearm_incl_mae": 16.457,
+   "forearm_incl_r": 0.879,
+   "upper_arm_dir_deg": 15.808,
+   "elevation_mae": 9.881,
+   "elevation_r": 0.686,
+   "plane_mae": 29.598,
+   "elbow_mae": 19.427,
+   "elbow_bias": -15.494,
+   "elbow_r": 0.682
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 30.592,
+   "forearm_incl_mae": 18.783,
+   "forearm_incl_r": 0.663,
+   "upper_arm_dir_deg": 50.542,
+   "elevation_mae": 37.358,
+   "elevation_r": 0.615,
+   "plane_mae": 32.297,
+   "elbow_mae": 25.758,
+   "elbow_bias": 9.545,
+   "elbow_r": 0.344
+  }
+ },
+ "gru_watch_phone_both+half": {
+  "all": {
+   "minutes": 35.62,
+   "forearm_dir_deg": 11.712,
+   "forearm_incl_mae": 6.853,
+   "forearm_incl_r": 0.911,
+   "upper_arm_dir_deg": 9.832,
+   "elevation_mae": 5.522,
+   "elevation_r": 0.907,
+   "plane_mae": 11.285,
+   "elbow_mae": 8.248,
+   "elbow_bias": -3.567,
+   "elbow_r": 0.844
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 15.877,
+   "forearm_incl_mae": 7.507,
+   "forearm_incl_r": 0.794,
+   "upper_arm_dir_deg": 15.23,
+   "elevation_mae": 7.728,
+   "elevation_r": 0.903,
+   "plane_mae": 11.076,
+   "elbow_mae": 11.892,
+   "elbow_bias": -3.348,
+   "elbow_r": 0.716
+  }
+ },
+ "gru_watch_phone_airpods_janys": {
+  "all": {
+   "minutes": 35.62,
+   "forearm_dir_deg": 15.167,
+   "forearm_incl_mae": 7.76,
+   "forearm_incl_r": 0.896,
+   "upper_arm_dir_deg": 11.929,
+   "elevation_mae": 6.556,
+   "elevation_r": 0.874,
+   "plane_mae": 13.693,
+   "elbow_mae": 9.64,
+   "elbow_bias": -4.439,
+   "elbow_r": 0.772
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 20.374,
+   "forearm_incl_mae": 9.828,
+   "forearm_incl_r": 0.772,
+   "upper_arm_dir_deg": 20.922,
+   "elevation_mae": 11.513,
+   "elevation_r": 0.853,
+   "plane_mae": 14.506,
+   "elbow_mae": 15.574,
+   "elbow_bias": -8.104,
+   "elbow_r": 0.619
+  }
+ },
+ "gru_watch_phone_airpods_both": {
+  "all": {
+   "minutes": 35.62,
+   "forearm_dir_deg": 14.916,
+   "forearm_incl_mae": 8.981,
+   "forearm_incl_r": 0.906,
+   "upper_arm_dir_deg": 11.416,
+   "elevation_mae": 6.624,
+   "elevation_r": 0.881,
+   "plane_mae": 14.631,
+   "elbow_mae": 11.239,
+   "elbow_bias": -8.781,
+   "elbow_r": 0.815
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 20.186,
+   "forearm_incl_mae": 10.694,
+   "forearm_incl_r": 0.813,
+   "upper_arm_dir_deg": 19.337,
+   "elevation_mae": 10.144,
+   "elevation_r": 0.869,
+   "plane_mae": 13.808,
+   "elbow_mae": 14.995,
+   "elbow_bias": -8.706,
+   "elbow_r": 0.648
+  }
+ },
+ "gru_watch_phone_airpods_tom": {
+  "all": {
+   "minutes": 35.62,
+   "forearm_dir_deg": 25.949,
+   "forearm_incl_mae": 17.799,
+   "forearm_incl_r": 0.88,
+   "upper_arm_dir_deg": 16.38,
+   "elevation_mae": 9.653,
+   "elevation_r": 0.623,
+   "plane_mae": 29.868,
+   "elbow_mae": 19.964,
+   "elbow_bias": -15.7,
+   "elbow_r": 0.666
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 33.226,
+   "forearm_incl_mae": 19.289,
+   "forearm_incl_r": 0.677,
+   "upper_arm_dir_deg": 52.136,
+   "elevation_mae": 41.444,
+   "elevation_r": 0.473,
+   "plane_mae": 31.736,
+   "elbow_mae": 25.192,
+   "elbow_bias": 11.599,
+   "elbow_r": 0.317
+  }
+ },
+ "gru_watch_phone_airpods_both+half": {
+  "all": {
+   "minutes": 35.62,
+   "forearm_dir_deg": 11.712,
+   "forearm_incl_mae": 6.504,
+   "forearm_incl_r": 0.922,
+   "upper_arm_dir_deg": 10.276,
+   "elevation_mae": 5.805,
+   "elevation_r": 0.909,
+   "plane_mae": 12.41,
+   "elbow_mae": 8.477,
+   "elbow_bias": -3.661,
+   "elbow_r": 0.85
+  },
+  "swing": {
+   "minutes": 4.59,
+   "forearm_dir_deg": 15.732,
+   "forearm_incl_mae": 7.297,
+   "forearm_incl_r": 0.82,
+   "upper_arm_dir_deg": 15.933,
+   "elevation_mae": 7.453,
+   "elevation_r": 0.906,
+   "plane_mae": 11.771,
+   "elbow_mae": 11.493,
+   "elbow_bias": -2.769,
+   "elbow_r": 0.73
+  }
+ }
+}

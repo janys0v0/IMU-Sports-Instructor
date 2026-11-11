@@ -10,11 +10,11 @@ when its gate passes on two consecutive runs; then the next stage starts.
 
 | | |
 |---|---|
-| **Current stage** | 0 — Test harness + timer bug fix (not started) |
-| **Next action** | Create the `MotionStreamerCore` Swift package (stage 0, task 1) |
-| **Blocked on** | — |
+| **Current stage** | 9 — Endurance + device tests (stages 0-8 done; stage 6's gate waits for device test T6) |
+| **Next action** | Device round: stage 0b check (= T6) first, runbook in [`test-plan.md`](test-plan.md) §4; L1-L3 done. Stage 11 (E04) done for one session; Watch hand-off fixed. E05-E08 (commercial IMUs, arm-pose methods vs OpenCap) done and merged 11/10. Next: a cleaner filmed recording (E04 checklist) |
+| **Blocked on** | Devices: stage 0b check (= T6) closes stage 6's gate and the keep-alive decision · People: V9 listen-through |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
-| **Last updated** | 2026-10-16 |
+| **Last updated** | 2026-11-10 |
 
 ## Overview
 
@@ -32,6 +32,8 @@ when its gate passes on two consecutive runs; then the next stage starts.
 | 8 | Trial button + extra sensors | ◐ Trial marker on the phone | G8 | 2 | Mac + simulators |
 | 9 | Endurance + device tests | 35 real recordings to replay | G9 | 3-4 | Simulators + devices |
 | 10 | Calibration interval | — | G10 | 2 (two court days) | Devices |
+| 11 | Accuracy against video (E04, single camera) | MobilePoser offline runner (E01) | G11 | 1-2 | Mac + one camera |
+| 12 | Arm-only swing model (Watch alone) | direct arm angles from segment sensors (10/28, exploratory) | G12 | 3-4 + 1 court day | Mac + devices |
 
 ◐ = partly built (details below). **Total: about 22-29 working days (4-6 weeks).** Estimates
 assume one person coding with Claude; device stages depend on court and weather.
@@ -59,7 +61,7 @@ The app already records all three devices and has been used for 35 sessions. The
 | Mac receiver: per-stream coverage, `summary.json`, PASS/FAIL | `pipeline/live/receiver.py` | ◐ live UDP only, no checksums | 3 |
 | Exact missing samples (by index), gaps > 100 ms, delay, clock mapping | `experiments/common/stream_quality.py` (E03) | ✅ | 3 (reused in ingest), S2 baseline |
 | Recording loader, 30 Hz resampling with gap marks | `pipeline/preprocessing/motion_io.py`, `pipeline/preprocessing/resample.py` | ✅ | 3 (merged stream must load here) |
-| Standing calibration + checks on the Mac | `pipeline/preprocessing/calibration.py` | ◐ one calibration only, no arms-out pose | 5 |
+| Standing calibration + checks on the Mac | `pipeline/preprocessing/calibration.py` | ◐ wrists start as a hanging arm (E04); arms-out pose optional | 5 |
 | Replay a recording over UDP; synthetic packets | `pipeline/live/send_recording.py`, `pipeline/live/fake_phone.py` | ✅ | 0 (basis for replay fakes) |
 
 ## Human testing: what blocks and what waits
@@ -102,13 +104,13 @@ push. Merge when the stage's gate passes twice in a row.
 6. Fix the calibration-timer bug (`calibrationTimer = nil` in `StreamController.stop()`), with test C1.
 
 **Testable goals (G0)**
-- [ ] `swift build` succeeds for macOS, iOS simulator and watchOS simulator.
-- [ ] Replaying the 4 key recordings (test-plan §0) yields the same sample counts as the files.
-- [ ] A 60-min fake-clock replay finishes in under 10 s.
-- [ ] `tools/run_tests.sh` exits 0 and runs in GitHub Actions on every PR.
-- [ ] **C1** passes: Stop during the countdown, Start, Calibrate → calibration runs.
-- [ ] **No change in behaviour:** a replayed session through the moved code produces byte-identical `stream.jsonl` packets to the current app (except timestamps of writing).
-- [ ] **Demo:** run `tools/run_tests.sh` and see a summary line listing every test that passed.
+- [x] `swift build` succeeds for macOS, iOS simulator and watchOS simulator.
+- [x] Replaying the 4 key recordings (test-plan §0) yields the same sample counts as the files.
+- [x] A 60-min fake-clock replay finishes in under 10 s.
+- [x] `tools/run_tests.sh` exits 0 and runs in GitHub Actions on every PR.
+- [x] **C1** passes: Stop during the countdown, Start, Calibrate → calibration runs.
+- [x] **No change in behaviour:** every packet of the reference recording, rebuilt by the moved encoder, has identical keys and values (JSON key order was never fixed).
+- [x] **Demo:** run `tools/run_tests.sh` and see a summary line listing every test that passed.
 
 ## Stage 0b: Early device check (~1 hour, blocking for stage 6)
 
@@ -116,11 +118,10 @@ push. Merge when the stage's gate passes twice in a row.
 app is locked in a pocket and kept awake in the background? Also confirm the research findings on
 our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 
-**Tasks**
-1. Throwaway branch `spike/background-check`; nothing is merged.
-2. Phone app: background location at 3 km accuracy + phone motion + AirPods motion, counts logged to a file. Speak a short phrase through the AirPods every 30 s.
-3. Watch app: workout + `CMBatchedSensorManager` (800 / 200 Hz), counts logged.
-4. Launch from the Home screen (**Xcode detached**), lock the phone, pocket it, walk for 20 min.
+**Tasks** (no throwaway build needed: the real app does all of this since stage 8)
+1. Install the current build; launch from the Home screen (**Xcode detached**); keep-alive setting "Location".
+2. Go/No-Go → Start → calibrate from the Watch (the spoken script) → lock the phone, pocket it, walk 20 min → Stop.
+3. Copy the session to the Mac and run `python -m pipeline.analysis.device_check <session>` (test-plan §4 runbook).
 
 **Testable goals**
 - [ ] Phone and AirPods: ≥ 95 % of expected samples while locked.
@@ -144,10 +145,10 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 6. Crash recovery on launch: trim the open chunk, Resume as a new segment (design §4).
 
 **Testable goals (G1)**
-- [ ] **R1-R8:** chunking, `fsync` cadence, checksums, disk-full and `fsync` failures, packet format unchanged.
-- [ ] **J1-J6:** journal lines, manifest rebuild, **1,000 random crash points with zero loss of `fsync`ed data**, resume, torn journal line, clock jump.
-- [ ] **S1-S3:** sample accounting; replays match E03's numbers; status-dot thresholds.
-- [ ] **Demo:** in the iOS simulator, start a replayed session with no Mac IP, kill the app at 2 min, relaunch, tap Resume. The session folder shows 2 segments and no lost chunk.
+- [x] **R1-R8:** chunking, `fsync` cadence, checksums, disk-full and `fsync` failures, packet format unchanged.
+- [x] **J1-J6:** journal lines, manifest rebuild, **1,000 random crash points with zero loss of `fsync`ed data**, resume, torn journal line, clock jump.
+- [x] **S1-S3:** sample accounting; replays match E03's numbers; status-dot thresholds.
+- [x] **Demo:** in the iOS simulator, start a replayed session with no Mac IP, kill the app at 2 min, relaunch, tap Resume. The session folder shows 2 segments and no lost chunk.
 
 ## Stage 2: Watch recording + transfer
 
@@ -163,9 +164,9 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 5. Watch workout-ended handling: the phone relaunches the Watch app.
 
 **Testable goals (G2)**
-- [ ] **W1-W10** with the fake link: phone unreachable for 10 min, 20 % dropped/duplicated/reordered files, corruption, lost acks, no early deletes, resend, workout end, high-rate 60 min, high-rate failure, binary format and torn-chunk trimming.
-- [ ] **E3-E4** in paired simulators where supported (otherwise marked for device testing).
-- [ ] **Demo:** in the simulators, block the link for 3 min mid-session; after it returns the phone shows "Watch: 10 / 10 chunks" and every SHA matches.
+- [x] **W1-W10** with the fake link: phone unreachable for 10 min, 20 % dropped/duplicated/reordered files, corruption, lost acks, no early deletes, resend, workout end, high-rate 60 min, high-rate failure, binary format and torn-chunk trimming.
+- [x] **E3-E4** marked for device testing (stage 9): real WatchConnectivity file transfer and HealthKit workouts need a paired Watch; the fake link covers the logic.
+- [x] **Demo (simulated):** test W1 blocks the link for 10 min; after it returns every closed chunk arrives with a matching SHA (on devices: T2).
 
 ## Stage 3: Mac ingest script
 
@@ -182,9 +183,9 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 6. `Shared/quality_thresholds.json` read by both Swift and Python.
 
 **Testable goals (G3)**
-- [ ] **I1-I8:** corrupt byte, missing/extra chunks, segments, clock fit (1 ms, 1 ppm), backward compatibility, all 35 recordings load, report agrees with contract fixtures, PENDING handling.
-- [ ] **S4:** Swift and Python give identical PASS/WARN/FAIL on every contract fixture.
-- [ ] **Demo:** run `ingest_field.py` on a simulated session with one corrupted chunk → FAIL naming that chunk; restore it → PASS, and E03 runs on the merged stream.
+- [x] **I1-I8:** corrupt byte, missing/extra chunks, segments, clock fit (1 ms, 1 ppm), backward compatibility, all 35 recordings load, report agrees with contract fixtures, PENDING handling.
+- [x] **S4:** Swift and Python give identical PASS/WARN/FAIL on every contract fixture.
+- [x] **Demo:** `ingest_field.py` on the session the app wrote in the simulator (stage 1 demo): one flipped byte → FAIL naming `phone/000001.jsonl`; restored → WARN (the replayed recording has real gaps), merged stream loads. E03's numbers come out identical on a re-chunked reference session (I5).
 
 ## Stage 4: Phone preview
 
@@ -198,9 +199,9 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 3. Session check card after Stop: PASS / WARN / FAIL from the shared thresholds.
 
 **Testable goals (G4)**
-- [ ] **P1-P5:** disk-only reads, peak-preserving downsampling, < 50 ms per chunk load, gap and calibration marks match the journal, snapshot tests.
-- [ ] **E5:** review screen with a 10-min replayed session through the real UI.
-- [ ] **Demo:** replay the reference recording; the thigh-angle plot shows the 3 squats, and an injected 5 s AirPods gap appears in the timeline.
+- [x] **P1-P5:** disk-only reads, peak-preserving downsampling, < 50 ms per chunk load, gap and calibration marks match the journal, snapshot tests.
+- [x] **E5:** review screen through the real UI in the iOS simulator, with the longest available recording (5.2 min, replayed): 5 saved chunks read from disk and plotted.
+- [x] **Demo:** the reference recording with a 5 s AirPods gap cut in: the thigh-angle plot shows the 3 squats and the gap shows in the timeline (test `ReviewDemoTests`).
 
 ## Stage 5: Spoken calibration
 
@@ -217,9 +218,10 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 6. `pipeline/preprocessing/calibration.py`: many calibrations, arms-out step, slerp blend between neighbours.
 
 **Testable goals (G5)**
-- [ ] **C1-C10:** timer regression, clean run, moving, arms not level, each fail reason, reminders, agreement with `calibration.py` within 0.5°, blend removes 8°/min drift to within 1°, piecewise across segments, interval setting.
-- [ ] **V1-V9:** script lint, phrase order and timing, prompts logged, priority, output fallback, repeat, mic route, audibility check, and a **listen-through signed off by both of you**.
-- [ ] **Demo:** play the generated audio of a full calibration on the Mac speaker; follow it standing up without looking at a screen.
+- [x] **C1-C10:** timer regression, clean run, moving, arms not level, each fail reason, reminders, agreement with `calibration.py` within 0.5°, blend removes 8°/min drift to within 1°, piecewise across segments, interval setting.
+- [x] **V1-V8:** script lint, phrase order and timing, prompts logged, priority, output fallback, repeat, mic route, audibility check.
+- [ ] **V9 (people):** listen-through of `data/voice/voice_sample.m4a` (made by `tools/make_voice_sample.py`) signed off by both of you. Not blocking the code stages; wording changes go in `voice_prompts.json`.
+- [ ] **Demo (people):** play `data/voice/voice_sample.m4a` on the Mac speaker and follow the calibration standing up, without looking at a screen.
 
 ## Stage 6: Keeping the app alive
 
@@ -235,7 +237,7 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 5. App lifecycle events logged and followed by `fsync`.
 
 **Testable goals (G6)**
-- [ ] Simulated parts of **E1-E2** pass.
+- [x] Simulated parts: the keep-alive policy (4 tests) and E2 (kill and Resume through the real UI, stage 1 demo); E1's full flow runs in stage 8.
 - [ ] **Device test T6** (Xcode detached): 20 min, phone locked in a pocket → phone and AirPods continuous (or the fallback is recorded as primary).
 - [ ] **Demo:** walk for 20 min with the phone locked; the review screen afterwards shows no gap.
 
@@ -252,8 +254,8 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 4. Trial check after each trial; court-exit check (60 Hz chunks on phone, high-rate closed on Watch).
 
 **Testable goals (G7)**
-- [ ] **A1-A13:** every fault in the scenario tables produces the right event, fix and alert; no false "phone dropped" during jumping jacks; debounce and escalation; trial check; court-exit check with and without high-rate chunks still on the Watch.
-- [ ] **Demo:** replay a session with a scripted AirPods disconnect; hear "Stop. The AirPods disconnected." within 3 s, then "The AirPods are back" after reconnect.
+- [x] **A1-A13:** every fault in the scenario tables produces the right event, fix and alert; no false "phone dropped" during jumping jacks; debounce and escalation; trial check; court-exit check with and without high-rate chunks still on the Watch.
+- [x] **Demo:** the reference recording replayed second by second with the AirPods cut from 20-28 s: "Stop. The AirPods disconnected." at 22 s, "The AirPods are back." at 29 s (`WatchdogDemoTests`).
 
 ## Stage 8: Trial button + extra sensors
 
@@ -267,10 +269,10 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 3. `motion_io.py` and `ingest_field.py` accept the new packets without breaking old recordings.
 
 **Testable goals (G8)**
-- [ ] **A11-A13** again, now with real trials.
-- [ ] **X1-X4:** barometer, magnetometer, audio level with no raw audio stored, old recordings still load.
-- [ ] **E1:** full simulator flow Setup → Go/No-Go → Start → Calibrate → 3 trials → Stop.
-- [ ] **Demo:** run E1 and open the session check card: 3 trials ✅ and the barometer trace on the review screen.
+- [x] **A11-A13** again, now with real trials (trial tracker tests, and the app's own trial checks in E1).
+- [x] **X1-X4:** barometer, magnetometer, audio level with no raw audio stored, old recordings still load.
+- [x] **E1:** in the iOS simulator, driven by a launch script through the app's controller (not UI taps), on a replayed recording: Go/No-Go → Start → spoken calibration (one "you moved" retry, then pass) → 3 trials checked and spoken → Stop, every step in the session's events.
+- [ ] **Demo (device round):** 3 trials ✅ needs real sync hops, and the barometer trace needs a real barometer; replayed recordings have neither. Moved to T7 in stage 9.
 
 ## Stage 9: Endurance + device tests
 
@@ -282,8 +284,9 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 3. Device tests T1-T19 and T21 (test-plan §4), on a court where needed.
 
 **Testable goals (G9)**
-- [ ] **L1-L3:** 60 and 120 min sessions with flat memory; 120 random faults with zero silent loss.
-- [ ] test-plan §3 exit criteria all met.
+- [x] **L1, L3:** 60 and 120 min sessions on disk (one chunk per minute, no open-file leak, memory flat); 120 random faults with every fault logged and zero silent loss.
+- [x] **L2:** 60 min real-time replay in the iOS simulator: no crash, memory flat (85-90 MB after warm-up), 60 chunks closed, ingest PASS (coverage 0.998).
+- [x] test-plan §3 exit criteria met, except V9 (people).
 - [ ] **T1-T19, T21** pass on devices; results logged in `EXPERIMENT_LOG.md`.
 - [ ] **Demo:** the full 60-min tennis rehearsal (T7) ingests as **PASS** on the Mac the same day.
 
@@ -299,5 +302,52 @@ our own devices (test T6 in [`test-plan.md`](test-plan.md) §4).
 - [ ] T20 run on 2 days and logged.
 - [ ] Interval = time until any device exceeds 10°, rounded down to whole minutes; set as the reminder default.
 - [ ] **Demo:** a drift-over-time plot per device, with the chosen interval marked.
+
+## Stage 11: Accuracy against video (E04)
+
+**Goal:** a first, honest number for how well the IMU pose matches what a camera sees, before
+OpenCap ([`opencap.md`](../deferred/opencap.md)). Can run alongside stages 9-10.
+
+**Tasks**
+1. Record a session with a camera filming the whole body (the recording checklist in
+   [`E04 README`](../../experiments/E04_video_validation/README.md)).
+2. Align video and IMU: on-screen motion vs Watch and phone motion (plus audio), ±0.1 s.
+3. 3D pose from the video with Apple Vision (built into macOS, no download); joint angles from
+   both: elbow and knee flexion, shoulder elevation, left and right.
+4. Per-angle RMSE, bias and correlation, per activity window.
+
+**Testable goals (G11)**
+- [x] Angle and alignment code covered by tests (`tests/test_e04.py`).
+- [x] `run.py` writes `metrics.json`, `summary.md` and an angle plot for a recorded session.
+- [x] **Demo:** results for one session in `EXPERIMENT_LOG.md`, with limits stated (single
+      camera, Vision's own error; angles only, not positions). Knees agree (RMSE ~19°). The Watch
+      hand-off is fixed (model forearm r −0.39 → 0.67); arm angles stay ~30° off because one
+      wrist sensor cannot fix the upper arm (see the log, 2026-10-19).
+
+## Stage 12: Arm-only swing model (Watch alone)
+
+**Goal:** elbow flexion and shoulder elevation through each stroke from the Watch alone, with no
+full-body model. Why: with an upper-arm sensor, plain geometry already beats MobilePoser on 10/28
+(elbow 9-12° vs 17-23° median error, shoulder 7-8°, against OpenCap), but the Apple setup has no
+upper-arm device. Forearm swing metrics (path, peak speed, rotation at contact) need no model.
+
+**Tasks**
+1. **Teacher labels:** move the exploratory direct method into `pipeline/` with tests: joint zero
+   from the Calibrate hold, elbow = forearm swing relative to the upper arm (twist removed),
+   shoulder = upper arm vs trunk. Set the hanging elbow to ~15°, not 0°, and fix relative heading
+   with the elbow's hinge axis instead of the magnetometer.
+2. **Data:** 10/28 gives 24 min with Watch + upper arm (1D03) + trunk (2F5A): Janys 9.3, Tom 15.0.
+   Record 3-4 more players × 20 min with the same sensors, OpenCap filming for some of it.
+3. **Inputs:** 1 s windows of the Watch's 200 Hz motion stream: gravity direction, rotation rate,
+   acceleration, orientation relative to the body heading from calibration.
+4. **Model:** a non-learned baseline first (nearest neighbour or ridge on window features), then a
+   small sequence model (GRU or 1D CNN, ~100k parameters) predicting both angles.
+5. **Evaluate:** leave one player out; error against the direct labels and against OpenCap; same
+   numbers for MobilePoser; per stroke: angle at contact and range through the swing.
+
+**Testable goals (G12)**
+- [ ] Direct arm angles covered by tests; within 10° of OpenCap on 10/28 after the rest-angle fix.
+- [ ] On a held-out player, Watch-only elbow and shoulder errors beat MobilePoser's (elbow < 17°).
+- [ ] **Demo:** one stroke plotted (Watch-only, direct, OpenCap) and in the side-by-side video.
 
 **After stage 10: first real field session.**
