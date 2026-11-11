@@ -278,7 +278,7 @@ Patches 2 and 3 only change translation; the arm pose is unaffected.
    overhead racket strokes. The model favours plausible everyday poses over the extreme shoulder
    positions of a serve or forehand.
 2. **No upper-arm sensor.** With only the forearm (Watch) on the arm, shoulder elevation must be
-   inferred from priors. In E07 swings, elevation error was 62° for Janys.
+   inferred from priors. In E07 swings, elevation error was 64° for Janys.
 3. **30 Hz, smoothed acceleration.** The training accelerations come from vertex positions
    smoothed over 4 frames at 30 Hz; real swing accelerations (tens of g) are far outside that range.
    Our 30 Hz input also blurs swing peaks.
@@ -299,35 +299,35 @@ Patches 2 and 3 only change translation; the arm pose is unaffected.
 
 ## 5. Our results
 
-Median absolute error vs OpenCap, degrees; "swing" = ±0.5 s around each Watch rotation-speed
-peak (`experiments/E07_pose_methods/evaluate.py:16`). Elbow bias = median(model − OpenCap).
+Median absolute error vs OpenCap, degrees; "swing" = ±0.5 s around each ball contact detected
+from the Watch (`experiments/E07_pose_methods/evaluate.py:16`). Elbow bias = median(model − OpenCap).
 
 ### 5.1 E07, 10/28 (`experiments/E07_pose_methods/results/scores.json`)
 
 | Method | Player | Part | Elbow | Elbow bias | Elbow r | Shoulder elev. | Forearm incl. | Forearm dir. | Upper-arm dir. |
 |---|---|---|---|---|---|---|---|---|---|
-| rw_rp_h | Janys | swing | 33 | +31 | 0.15 | 62 | 23 | 40 | 73 |
-| rw_rp_h | Tom | swing | 22 | +16 | 0.60 | 16 | 20 | 41 | 34 |
+| rw_rp_h | Janys | swing | 38 | +37 | 0.07 | 64 | 21 | 38 | 75 |
+| rw_rp_h | Tom | swing | 24 | +19 | 0.58 | 16 | 20 | 42 | 35 |
 | rw_rp_h | Janys | all | 21 | −10 | 0.37 | 13 | 27 | 36 | 26 |
 | rw_rp_h | Tom | all | 19 | +11 | 0.61 | 11 | 20 | 38 | 21 |
-| rw_rp | Janys | swing | 33 | +31 | 0.11 | 63 | 22 | 39 | 74 |
-| rw_rp | Tom | swing | 23 | +17 | 0.56 | 16 | 25 | 51 | 40 |
+| rw_rp | Janys | swing | 38 | +37 | 0.02 | 65 | 21 | 36 | 76 |
+| rw_rp | Tom | swing | 26 | +20 | 0.52 | 17 | 24 | 50 | 40 |
 | rw_rp | Janys | all | 20 | −8 | 0.36 | 14 | 26 | 34 | 27 |
 | rw_rp | Tom | all | 21 | +11 | 0.58 | 14 | 22 | 43 | 25 |
 
-Mean of the two players, swings (`results/summary.md`): `rw_rp_h` elbow 27, elevation 39, forearm
-inclination 22, forearm direction 40. Over whole blocks it is reasonable (elevation 12), but in
+Mean of the two players, swings (`results/summary.md`): `rw_rp_h` elbow 31, elevation 40, forearm
+inclination 20, forearm direction 40. Over whole blocks it is reasonable (elevation 12), but in
 swings it misses the raised arm, worst for Janys. AirPods add little (`rw_rp_h` vs `rw_rp`).
 
 ### 5.2 E08, Janys 11/05 (`experiments/E08_janys_1105/results/scores_all.json`)
 
 | Method | Part | Minutes | Elbow | Elbow bias | Elbow r | Shoulder elev. | Forearm incl. | Forearm dir. | Upper-arm dir. |
 |---|---|---|---|---|---|---|---|---|---|
-| rw_rp_h | swing | 4.6 | 25 | +7 | 0.18 | 48 | 36 | 73 | 71 |
+| rw_rp_h | swing | 4.4 | 26 | +10 | 0.17 | 50 | 36 | 75 | 77 |
 | rw_rp_h | all | 35.3 | 26 | −14 | 0.31 | 15 | 34 | 51 | 33 |
-| rw_rp | swing | 4.6 | 24 | +5 | 0.21 | 48 | 37 | 76 | 72 |
+| rw_rp | swing | 4.4 | 25 | +8 | 0.22 | 50 | 37 | 78 | 78 |
 | rw_rp | all | 35.3 | 27 | −15 | 0.30 | 15 | 34 | 53 | 32 |
 
-Compared with Janys 10/28 (swings): elbow 33 -> 25, elevation 62 -> 48, forearm inclination
-23 -> 36, forearm direction 40 -> 73. Our GRU trained on Janys 10/28 gets elbow 14, elevation 11,
+Compared with Janys 10/28 (swings): elbow 38 -> 26, elevation 64 -> 50, forearm inclination
+21 -> 36, forearm direction 38 -> 75. Our GRU trained on Janys 10/28 gets elbow 14, elevation 11,
 forearm direction 23 on the same 11/05 swings.

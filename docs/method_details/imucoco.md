@@ -291,7 +291,7 @@ upper-arm or chest sensors were worn on 11/05).
    bone alignment, and the commercial headings come from magnetometer-free alignment.
 5. **T-pose start.** The DTP state starts in a T-pose while our player stands with arms hanging,
    and our calibration is standing, not T-pose (fixed 90° rest instead).
-6. **Elbow reads straight.** Elbow bias is −15° to −35° over whole blocks: the model keeps the
+6. **Elbow reads straight.** Elbow bias is −15° to −24° over whole blocks: the model keeps the
    elbow straighter than OpenCap (which sees ~18° of bend even when hanging).
 7. **Rates.** 60 Hz from a ~33 Hz phone and ~66 Hz Watch stream (interpolated); the commercial
    sensors enter at 30 Hz repeated.
@@ -304,38 +304,38 @@ upper-arm or chest sensors were worn on 11/05).
 
 ## 5. Our results
 
-Median absolute error vs OpenCap, degrees; "swing" = ±0.5 s around each Watch rotation-speed
-peak (`experiments/E07_pose_methods/evaluate.py:16`). Elbow bias = median(model − OpenCap).
+Median absolute error vs OpenCap, degrees; "swing" = ±0.5 s around each ball contact detected
+from the Watch (`experiments/E07_pose_methods/evaluate.py:16`). Elbow bias = median(model − OpenCap).
 
 ### 5.1 E07, 10/28 (`experiments/E07_pose_methods/results/scores.json`)
 
 | Method | Player | Part | Elbow | Elbow bias | Elbow r | Shoulder elev. | Forearm incl. | Forearm dir. | Upper-arm dir. |
 |---|---|---|---|---|---|---|---|---|---|
-| rw_rp_h | Janys | swing | 25 | −4 | 0.46 | 22 | 11 | 28 | 41 |
-| rw_rp_h | Tom | swing | 35 | −34 | 0.60 | 30 | 13 | 38 | 60 |
+| rw_rp_h | Janys | swing | 25 | 0 | 0.41 | 24 | 10 | 29 | 41 |
+| rw_rp_h | Tom | swing | 36 | −34 | 0.59 | 31 | 13 | 38 | 61 |
 | rw_rp_h | Janys | all | 22 | −17 | 0.63 | 9 | 20 | 30 | 20 |
 | rw_rp_h | Tom | all | 20 | −15 | 0.59 | 18 | 19 | 46 | 33 |
-| rw_rp_h + upper arm + chest | Janys | swing | 25 | −7 | 0.46 | 22 | 14 | 31 | 49 |
-| rw_rp_h + upper arm + chest | Tom | swing | 36 | −35 | 0.49 | 26 | 16 | 63 | 77 |
+| rw_rp_h + upper arm + chest | Janys | swing | 23 | −4 | 0.41 | 23 | 13 | 30 | 48 |
+| rw_rp_h + upper arm + chest | Tom | swing | 36 | −35 | 0.49 | 26 | 15 | 63 | 78 |
 | rw_rp_h + upper arm + chest | Janys | all | 24 | −19 | 0.58 | 12 | 22 | 42 | 27 |
 | rw_rp_h + upper arm + chest | Tom | all | 23 | −20 | 0.55 | 18 | 16 | 64 | 34 |
-| rw + upper arm + chest | Janys | swing | 24 | −8 | 0.46 | 25 | 16 | 34 | 50 |
-| rw + upper arm + chest | Tom | swing | 35 | −34 | 0.48 | 26 | 15 | 66 | 79 |
+| rw + upper arm + chest | Janys | swing | 23 | −4 | 0.41 | 26 | 16 | 33 | 50 |
+| rw + upper arm + chest | Tom | swing | 35 | −34 | 0.48 | 27 | 14 | 66 | 80 |
 | rw + upper arm + chest | Janys | all | 23 | −18 | 0.58 | 13 | 21 | 42 | 28 |
 | rw + upper arm + chest | Tom | all | 23 | −20 | 0.55 | 17 | 16 | 66 | 34 |
 
-Mean of the two players, swings (`results/summary.md`): `rw_rp_h` elbow 30, elevation 26, forearm
-inclination 12, forearm direction 33 (the best published model on forearm direction). Adding the
-commercial sensors: elbow 30, elevation 24, forearm direction 47.
+Mean of the two players, swings (`results/summary.md`): `rw_rp_h` elbow 31, elevation 28, forearm
+inclination 12, forearm direction 34 (the best published model on forearm direction). Adding the
+commercial sensors: elbow 30, elevation 25, forearm direction 47.
 
 ### 5.2 E08, Janys 11/05 (`experiments/E08_janys_1105/results/scores_all.json`)
 
 | Method | Part | Minutes | Elbow | Elbow bias | Elbow r | Shoulder elev. | Forearm incl. | Forearm dir. | Upper-arm dir. |
 |---|---|---|---|---|---|---|---|---|---|
-| rw_rp_h | swing | 4.6 | 25 | −11 | 0.22 | 32 | 16 | 66 | 81 |
+| rw_rp_h | swing | 4.4 | 25 | −9 | 0.21 | 34 | 15 | 66 | 83 |
 | rw_rp_h | all | 35.3 | 29 | −24 | 0.44 | 17 | 27 | 61 | 38 |
 
-Compared with Janys 10/28 (swings): elbow 25 -> 25, elevation 22 -> 32, forearm inclination
-11 -> 16, forearm direction 28 -> 66. Still the best published model on forearm inclination on
+Compared with Janys 10/28 (swings): elbow 25 -> 25, elevation 24 -> 34, forearm inclination
+10 -> 15, forearm direction 29 -> 66. Still the best published model on forearm inclination on
 11/05; our GRU trained on Janys 10/28 gets elbow 14, elevation 11, forearm inclination 10, forearm
 direction 23 on the same swings.

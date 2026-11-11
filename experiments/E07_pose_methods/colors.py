@@ -31,3 +31,20 @@ def bgr(name_or_hex):
     h = name_or_hex if name_or_hex.startswith("#") else color(name_or_hex)
     r, g, b = (int(h[i : i + 2], 16) for i in (1, 3, 5))
     return (b, g, r)
+
+
+PLAYERS_SHOWN = {"janys": "Player A", "tom": "Player B"}  # figures name no one (11/11)
+
+
+def anonymize(fig):
+    """Replace the players' names in every text of a matplotlib figure (titles, labels, ticks,
+    legends) with PLAYERS_SHOWN. Call just before savefig; data keys stay as they are."""
+    import re
+
+    import matplotlib.text
+
+    pat = re.compile(r"\b(" + "|".join(PLAYERS_SHOWN) + r")\b", re.IGNORECASE)
+    for t in fig.findobj(matplotlib.text.Text):
+        s = t.get_text()
+        if s:
+            t.set_text(pat.sub(lambda m: PLAYERS_SHOWN[m.group(1).lower()], s))

@@ -4,7 +4,7 @@ Built from the E06 results (clock offsets, Calibrate segments) for the 10/28 ten
 - sensors: iPhone (right pocket), Apple Watch (right wrist), AirPods (head), and the commercial
   msense sensors (trunk 2F5A, upper arm 1D03, wrist D0E5) as orientation streams from VQF without
   the magnetometer (offline, from 1 min before each Calibrate hold; `vqf_orient.py` says why);
-- the Watch's 200 Hz motion stream (rotation speed) for finding swings;
+- the Watch's 200 Hz motion stream and ~800 Hz accelerometer for finding ball contacts (swings);
 - OpenCap: segment rotations and positions, markers, joint angles, on our clock.
 
 Arm targets are model-independent: the right upper arm's and forearm's long axes in the trunk
@@ -28,7 +28,11 @@ DATA = ROOT / "data" / "external" / "20261028"
 FS = 30.0
 PLAYERS = {"janys": ("janys-IMU1", "IMU1"), "tom": ("tom-IMU4", "IMU4")}
 COMMERCIAL = {"trunk": "msense_2F5A", "upper_arm": "msense_1D03", "cwrist": "msense_D0E5"}
-SWING_RAD_S, SWING_GAP_S, SWING_HALF_S = 15.0, 1.5, 0.5
+SWING_HALF_S = 0.5  # scored swing window: ±0.5 s around each ball contact
+# Ball hits from the Watch (11/11, checked against IMG_0021 on 11/05): the impact rings the wrist
+# above 60 Hz (hits 3.7-28 g, swings without a ball < 1 g); a fast arm (>= 10 rad/s within
+# -0.25..+0.1 s) separates strokes from ball bouncing, pickups and racket taps.
+HIT_HP_HZ, HIT_IMPACT_G, HIT_MIN_RAD_S, HIT_GAP_S = 60.0, 3.5, 10.0, 1.0
 
 
 def unit(v):
@@ -52,16 +56,33 @@ def on_grid(t_src, quat, rot_rate, user_acc, gravity, g):
     )
 
 
-def swings(t, w):
-    idx = np.nonzero(w > SWING_RAD_S)[0]
-    out = []
-    for i in idx:
-        if out and t[i] - t[out[-1]] < SWING_GAP_S:
-            if w[i] > w[out[-1]]:
-                out[-1] = i
+def hits(ta, acc, tm, w):
+    """Ball-contact times (s): Watch accelerometer `acc` (n, 3) in g at `ta` (~800 Hz), rotation
+    speed `w` (rad/s) at `tm`. Impacts are peaks of the > 60 Hz acceleration magnitude above
+    HIT_IMPACT_G, one per HIT_GAP_S (the largest); kept if the arm turns >= HIT_MIN_RAD_S
+    around them. The contact time is the impact sample's."""
+    from scipy.signal import butter, sosfiltfilt
+
+    hp = np.zeros(len(ta))
+    fs = 1 / np.median(np.diff(ta))
+    sos = butter(4, HIT_HP_HZ, "highpass", fs=fs, output="sos")
+    cuts = np.r_[0, np.nonzero(np.diff(ta) > 0.05)[0] + 1, len(ta)]  # filter each gap-free run
+    for a, b in zip(cuts[:-1], cuts[1:]):
+        if b - a > 100:
+            hp[a:b] = np.linalg.norm(sosfiltfilt(sos, acc[a:b], axis=0), axis=1)
+    ev = []
+    for i in np.nonzero(hp > HIT_IMPACT_G)[0]:
+        if ev and ta[i] - ta[ev[-1]] < HIT_GAP_S:
+            if hp[i] > hp[ev[-1]]:
+                ev[-1] = i
         else:
-            out.append(i)
-    return t[np.array(out, int)]
+            ev.append(i)
+    out = []
+    for i in ev:
+        j0, j1 = np.searchsorted(tm, [ta[i] - 0.25, ta[i] + 0.1])
+        if j1 > j0 and w[j0:j1].max() >= HIT_MIN_RAD_S:
+            out.append(ta[i])
+    return np.array(out)
 
 
 def arm_targets(R, bn):
@@ -172,13 +193,15 @@ def build(player, full=False):
     d["body_names"], d["ik_names"], d["mk_names"] = np.array(bn), np.array(ikn), z["mk_names"]
     d["unix0"], d["start_unix"] = unix0, meta["start_unix"]
 
-    # swings from the Watch's 200 Hz rotation speed
+    # swings = ball contacts from the Watch's accelerometer and rotation speed
     hf = [read_file(p) for p in sorted(Path(meta["session_dir"], "watch_hf").glob("*.bin"))]
     mot = np.concatenate([c.motion for c in hf])
     mot = mot[np.argsort(mot[:, 0])]
     b2u = hf[0].header.get("boot_to_unix", w.boot_to_unix)
     tw, ww = mot[:, 0] + b2u, np.linalg.norm(mot[:, 11:14], axis=1)
-    sw = swings(tw, ww)
+    acc = np.concatenate([c.accel for c in hf])
+    acc = acc[np.argsort(acc[:, 0])]
+    sw = hits(acc[:, 0] + b2u, acc[:, 1:4], tw, ww)  # ball contacts (data.py `hits`)
     d["swing_t"] = sw[(sw > g[0]) & (sw < g[-1])]
     near = np.zeros(len(g), bool)
     for s in d["swing_t"]:

@@ -173,7 +173,7 @@ $$s(t) = \operatorname{mean}_{15\ \text{frames}}\lVert\omega_\text{watch}\rVert\
 | 0 rad/s (still) | 1.0 |
 | 4 rad/s | 0.5 |
 | 8 rad/s | 0.2 |
-| 15 rad/s (the swing-detection threshold) | 0.07 |
+| 15 rad/s | 0.07 |
 
 Everything else is unchanged.
 
@@ -235,16 +235,16 @@ grid, the phone's and Watch's mean quaternion over a 3 s standing hold, and §2.
 
 ## 6. Results
 
-Median absolute error vs OpenCap in degrees. Swings = ±0.5 s around each Watch rotation-speed peak above
-15 rad/s.
+Median absolute error vs OpenCap in degrees. Swings = ±0.5 s around each ball contact detected from the Watch
+([`shared_pipeline.md` §6](shared_pipeline.md#6-swing-detection-ball-contacts)).
 
 ### E07, 10/28 (mean of two players, Janys / Tom; `experiments/E07_pose_methods/results/summary.md` and `scores.json`)
 
 | Variant | Part | Elbow | Elbow bias | Shoulder elev. | Forearm incl. | Forearm dir. | Upper-arm dir. |
 |---|---|---|---|---|---|---|---|
-| Plain, static trunk | swings | 27 (38 / 15) | +36 / −1 | 40 (55 / 25) | 15 (15 / 15) | 38 (44 / 31) | 63 (87 / 38) |
-| Swing-aware | swings | 28 (38 / 18) | +34 / −12 | 35 (49 / 20) | 15 | 38 | 62 (84 / 39) |
-| Aligned chest trunk | swings | 26 (35 / 18) | +31 / +9 | 41 (57 / 25) | 18 (21 / 14) | 52 (60 / 44) | 66 (90 / 41) |
+| Plain, static trunk | swings | 30 (44 / 16) | +42 / +1 | 41 (58 / 25) | 15 (15 / 14) | 37 (45 / 29) | 63 (87 / 39) |
+| Swing-aware | swings | 30 (43 / 17) | +41 / −10 | 35 (49 / 20) | 15 | 37 | 63 (85 / 40) |
+| Aligned chest trunk | swings | 28 (37 / 19) | +34 / +11 | 42 (58 / 26) | 17 (21 / 14) | 52 (59 / 45) | 67 (92 / 43) |
 | Plain, static trunk | whole block | 24 (30 / 18) | −23 / −15 | 12 (14 / 10) | 19 (24 / 14) | 39 (49 / 29) | 26 (28 / 24) |
 | Swing-aware | whole block | 24 (31 / 18) | −23 / −16 | 12 (14 / 10) | 19 | 39 | 29 (33 / 26) |
 | Aligned chest trunk | whole block | 21 (27 / 15) | −17 / −8 | 14 (15 / 12) | 15 (19 / 11) | 56 (65 / 46) | 27 (29 / 25) |
@@ -255,8 +255,8 @@ Elbow correlation with OpenCap (whole block): plain 0.24 / 0.73, swing-aware 0.2
 
 | Variant | Part | Elbow | Elbow bias | Shoulder elev. | Forearm incl. | Forearm dir. | Upper-arm dir. |
 |---|---|---|---|---|---|---|---|
-| Plain | swings | 34 (38) | +22 | 47 (55) | 24 (15) | 65 (44) | 75 (87) |
-| Swing-aware | swings | 34 (38) | +20 | 41 (49) | 24 (15) | 65 (44) | 71 (84) |
+| Plain | swings | 36 (44) | +27 | 49 (58) | 24 (15) | 64 (45) | 78 (87) |
+| Swing-aware | swings | 35 (43) | +24 | 43 (49) | 24 (15) | 64 (45) | 74 (85) |
 | Plain | all | 32 (30) | −26 | 15 (14) | 28 (24) | 56 (49) | 33 (28) |
 | Swing-aware | all | 32 (31) | −26 | 16 (14) | 28 (24) | 56 (49) | 36 (33) |
 
@@ -272,15 +272,15 @@ Figures: `experiments/E07_pose_methods/figures/errors_swing.png`, `per_swing_elb
 
 - **The upper arm is not observed.** The Watch fixes the forearm; the upper arm and elbow come from the
   effort and twist priors. When the arm is raised, the prior still prefers a hanging upper arm, so the
-  method bends the elbow instead: in swings elevation is 40-55° off for Janys and the elbow is read
-  ~22-36° too bent. Over whole blocks (mostly ready stance) the elbow is read 15-26° too straight.
-- **Swing-aware helps only a little**: elevation in swings 40 → 35° (E07), 47 → 41° (E08); the elbow
+  method bends the elbow instead: in swings elevation is 43-58° off for Janys and the elbow is read
+  ~24-42° too bent. Over whole blocks (mostly ready stance) the elbow is read 15-26° too straight.
+- **Swing-aware helps only a little**: elevation in swings 41 → 35° (E07), 49 → 43° (E08); the elbow
   does not improve. With the prior faded there is nothing else to pick the right $(\theta,\phi)$.
 - **No accelerometer.** ArmTrak's HMM used the Watch's acceleration to tell positions apart; dropping it
   leaves an orientation-only, under-determined problem.
 - **Coarse grid.** Elbow in 10° steps, twist in 15° steps; the elbow MAE floor is ~2.5° from rounding alone.
 - **Trunk assumed fixed** (static variants): no trunk rotation or lean after the hold. The forearm
-  direction error (38-65°) is the same as the geometric `watch_static_trunk`.
+  direction error (37-64°) is the same as the geometric `watch_static_trunk`.
 - **Hold = straight arm, palm in.** Same zero-pose assumption as the geometric methods; OpenCap sees a
   hanging elbow ~18° bent. No rest-angle correction is applied here.
 - **Hand-set weights and limits**, from two players; the limit box is crude (no shoulder-angle limits

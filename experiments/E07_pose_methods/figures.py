@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .colors import FEATURED, TRUTH, color
+from .colors import FEATURED, TRUTH, anonymize, color
 from .common import OUT, load, load_method
 from .data import PLAYERS, elevation_plane
 
@@ -118,6 +118,7 @@ def bars(scores, part):
         color=INK,
         fontsize=11,
     )
+    anonymize(fig)
     fig.savefig(FIG / f"errors_{part}.png", dpi=130)
     plt.close(fig)
 
@@ -151,7 +152,7 @@ def traces(player, names, around, width=3.0):
         for r in range(2):
             ax[r, c].axvline(0, color=GRID, lw=1)
             ax[r, c].grid(axis="y", color=GRID)
-        ax[1, c].set_xlabel("s from swing peak")
+        ax[1, c].set_xlabel("s from ball contact")
         ax[0, c].set_title(
             f"{player.capitalize()}, swing {c + 1}", loc="left", color=INK, fontsize=10
         )
@@ -167,6 +168,7 @@ def traces(player, names, around, width=3.0):
         fontsize=9,
         bbox_to_anchor=(0.5, -0.13),
     )
+    anonymize(fig)
     fig.savefig(FIG / f"traces_{player}.png", dpi=130, bbox_inches="tight")
     plt.close(fig)
 
@@ -204,11 +206,12 @@ def per_swing(names):
         patch.set_facecolor(color(n))
         patch.set_edgecolor(INK2)
     ax.set_yticklabels(labels[::-1])
-    ax.set_xlabel("elbow error at the swing peak (deg, one value per swing)")
+    ax.set_xlabel("elbow error at ball contact (deg, one value per swing)")
     ax.grid(axis="x", color=GRID)
     ax.set_title(
         "Per-swing elbow error (both players; whiskers 5-95 % range)", loc="left", color=INK
     )
+    anonymize(fig)
     fig.savefig(FIG / "per_swing_elbow.png", dpi=130)
     plt.close(fig)
 

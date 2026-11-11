@@ -10,7 +10,10 @@ methods (frame-based geometry, constraints, OpenSense, published models) do on J
   That is Janys 26.8 min and Tom 12.0 min.
 - **Test:** Janys on 11/05, session `20261105-124805-P01` (iPhone in the right pocket, Watch on
   the right wrist, AirPods).
-  - 35.8 min with OpenCap, in 97 segments of about 25 s, with 278 swings.
+  - 35.8 min with OpenCap, in 97 segments of about 25 s, with 264 ball contacts (swings).
+    A swing is ±0.5 s around a ball contact found from the Watch's impact and arm speed
+    ([`shared_pipeline.md` §6](../../docs/method_details/shared_pipeline.md#6-swing-detection-ball-contacts));
+    74 events were checked by eye on IMG_0021 (`results/swing_labels.json`).
   - Ground truth: jtchen's 3-camera HRNet OpenCap reconstruction (Drive folder
     `es224/20261105 Janys/opencap`), copied to `data/external/20261105/opencap_jtchen`.
 
@@ -35,7 +38,7 @@ methods (frame-based geometry, constraints, OpenSense, published models) do on J
    - Joint-limit constraints, plain and swing-aware.
    - OpenSense IK with Watch + phone (`opensense_run.py`, OpenSim env).
    - WearMoCap, MobilePoser and IMUCoCo.
-   Methods built on the commercial chest and upper-arm sensors can't run: those weren't worn.
+   Methods built on the commercial chest and upper-arm sensors aren't run (see Limits).
 6. `evaluate.py` scores every saved method with E07's `score`.
 7. **Video** (`camera.py`, `video.py`): the IMG_0021 clip (iPhone behind Janys, 70 min, 60 fps,
    from the Drive folder) next to one arm panel per method and rolling curves, as in E07.
@@ -58,21 +61,21 @@ for our models, E07's model of that kind, trained with Janys's own 10/28 minutes
 
 | Method | Elbow | Elevation | Forearm incl. | Forearm dir. |
 |---|---|---|---|---|
-| Watch orientation, trunk fixed | – | – | 24 (15) | 65 (44) |
-| Watch orientation, AirPods as trunk | – | – | 26 (15) | 69 (46) |
-| OpenSense IK, Watch+phone | 29 (27) | 39 (53) | 32 (34) | 62 (70) |
-| Joint limits + effort, Watch only | 34 (38) | 47 (55) | 24 (15) | 65 (44) |
-| Joint limits, swing-aware, Watch only | 34 (38) | 41 (49) | 24 (15) | 65 (44) |
-| WearMoCap (pretrained), Watch | 35 (28) | 26 (23) | 23 (13) | 58 (38) |
-| WearMoCap (pretrained), Watch+phone | 34 (28) | 23 (21) | 23 (14) | 70 (52) |
-| MobilePoser, Watch+phone+AirPods | 25 (33) | 48 (62) | 36 (23) | 73 (40) |
-| MobilePoser, Watch+phone | 24 (33) | 48 (63) | 37 (22) | 76 (39) |
-| IMUCoCo, Watch+phone+AirPods | 25 (25) | 32 (22) | 16 (11) | 66 (28) |
-| Ridge, Watch+phone (Janys + Tom 10/28) | 17 (16) | 14 (15) | 14 (8) | 29 (18) |
-| GRU, Watch (Tom 10/28 only) | 24 (22) | 35 (35) | 15 (12) | 33 (26) |
-| GRU, Watch (Janys 10/28) | 14 (10) | 11 (9) | 10 (7) | 23 (13) |
-| GRU, Watch (Janys + Tom 10/28) | 13 (10) | 10 (9) | 10 (7) | 21 (13) |
-| GRU, Watch (+ half of 11/05) | 12 (10) | 8 (9) | 8 (7) | 17 (13) |
+| Watch orientation, trunk fixed | – | – | 24 (15) | 64 (45) |
+| Watch orientation, AirPods as trunk | – | – | 26 (15) | 69 (47) |
+| OpenSense IK, Watch+phone | 29 (30) | 40 (54) | 32 (34) | 63 (69) |
+| Joint limits + effort, Watch only | 36 (44) | 49 (58) | 24 (15) | 64 (45) |
+| Joint limits, swing-aware, Watch only | 35 (43) | 43 (49) | 24 (15) | 64 (45) |
+| WearMoCap (pretrained), Watch | 35 (31) | 26 (26) | 23 (13) | 56 (40) |
+| WearMoCap (pretrained), Watch+phone | 35 (30) | 24 (23) | 23 (13) | 70 (54) |
+| MobilePoser, Watch+phone+AirPods | 26 (38) | 50 (64) | 36 (21) | 75 (38) |
+| MobilePoser, Watch+phone | 25 (38) | 50 (65) | 37 (21) | 78 (36) |
+| IMUCoCo, Watch+phone+AirPods | 25 (25) | 34 (24) | 15 (10) | 66 (29) |
+| Ridge, Watch+phone (Janys + Tom 10/28) | 17 (16) | 14 (15) | 14 (7) | 29 (17) |
+| GRU, Watch (Tom 10/28 only) | 24 (25) | 37 (36) | 14 (10) | 33 (22) |
+| GRU, Watch (Janys 10/28) | 14 (10) | 11 (8) | 10 (7) | 23 (12) |
+| GRU, Watch (Janys + Tom 10/28) | 13 (10) | 10 (8) | 10 (7) | 21 (12) |
+| GRU, Watch (+ half of 11/05) | 12 (10) | 8 (8) | 8 (7) | 18 (12) |
 
 - **Our GRU trained on Janys 10/28 is the best method on Janys 11/05 that uses no 11/05 data.**
   It beats every method that needs no training by 10–20° on elbow and elevation in swings.
@@ -84,18 +87,18 @@ for our models, E07's model of that kind, trained with Janys's own 10/28 minutes
   - **Janys's trunk leaned slightly more on 11/05** (median 21° from vertical vs 19°). The
     frame-based methods assume an upright trunk; the trained models learned typical lean.
   - A clock error is ruled out: shifting the Watch by ±100 ms doesn't change the swing error.
-- **Heading is still the weak point.** Forearm direction is 58–76° off for every method without
-  training (38–70° on 10/28).
+- **Heading is still the weak point.** Forearm direction is 56–78° off for every method without
+  training (36–69° on 10/28).
 - **Shoulder elevation:** OpenSense, constraints and MobilePoser are slightly better on 11/05 than
-  on 10/28 but still 39–48° off in swings. WearMoCap (23–26°) and IMUCoCo (32°) are about as
+  on 10/28 but still 40–50° off in swings. WearMoCap (24–26°) and IMUCoCo (34°) are about as
   before.
 
 Four methods side by side, all Watch + phone (`figures/four_methods.png`, `four_methods.py`):
 MobilePoser and OpenSense IK need no training; ridge and GRU are trained on Janys + Tom 10/28.
-Swings, elbow / elevation / forearm direction: MobilePoser 24 / 48 / 76, OpenSense 29 / 39 / 62,
-ridge 17 / 14 / 29, GRU 15 / 11 / 22.
-Elbow / wrist position, swings (cm, shoulder-anchored): MobilePoser 29 / 47, OpenSense 32 / 47,
-ridge 11 / 17, GRU 8 / 12; all minutes: 14 / 28, 24 / 35, 6 / 11, 5 / 8. For scale, the papers
+Swings, elbow / elevation / forearm direction: MobilePoser 25 / 50 / 78, OpenSense 29 / 40 / 63,
+ridge 17 / 14 / 29, GRU 14 / 11 / 22.
+Elbow / wrist position, swings (cm, shoulder-anchored): MobilePoser 31 / 49, OpenSense 33 / 49,
+ridge 11 / 18, GRU 8 / 12; all minutes: 14 / 28, 24 / 35, 6 / 11, 5 / 8. For scale, the papers
 report WearMoCap 2.6 cm (wrist and elbow, IROS 2023; ~10 cm Watch-only, 2025) and MobilePoser
 11.9 cm (mean joint error, whole body) on their own data.
 
@@ -105,21 +108,21 @@ Janys, swings, median error in degrees. Full table: `results/summary.md`.
 
 | Model | Trained on | Elbow | Elevation | Forearm dir. |
 |---|---|---|---|---|
-| GRU, Watch | Janys 10/28, tested on Janys 10/28 (E07) | 10 | 9 | 13 |
+| GRU, Watch | Janys 10/28, tested on Janys 10/28 (E07) | 10 | 8 | 12 |
 | GRU, Watch | Janys 10/28 → Janys 11/05 | 14 | 11 | 23 |
 | GRU, Watch | Janys + Tom 10/28 → Janys 11/05 | 13 | 10 | 21 |
-| GRU, Watch | Tom 10/28 → Janys 11/05 | 24 | 35 | 33 |
-| GRU, Watch | Janys + Tom 10/28 + half of Janys 11/05 | 12 | 8 | 17 |
-| Ridge, Watch+phone | Janys 10/28, tested on Janys 10/28 (E07) | 16 | 15 | 18 |
+| GRU, Watch | Tom 10/28 → Janys 11/05 | 24 | 37 | 33 |
+| GRU, Watch | Janys + Tom 10/28 + half of Janys 11/05 | 12 | 8 | 18 |
+| Ridge, Watch+phone | Janys 10/28, tested on Janys 10/28 (E07) | 16 | 15 | 17 |
 | Ridge, Watch+phone | Janys + Tom 10/28 → Janys 11/05 | 17 | 14 | 29 |
 
 - **From Janys 10/28 to Janys 11/05 costs a few degrees, not the model.**
-  - The Watch-only GRU goes from 10° to 14° on the elbow and from 9° to 11° on elevation.
+  - The Watch-only GRU goes from 10° to 14° on the elbow and from 8° to 11° on elevation.
   - Over all minutes, not just swings, it is elbow 9° and elevation 6°.
   - Ridge barely changes on the angles. Forearm direction suffers more: it is the one target that
     depends on how the trunk is oriented relative to the arm.
-- **Training on another player is still the problem.** Trained on Tom 10/28 alone, every model is 23–27° off on the
-  elbow and 31–44° on elevation in Janys's swings. That's the same as E07's cross-player result.
+- **Training on another player is still the problem.** Trained on Tom 10/28 alone, every model is 24–28° off on the
+  elbow and 34–48° on elevation in Janys's swings. That's the same as E07's cross-player result.
 - **Half of Janys 11/05 in training closes most of the gap:** GRU elbow 12°, elevation 8°. That
   is back at the Janys 10/28 level.
 - **The phone and AirPods add nothing on Janys 11/05**, as in E07; the Watch carries the arm.
@@ -136,29 +139,32 @@ Every variant: `results/cross.md`; figures `figures/cross_swing.png`, `figures/c
 
 | Tested on | Trained on | GRU elbow | GRU elev. | GRU forearm dir. | Ridge elbow | Ridge elev. |
 |---|---|---|---|---|---|---|
-| Tom 10/28 | Janys 10/28 | 27 | 26 | 31 | 18 | 24 |
-| Tom 10/28 | Janys 10/28 + Janys 11/05 | **19** | **20** | 27 | 15 | 20 |
-| Janys 10/28 | Tom 10/28 | 25 | 38 | 27 | 27 | 38 |
-| Janys 10/28 | Janys 11/05 | **10** | **9** | 19 | 20 | 20 |
-| Janys 10/28 | Janys 11/05 + Tom 10/28 | 10 | 9 | 19 | 22 | 22 |
+| Tom 10/28 | Janys 10/28 | 26 | 24 | 32 | 17 | 23 |
+| Tom 10/28 | Janys 10/28 + Janys 11/05 | **18** | **19** | 27 | 15 | 19 |
+| Janys 10/28 | Tom 10/28 | 26 | 38 | 25 | 30 | 39 |
+| Janys 10/28 | Janys 11/05 | **10** | **9** | 20 | 23 | 22 |
+| Janys 10/28 | Janys 11/05 + Tom 10/28 | 10 | 9 | 19 | 25 | 25 |
 
-- **A second day of Janys helps on a new player.** On Tom, the Watch GRU goes from elbow 27° and
-  elevation 26° to 19° and 20°. Forearm direction barely changes (31° to 27°).
+- **A second day of Janys helps on a new player.** On Tom, the Watch GRU goes from elbow 26° and
+  elevation 24° to 18° and 19°. Forearm direction barely changes (32° to 27°).
 - **Janys's other day is as good as her same-day minutes.** Trained on Janys 11/05 only, the GRU
   reaches elbow 10° and elevation 9° on Janys 10/28: E07's same-session personal result.
 - **Adding Tom to Janys 11/05 changes nothing on Janys** (10° / 9°).
-- The phone and AirPods add nothing consistent: the GRU elbow is 6° better to 5° worse with them.
-- Caveat: Tom's swing scores are unstable. After fixing the GRU's dropout at test time (11/10) and
-  retraining, they moved by up to 6°; Janys's moved by 1° or less. Read differences under ~5° on
-  Tom as noise.
+- The phone and AirPods add nothing consistent: the GRU elbow is 7° better to 5° worse with them.
+- Caveat: Tom's swing scores are unstable. Retraining the same GRU (after the dropout fix on
+  11/10, and again on 11/11) moved them by up to 6°; Janys's moved by 1° or less. Read differences
+  under ~5° on Tom as noise. `cross.py` now saves its predictions (`results/cross/`, not
+  committed), so a scoring change is a `rescore`, not a retrain.
 
 **Limits:**
 - One test player and date: Janys 11/05.
 - The 11/05 OpenCap differs from 10/28's: 3 cameras instead of 2, 30 fps instead of 60, and
   segments of about 25 s. Some of the gap may come from that change rather than the day.
 - The "half of 11/05" split is within one session, like E07's personal split.
-- No commercial upper-arm or chest sensors on 11/05 (one msense, 2DA6), so E07's all-sensor and
-  chest + upper-arm geometric methods (its best model-free result) can't be tested here.
+- Four commercial sensors streamed on 11/05 (msense D0E5, 2DA6, 2F5A, 1D03 in the logger's
+  `*_imu.csv`; corrected 11/11, this README first said only 2DA6). E08 doesn't use them yet, so
+  E07's all-sensor and chest + upper-arm geometric methods (its best model-free result) aren't
+  tested here. Where each was worn on 11/05 isn't recorded in this repo.
 - OpenSense uses Janys's 10/28 scaled model (as in E07), not the 11/05 one.
 
 ```bash

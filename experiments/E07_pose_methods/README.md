@@ -5,7 +5,7 @@ arm: plain geometry from segment orientations (the OpenSense idea), OpenSense it
 joint constraints, published learned models, or models we train on our own data?
 
 **Data:** the 10/28 tennis blocks with every sensor (`janys` 8.1 min, `tom` 12.6 min; OpenCap on
-79 % / 70 % of frames, 128 swings) and, for training the Apple-only models, every Calibrate
+79 % / 70 % of frames, 165 ball contacts) and, for training the Apple-only models, every Calibrate
 segment OpenCap covers (26.8 / 12.0 min). Sensors: iPhone (right pocket), Apple Watch (right
 wrist), AirPods; commercial chest (2F5A), right upper arm (1D03) and wrist (D0E5) sensors.
 Ground truth: OpenCap (two phone videos, OpenSim model), on our clock as in E06.
@@ -13,7 +13,8 @@ Ground truth: OpenCap (two phone videos, OpenSim model), on our clock as in E06.
 **What is scored** (`evaluate.py`), all in the trunk frame and model-independent: elbow flexion;
 shoulder elevation; forearm inclination (how far the forearm points up, heading-free); forearm
 and upper-arm direction (full 3D, heading-dependent). Median absolute error over the block and
-over swings (±0.5 s around each peak of the Watch's 200 Hz rotation speed).
+over swings (±0.5 s around each ball contact found from the Watch's impact and rotation speed;
+[`shared_pipeline.md` §6](../../docs/method_details/shared_pipeline.md#6-swing-detection-ball-contacts)).
 
 ## Methods
 
@@ -33,18 +34,18 @@ Survey and links: the research notes in the report.
 
 | Method | Elbow | Shoulder elev. | Forearm incl. | Forearm dir. |
 |---|---|---|---|---|
-| Geometric, qmt heading, hanging elbow = 18° | **11** | 16 | 18 | 52 |
-| OpenSense IK, 4 sensors | 26 | 15 | 24 | 65 |
-| Constraints, Watch only | 28 | 35 | 15 | 38 |
-| WearMoCap, Watch | 27 | 20 | 12 | 35 |
-| MobilePoser, Watch+phone+AirPods | 27 | 39 | 22 | 40 |
-| IMUCoCo, Watch+phone+AirPods | 30 | 26 | 12 | 33 |
-| Ours GRU, Watch, other player only | 24 | 30 | 13 | **25** |
+| Geometric, qmt heading, hanging elbow = 18° | **12** | 17 | 17 | 52 |
+| OpenSense IK, 4 sensors | 25 | 16 | 23 | 66 |
+| Constraints, Watch only | 30 | 35 | 15 | 37 |
+| WearMoCap, Watch | 29 | 21 | 12 | 36 |
+| MobilePoser, Watch+phone+AirPods | 31 | 40 | 20 | 40 |
+| IMUCoCo, Watch+phone+AirPods | 31 | 28 | 12 | 34 |
+| Ours GRU, Watch, other player only | 25 | 30 | 12 | **23** |
 | Ours GRU, all sensors, + own half of the block | **9** | **7** | **6** | **13** |
 
 - **Shoulder elevation and the elbow need a sensor on the upper arm, or the player's own data.**
   With chest + upper arm + Watch, pure geometry gets elevation within 15° in swings (10° over the
-  block) and, with one fixed rest angle, the elbow within 11° (7° over the block). Every
+  block) and, with one fixed rest angle, the elbow within 12° (7° over the block). Every
   published model and every Watch-only method is 20-40° off on elevation during swings.
 - **Heading is the weak point of everything model-free.** The court's magnetic field is too
   disturbed for the commercial sensors' magnetometers (VQF 9-axis drifts more than 6-axis), and
@@ -60,14 +61,14 @@ Survey and links: the research notes in the report.
   commercial upper-arm and chest sensors to IMUCoCo did not help (placement on the mesh is not a
   calibration).
 - **Our trained models, other player only,** beat the published ones on direction (GRU forearm
-  25°) but not on the elbow (24°); with all sensors they fail across players (elevation 56°):
+  23°) but not on the elbow (25°); with all sensors they fail across players (elevation 57°):
   20 minutes from two people cannot teach a 9-sensor model to generalise.
 - **With the player's own data the error halves** (all-sensor GRU: elbow 9°, elevation 7°,
   forearm 13° in swings). Caveat: training and test are minutes apart in the same session; this
   is the best case, not a new-player number.
 
 - **In cm** (elbow / wrist position, shoulder-anchored, swings, mean of the two players): WearMoCap
-  15 / 24, MobilePoser 23 / 31, Watch GRU other player 18 / 23, all-sensor GRU personal 6 / 9.
+  15 / 24, MobilePoser 23 / 32, Watch GRU other player 18 / 22, all-sensor GRU personal 6 / 8.
   WearMoCap's own paper reports 2.6 cm on its data; our tennis swings are far harder.
 
 **Limits:** two players, one session; OpenCap's own error (~15°, and it follows the wrong person

@@ -98,3 +98,44 @@ def test_position_errors_use_opencap_arm_lengths():
     fwd = np.tile([1.0, 0, 0], (n, 1))
     elbow, wrist = position_errors(down, fwd, down, down, (0.25, 0.22))
     assert np.allclose(elbow, 0) and np.allclose(wrist, 22 * np.sqrt(2))  # forearm 90 deg off
+
+
+def test_hits_need_an_impact_and_a_fast_arm():
+    from experiments.E07_pose_methods.data import hits
+
+    fs_a, fs_m = 800.0, 200.0
+    ta = np.arange(0, 20, 1 / fs_a)
+    tm = np.arange(0, 20, 1 / fs_m)
+    acc = np.zeros((len(ta), 3))
+    acc[:, 1] = -1.0  # gravity, in g
+    w = np.full(len(tm), 1.0)
+    for t0, impact, spin in ((5.0, 8.0, 20.0), (10.0, 8.0, 2.0), (15.0, 0.0, 20.0)):
+        k = np.searchsorted(ta, t0)
+        acc[k : k + 8, 0] += impact * np.sin(np.arange(8) * np.pi / 2)  # 200 Hz ring
+        w[np.abs(tm - t0) < 0.1] = spin
+    out = hits(ta, acc, tm, w)
+    # only the stroke: impact + fast arm; not a tap (slow arm) nor a shadow swing (no impact)
+    assert len(out) == 1 and abs(out[0] - 5.0) < 0.01
+
+
+def test_figures_show_players_anonymously():
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    from experiments.E07_pose_methods.colors import anonymize
+
+    fig, ax = plt.subplots()
+    ax.set_title("Janys 10/28 vs Tom; tom and janys's; bottom")
+    ax.bar([0], [1], label="trained on Janys + Tom")
+    ax.legend()
+    ax.set_xticks([0])
+    ax.set_xticklabels(["Tom 10/28"])
+    fig.suptitle("Janys")
+    anonymize(fig)
+    texts = [t.get_text() for t in fig.findobj(matplotlib.text.Text)]
+    assert ax.get_title() == "Player A 10/28 vs Player B; Player B and Player A's; bottom"
+    assert "trained on Player A + Player B" in texts and "Player B 10/28" in texts
+    assert not any("Janys" in t or "Tom" in t for t in texts)
+    plt.close(fig)

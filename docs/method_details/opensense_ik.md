@@ -332,7 +332,7 @@ $$\mathbf{h} = \frac{R_{\text{torso}}^{\top}\,(-R_{\text{humerus}}\,\hat{y})}{\|
 
 **Scoring** (`evaluate.py:16-54`, shared by every method):
 - Masks: OpenCap valid ∧ method valid, over the whole block and over swings. A swing is ±0.5 s around
-  each Watch rotation-speed peak above 15 rad/s, with peaks at least 1.5 s apart (`data.py:31`, `55-64`).
+  each ball contact detected from the Watch ([`shared_pipeline.md` §6](shared_pipeline.md#6-swing-detection-ball-contacts)).
 - Metrics are median absolute errors:
   - forearm direction angle;
   - forearm inclination $\arccos(-f_y)$;
@@ -387,11 +387,11 @@ Median absolute error against OpenCap, in degrees. "Swings" means ±0.5 s around
 
 | Variant | Part | Elbow | Shoulder elev. | Forearm incl. | Forearm dir. | Upper-arm dir. |
 |---|---|---|---|---|---|---|
-| chest + upper arm + Watch + phone | swings | 25 / 26 | 17 / 14 | 24 / 23 | 73 / 57 | 77 / 45 |
+| chest + upper arm + Watch + phone | swings | 24 / 26 | 18 / 15 | 23 / 23 | 73 / 59 | 76 / 47 |
 | | block | 20 / 22 | 11 / 12 | 19 / 15 | 76 / 54 | 35 / 31 |
-| chest + Watch + phone | swings | 26 / 18 | 35 / 13 | 20 / 16 | 62 / 47 | 92 / 38 |
+| chest + Watch + phone | swings | 32 / 17 | 34 / 12 | 20 / 16 | 61 / 48 | 95 / 39 |
 | | block | 31 / 23 | 29 / 21 | 18 / 13 | 68 / 50 | 58 / 36 |
-| Watch + phone | swings | 27 / 16 | 53 / 18 | 34 / 25 | 70 / 58 | 77 / 33 |
+| Watch + phone | swings | 30 / 15 | 54 / 20 | 34 / 25 | 69 / 58 | 79 / 33 |
 | | block | 24 / 21 | 27 / 33 | 34 / 17 | 56 / 37 | 42 / 41 |
 
 The chest + Watch + phone rows come from `results/scores.json`, because `summary.md` lists only the
@@ -402,16 +402,16 @@ The chest + Watch + phone rows come from `results/scores.json`, because `summary
 - **Elbow tracking is good only with all 4 sensors.** Block elbow r is 0.85 (Janys) and 0.48 (Tom).
   With fewer sensors, r is −0.11 to 0.64.
 - **The upper-arm IMU pins elevation, and the elbow hits its 0° limit 11–12 % of the time.** With all 4
-  sensors, elevation is within 11–17°. Without the upper-arm IMU it is 13–53° off.
-- **Heading-dependent directions are poor everywhere** (forearm 47–76°), as for all model-free methods.
+  sensors, elevation is within 11–18°. Without the upper-arm IMU it is 12–54° off.
+- **Heading-dependent directions are poor everywhere** (forearm 48–76°), as for all model-free methods.
 - **For comparison,** plain geometry on the same chest + upper arm + Watch, with the 18° rest angle,
-  reaches elbow 11° in swings. OpenSense's joint limits do not beat geometry here.
+  reaches elbow 12° in swings. OpenSense's joint limits do not beat geometry here.
 
 ### 5.2 E08, Janys 11/05, Watch + phone, from `E08_janys_1105/results/scores_all.json`
 
 | Part | Elbow | Elev. | Forearm incl. | Forearm dir. | Upper-arm dir. | Elbow bias / r |
 |---|---|---|---|---|---|---|
-| swings (4.6 min) | 29 (10/28: 27) | 39 (53) | 32 (34) | 62 (70) | 82 (77) | +22° / 0.18 |
+| swings (4.4 min) | 29 (10/28: 30) | 40 (54) | 32 (34) | 63 (69) | 85 (79) | +23° / 0.18 |
 | all (35.8 min) | 27 (24) | 36 (27) | 33 (34) | 54 (56) | 59 (42) | −5° / 0.08 |
 
 Two sensors cannot recover the arm. Elevation r is about 0, and the elbow barely correlates with

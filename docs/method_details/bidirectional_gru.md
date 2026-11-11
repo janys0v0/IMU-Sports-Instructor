@@ -80,7 +80,7 @@ Each Apple device gives Core Motion "device motion" in its own frame
 | `gravity` | (N, 3) | g (unit length) | gravity direction in the device frame, pointing down |
 
 Delivered rates (E03, `docs/research/device-research.md:12`): iPhone 33.5 Hz, Watch 66.4 Hz,
-AirPods 50 Hz. The Watch's separate 200 Hz stream only finds swings (section 7.5).
+AirPods 50 Hz. The Watch's separate 200 Hz motion and ~800 Hz accelerometer streams only find swings (section 7.5).
 
 All-sensor variant only: the commercial msense sensors on the chest (`2F5A`) and right upper arm
 (`1D03`) (`experiments/E07_pose_methods/data.py:30`) are given the same four fields by VQF
@@ -328,11 +328,11 @@ flowchart TB
 
 | Dataset | File | Grid minutes | Valid-GT minutes | Segments | Swings |
 |---|---|---|---|---|---|
-| Janys 10/28 block (all sensors) | `E07…/results/janys/dataset.npz` | 8.1 | 6.4 | 2 | 36 |
-| Tom 10/28 block (all sensors) | `E07…/results/tom/dataset.npz` | 12.6 | 8.9 | 2 | 92 |
-| Janys 10/28 full (Apple only) | `E07…/results/janys/dataset_full.npz` | 26.8 | 17.0 | 7 | 114 |
-| Tom 10/28 full (Apple only) | `E07…/results/tom/dataset_full.npz` | 12.0 | 8.9 | 2 | 92 |
-| Janys 11/05 (Apple only) | `E08…/results/janys/dataset.npz` | 35.8 | 35.8 | 97 | 278 |
+| Janys 10/28 block (all sensors) | `E07…/results/janys/dataset.npz` | 8.1 | 6.4 | 2 | 51 |
+| Tom 10/28 block (all sensors) | `E07…/results/tom/dataset.npz` | 12.6 | 8.9 | 2 | 114 |
+| Janys 10/28 full (Apple only) | `E07…/results/janys/dataset_full.npz` | 26.8 | 17.0 | 7 | 151 |
+| Tom 10/28 full (Apple only) | `E07…/results/tom/dataset_full.npz` | 12.0 | 8.9 | 2 | 114 |
+| Janys 11/05 (Apple only) | `E08…/results/janys/dataset.npz` | 35.8 | 35.8 | 97 | 264 |
 
 (Read from the saved `.npz` files on 11/10.) On 11/05, 4 segments (274 frames, 0.15 min, no
 swings) are shorter than 4 s, so the GRU scores 35.62 min against ridge's 35.77.
@@ -371,9 +371,9 @@ Test = the test player's **block**.
 
 ### 7.5 Swings
 
-Peaks of the Watch's 200 Hz rotation speed above 15 rad/s, merged within 1.5 s; a frame is in a
-swing if within ±0.5 s of a peak (`data.py:31`, `data.py:55-64`, `data.py:175-186`). Used only
-for scoring.
+Ball contacts from the Watch's accelerometer impact and rotation speed (`hits` in `data.py`,
+[`shared_pipeline.md` §6](shared_pipeline.md#6-swing-detection-ball-contacts)); a frame is in a
+swing if within ±0.5 s of a contact. Used only for scoring.
 
 ## 8. Evaluation and results
 
@@ -389,14 +389,14 @@ Swings, median error in degrees, Janys / Tom (`E07…/results/scores.json`; "–
 
 | GRU variant | Split | Elbow | Elevation | Forearm incl. | Forearm dir. | Upper-arm dir. | Elbow r |
 |---|---|---|---|---|---|---|---|
-| Watch | xplayer | 22 / 26 | 35 / 26 | 12 / 13 | 26 / 24 | 45 / 38 | 0.39 / 0.63 |
-| Watch | personal | 10 / – | 9 / – | 7 / – | 13 / – | 16 / – | 0.79 / – |
-| Watch+phone | xplayer | 21 / 23 | 34 / 26 | 14 / 17 | 35 / 29 | 50 / 40 | 0.30 / 0.57 |
-| Watch+phone | personal | 12 / – | 9 / – | 7 / – | 15 / – | 16 / – | 0.77 / – |
-| Watch+phone+AirPods | xplayer | 22 / 24 | 33 / 35 | 16 / 21 | 37 / 33 | 52 / 47 | 0.34 / 0.60 |
-| Watch+phone+AirPods | personal | 10 / – | 8 / – | 7 / – | 13 / – | 15 / – | 0.81 / – |
-| All sensors | xplayer | 23 / 36 | 25 / 53 | 13 / 27 | 39 / 39 | 41 / 77 | 0.00 / 0.23 |
-| All sensors | personal (other half) | 10 / 9 | 7 / 7 | 7 / 6 | 14 / 12 | 15 / 10 | 0.84 / 0.87 |
+| Watch | xplayer | 25 / 26 | 36 / 25 | 10 / 13 | 22 / 24 | 46 / 37 | 0.41 / 0.63 |
+| Watch | personal | 10 / – | 8 / – | 7 / – | 12 / – | 16 / – | 0.81 / – |
+| Watch+phone | xplayer | 21 / 24 | 32 / 26 | 12 / 17 | 35 / 30 | 49 / 40 | 0.38 / 0.56 |
+| Watch+phone | personal | 11 / – | 8 / – | 7 / – | 14 / – | 15 / – | 0.81 / – |
+| Watch+phone+AirPods | xplayer | 22 / 24 | 32 / 34 | 15 / 20 | 37 / 33 | 50 / 45 | 0.37 / 0.59 |
+| Watch+phone+AirPods | personal | 10 / – | 7 / – | 7 / – | 13 / – | 15 / – | 0.82 / – |
+| All sensors | xplayer | 23 / 36 | 26 / 54 | 12 / 25 | 38 / 37 | 40 / 76 | -0.03 / 0.21 |
+| All sensors | personal (other half) | 10 / 8 | 7 / 6 | 7 / 5 | 14 / 12 | 16 / 10 | 0.83 / 0.87 |
 
 Whole blocks, elbow / elevation: Watch xplayer 13/18, 10/9; Watch personal 8, 6 (Janys); all
 sensors personal 6/5, 5/4.
@@ -407,52 +407,52 @@ sensors personal 6/5, 5/4.
 
 | GRU variant | Trained on | Elbow | Elevation | Forearm dir. | Elbow (all) | Elev. (all) |
 |---|---|---|---|---|---|---|
-| Watch | *E07 personal, tested on Janys 10/28* | 10 | 9 | 13 | 8 | 6 |
+| Watch | *E07 personal, tested on Janys 10/28* | 10 | 8 | 12 | 8 | 6 |
 | Watch | Janys 10/28 | 14 | 11 | 23 | 9 | 6 |
 | Watch | Janys + Tom 10/28 | 13 | 10 | 21 | 9 | 7 |
-| Watch | Tom 10/28 | 24 | 35 | 33 | 18 | 12 |
-| Watch | + half of 11/05 | 12 | 8 | 17 | 9 | 6 |
-| Watch+phone | Janys 10/28 | 15 | 11 | 20 | 10 | 6 |
-| Watch+phone | Janys + Tom 10/28 | 15 | 11 | 22 | 12 | 7 |
-| Watch+phone | Tom 10/28 | 26 | 37 | 31 | 19 | 10 |
+| Watch | Tom 10/28 | 24 | 37 | 33 | 18 | 12 |
+| Watch | + half of 11/05 | 12 | 8 | 18 | 9 | 6 |
+| Watch+phone | Janys 10/28 | 14 | 10 | 20 | 10 | 6 |
+| Watch+phone | Janys + Tom 10/28 | 14 | 11 | 22 | 12 | 7 |
+| Watch+phone | Tom 10/28 | 26 | 41 | 32 | 19 | 10 |
 | Watch+phone | + half of 11/05 | 12 | 8 | 16 | 8 | 6 |
-| Watch+phone+AirPods | Janys 10/28 | 16 | 12 | 20 | 10 | 7 |
-| Watch+phone+AirPods | Janys + Tom 10/28 | 15 | 10 | 20 | 11 | 7 |
-| Watch+phone+AirPods | Tom 10/28 | 25 | 41 | 33 | 20 | 10 |
-| Watch+phone+AirPods | + half of 11/05 | 11 | 7 | 16 | 8 | 6 |
+| Watch+phone+AirPods | Janys 10/28 | 15 | 11 | 20 | 10 | 7 |
+| Watch+phone+AirPods | Janys + Tom 10/28 | 14 | 10 | 20 | 11 | 7 |
+| Watch+phone+AirPods | Tom 10/28 | 26 | 45 | 34 | 20 | 10 |
+| Watch+phone+AirPods | + half of 11/05 | 11 | 8 | 16 | 8 | 6 |
 
 Extra numbers for the Watch GRU trained on Janys 10/28 (`results/scores.json`): elbow bias
-−8.2° in swings (reads straighter than OpenCap), elbow r 0.67 in swings and 0.82 overall,
+−8.3° in swings (reads straighter than OpenCap), elbow r 0.67 in swings and 0.82 overall,
 plane-of-elevation error 16° in swings.
 
 ### 8.3 Cross-session, tested on 10/28
 
-From `experiments/E08_janys_1105/results/cross.json` (swings: 1.2 min Tom, 1.6 min Janys).
+From `experiments/E08_janys_1105/results/cross.json` (swings: 1.5 min Tom, 2.25 min Janys).
 Figures: `experiments/E08_janys_1105/figures/cross_swing.png`, `cross_all.png`.
 
 | GRU variant | Test | Trained on | Elbow | Elevation | Forearm dir. | Elbow (all) | Elev. (all) |
 |---|---|---|---|---|---|---|---|
-| Watch | Tom 10/28 | Janys 10/28 | 27 | 26 | 31 | 17 | 9 |
-| Watch | Tom 10/28 | Janys 10/28 + 11/05 | 19 | 20 | 27 | 14 | 7 |
-| Watch | Janys 10/28 | Tom 10/28 | 25 | 38 | 27 | 16 | 11 |
-| Watch | Janys 10/28 | Janys 11/05 | 10 | 9 | 19 | 7 | 6 |
+| Watch | Tom 10/28 | Janys 10/28 | 26 | 24 | 32 | 17 | 9 |
+| Watch | Tom 10/28 | Janys 10/28 + 11/05 | 18 | 19 | 27 | 14 | 7 |
+| Watch | Janys 10/28 | Tom 10/28 | 26 | 38 | 25 | 16 | 11 |
+| Watch | Janys 10/28 | Janys 11/05 | 10 | 9 | 20 | 7 | 6 |
 | Watch | Janys 10/28 | Janys 11/05 + Tom 10/28 | 10 | 9 | 19 | 7 | 6 |
-| Watch+phone | Tom 10/28 | Janys 10/28 | 24 | 28 | 32 | 21 | 8 |
-| Watch+phone | Tom 10/28 | Janys 10/28 + 11/05 | 19 | 23 | 31 | 19 | 8 |
-| Watch+phone | Janys 10/28 | Tom 10/28 | 19 | 26 | 41 | 17 | 10 |
-| Watch+phone | Janys 10/28 | Janys 11/05 | 14 | 10 | 26 | 11 | 8 |
-| Watch+phone | Janys 10/28 | Janys 11/05 + Tom 10/28 | 15 | 14 | 26 | 13 | 8 |
-| Watch+phone+AirPods | Tom 10/28 | Janys 10/28 | 27 | 30 | 30 | 20 | 8 |
+| Watch+phone | Tom 10/28 | Janys 10/28 | 23 | 27 | 31 | 21 | 8 |
+| Watch+phone | Tom 10/28 | Janys 10/28 + 11/05 | 19 | 23 | 30 | 19 | 8 |
+| Watch+phone | Janys 10/28 | Tom 10/28 | 19 | 25 | 38 | 17 | 10 |
+| Watch+phone | Janys 10/28 | Janys 11/05 | 14 | 10 | 25 | 11 | 8 |
+| Watch+phone | Janys 10/28 | Janys 11/05 + Tom 10/28 | 15 | 14 | 25 | 13 | 8 |
+| Watch+phone+AirPods | Tom 10/28 | Janys 10/28 | 27 | 30 | 29 | 20 | 8 |
 | Watch+phone+AirPods | Tom 10/28 | Janys 10/28 + 11/05 | 22 | 24 | 25 | 16 | 8 |
-| Watch+phone+AirPods | Janys 10/28 | Tom 10/28 | 20 | 32 | 44 | 16 | 10 |
+| Watch+phone+AirPods | Janys 10/28 | Tom 10/28 | 21 | 32 | 43 | 16 | 10 |
 | Watch+phone+AirPods | Janys 10/28 | Janys 11/05 | 13 | 11 | 23 | 11 | 8 |
-| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 + Tom 10/28 | 14 | 13 | 25 | 12 | 9 |
+| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 + Tom 10/28 | 15 | 13 | 24 | 12 | 9 |
 
 What the results say: the same player on another day costs a few degrees (elbow 10 → 14°);
-training only on the other player costs about 10-15° on the elbow and 20-30° on elevation (35-41°
+training only on the other player costs about 10-15° on the elbow and 25-30° on elevation (37-45°
 in Janys's 11/05 swings when trained on Tom). A second Janys day cuts Tom's swing elbow error from
-27° to 19°. The phone and AirPods add nothing consistent over the Watch alone. Tom's swing scores
-are unstable: retraining after the dropout fix (below) moved them by up to 6°, Janys's by ~1°.
+26° to 18°. The phone and AirPods add nothing consistent over the Watch alone. Tom's swing scores
+are unstable: each retrain of the same GRU moves them by up to 6°, Janys's by ~1°.
 
 ## 9. Rebuild recipe
 

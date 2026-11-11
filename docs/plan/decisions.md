@@ -27,6 +27,7 @@ date; don't leave the old version in other docs. Other docs link here instead of
 | 2026-10-16 | **Human testing:** one early device check (stage 0b); all other device tests in stage 9 | Research answered most device questions | [`dev-plan.md`](dev-plan.md), [`device-research.md`](../research/device-research.md) |
 | 2026-10-17 | **One control system:** the iPhone owns the session; Start, Stop, Calibrate, Trial, Repeat and OK do the same from either device, and the Watch shows the iPhone's state and buttons. "Watch only" recording only when the iPhone is unreachable; the iPhone joins it when back | Starting each device separately opened two sessions on the first device run | design §7 |
 | 2026-10-19 | **First accuracy check against single-camera video** (Apple Vision 3D pose, E04); OpenCap stays deferred | Available now with no setup or download; gives joint-angle agreement on our own motions. Limits: one camera, Vision's own error | [`dev-plan.md`](dev-plan.md) stage 11 |
+| 2026-11-11 | **A scored swing = a ball contact** found from the Watch: > 60 Hz impact above 3.5 g with the arm turning ≥ 10 rad/s; window ±0.5 s around the contact | Rotation-speed peaks were ~16 % non-hits and missed gentle strokes; checked on 11/05 video (est. precision 0.99, recall 0.94) | [`shared_pipeline.md` §6](../method_details/shared_pipeline.md#6-swing-detection-ball-contacts) |
 
 ## Open
 
