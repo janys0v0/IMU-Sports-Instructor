@@ -139,3 +139,36 @@ def test_figures_show_players_anonymously():
     assert "trained on Player A + Player B" in texts and "Player B 10/28" in texts
     assert not any("Janys" in t or "Tom" in t for t in texts)
     plt.close(fig)
+
+
+def test_forearm_twist_about_the_forearm_axis():
+    from experiments.E07_pose_methods.twist import from_hold, swing_twist
+
+    y = np.array([0, 1.0, 0])
+    # 30 deg twist about y, then a 70 deg elbow bend about x: the twist part is 30 deg
+    R = (
+        Rotation.from_euler("x", [70.0], degrees=True).as_matrix()
+        @ Rotation.from_euler("y", [30.0], degrees=True).as_matrix()
+    )
+    assert np.allclose(swing_twist(R, y), 30.0, atol=1e-6)
+    t = np.arange(10.0)
+    tw = np.array([10.0] * 5 + [40.0] * 5)
+    hold = np.array([[1.0, 3.0]] * 10)  # each frame's hold window
+    assert np.allclose(from_hold(tw, t, hold), [90.0] * 5 + [120.0] * 5)
+
+
+def test_pronation_error_wraps():
+    from experiments.E07_pose_methods.evaluate import score
+
+    n = 60
+    d = {
+        "gt_valid": np.ones(n, bool), "in_swing": np.zeros(n, bool),
+        "gt_fore": np.tile([0, -1.0, 0], (n, 1)), "gt_hum": np.tile([0, -1.0, 0], (n, 1)),
+        "gt_elev": np.zeros(n), "gt_plane": np.zeros(n), "gt_elbow": np.zeros(n),
+        "gt_mk": np.zeros((n, 20, 3)) + np.r_[0, 0, 0], "gt_prosup": np.full(n, 179.0),
+    }  # fmt: skip
+    d["gt_mk"][:, 2] = [0, -0.25, 0]
+    d["gt_mk"][:, 3] = [0, -0.47, 0]
+    m = {"hum": d["gt_hum"], "fore": d["gt_fore"], "elbow": np.zeros(n), "valid": np.ones(n, bool),
+         "prosup": np.full(n, -179.0)}  # fmt: skip
+    assert np.isclose(score(d, m)["all"]["pronation_mae"], 2.0)

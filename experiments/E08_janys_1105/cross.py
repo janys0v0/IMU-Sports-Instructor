@@ -151,9 +151,7 @@ def main():
             variant = rest.rsplit("_", 1)[0]
             train, test = SPLITS[split]
             z = np.load(PRED / f"{model}_{variant}_{'_'.join(train)}_to_{test}.npz")
-            scores[name] = score(
-                sessions[test], {k: z[k] for k in ("hum", "fore", "elbow", "valid")}
-            )
+            scores[name] = score(sessions[test], {k: z[k] for k in z.files})
         path.write_text(json.dumps(scores, indent=1) + "\n")
         return
     sessions = {

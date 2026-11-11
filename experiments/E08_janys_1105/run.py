@@ -83,7 +83,7 @@ def rescore():
     scores = json.loads(path.read_text())
     for name in scores:
         z = np.load(OUT / "janys" / f"method_{name}.npz")
-        scores[name] = score(te, {k: z[k] for k in ("hum", "fore", "elbow", "valid")})
+        scores[name] = score(te, {k: z[k] for k in z.files})
     path.write_text(json.dumps(scores, indent=1) + "\n")
 
 

@@ -71,6 +71,12 @@ def score(d, m):
                                      d["gt_hum"][both_ok], d["gt_fore"][both_ok], lengths)  # fmt: skip
             s["elbow_pos_cm"] = float(np.median(pe))
             s["wrist_pos_cm"] = float(np.median(pw))
+        if "prosup" in m and "gt_prosup" in d:  # forearm twist (twist.py)
+            tw_ok = mask & np.isfinite(m["prosup"]) & np.isfinite(d["gt_prosup"])
+            if tw_ok.sum() > 30:
+                e = (m["prosup"][tw_ok] - d["gt_prosup"][tw_ok] + 180) % 360 - 180
+                s["pronation_mae"] = float(np.median(np.abs(e)))
+                s["pronation_bias"] = float(np.median(e))
         el_ok = mask & np.isfinite(m["elbow"])
         if el_ok.sum() > 30:
             e = m["elbow"][el_ok] - d["gt_elbow"][el_ok]

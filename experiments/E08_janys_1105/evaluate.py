@@ -18,7 +18,7 @@ def main():
     for p in sorted((OUT / "janys").glob("method_*.npz")):
         name = p.stem[len("method_") :]
         z = np.load(p, allow_pickle=True)
-        out[name] = score(d, {k: z[k] for k in ("hum", "fore", "elbow", "valid")})
+        out[name] = score(d, {k: z[k] for k in z.files})
     (OUT / "scores_all.json").write_text(json.dumps(out, indent=1) + "\n")
     for name, s in out.items():
         sw = s.get("swing", {})
