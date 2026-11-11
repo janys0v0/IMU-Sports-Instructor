@@ -133,9 +133,9 @@ Every variant: `results/cross.md`; figures `figures/cross_swing.png`, `figures/c
 | Tested on | Trained on | GRU elbow | GRU elev. | GRU forearm dir. | Ridge elbow | Ridge elev. |
 |---|---|---|---|---|---|---|
 | Tom 10/28 | Janys 10/28 | 27 | 26 | 31 | 18 | 24 |
-| Tom 10/28 | Janys 10/28 + Janys 11/05 | **19** | **20** | 27 | 16 | 21 |
+| Tom 10/28 | Janys 10/28 + Janys 11/05 | **19** | **20** | 27 | 15 | 20 |
 | Janys 10/28 | Tom 10/28 | 25 | 38 | 27 | 27 | 38 |
-| Janys 10/28 | Janys 11/05 | **10** | **9** | 19 | 19 | 20 |
+| Janys 10/28 | Janys 11/05 | **10** | **9** | 19 | 20 | 20 |
 | Janys 10/28 | Janys 11/05 + Tom 10/28 | 10 | 9 | 19 | 22 | 22 |
 
 - **A second day of Janys helps on a new player.** On Tom, the Watch GRU goes from elbow 27° and

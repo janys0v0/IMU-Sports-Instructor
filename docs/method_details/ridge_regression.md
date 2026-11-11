@@ -138,15 +138,15 @@ No unit conversion beyond gyro/10; the scale differences are removed by standard
 
 ### 3.4 Context stacking
 
-`context(X, seg, half=15)` (`learned_own.py:138-146`) adds, for every feature, its moving mean
+`context(X, seg, half=15)` (`learned_own.py:138-148`) adds, for every feature, its moving mean
 and moving standard deviation over a 31-frame box window ($\pm 15$ frames $= \pm 0.5$ s):
 
 $$m_t = \frac{1}{31}\sum_{j=-15}^{15} x_{t+j}, \qquad s_t = \sqrt{\max\Big(\frac{1}{31}\sum_{j=-15}^{15} x_{t+j}^2 - m_t^2,\ 0\Big)}$$
 
 $$\tilde x_t = [\,x_t,\ m_t,\ s_t\,] \in \mathbb R^{3D}$$
 
-It uses `scipy.ndimage.uniform_filter1d` with `mode="nearest"` (edge values repeated). Each
-training set (one per session) gets its own `context()` call, so windows never mix sessions.
+It uses `scipy.ndimage.uniform_filter1d` with `mode="nearest"` (edge values repeated), run on
+each segment separately, so windows never cross a segment boundary or mix sessions.
 
 ### 3.5 Normalisation
 
@@ -331,17 +331,17 @@ skipped):
 
 | Ridge variant | Split | Elbow | Elevation | Forearm incl. | Forearm dir. | Upper-arm dir. |
 |---|---|---|---|---|---|---|
-| Watch | xplayer | 26 / 18 | 37 / 24 | 15 / 11 | 43 / 29 | 53 / 36 |
+| Watch | xplayer | 26 / 18 | 36 / 24 | 15 / 11 | 43 / 29 | 53 / 36 |
 | Watch | personal | 16 / – | 15 / – | 9 / – | 22 / – | 28 / – |
 | Watch+phone | xplayer | 30 / 16 | 36 / 25 | 14 / 11 | 34 / 27 | 55 / 34 |
 | Watch+phone | personal | 16 / – | 15 / – | 8 / – | 18 / – | 24 / – |
 | Watch+phone+AirPods | xplayer | 33 / 18 | 41 / 26 | 15 / 10 | 36 / 27 | 57 / 37 |
 | Watch+phone+AirPods | personal | 15 / – | 14 / – | 8 / – | 17 / – | 24 / – |
-| All sensors | xplayer | 21 / 29 | 33 / 79 | 24 / 24 | 43 / 66 | 46 / 102 |
-| All sensors | personal (other half) | 12 / 9 | 10 / 7 | 8 / 6 | 17 / 14 | 20 / 13 |
+| All sensors | xplayer | 21 / 29 | 33 / 79 | 23 / 24 | 43 / 66 | 46 / 102 |
+| All sensors | personal (other half) | 13 / 9 | 10 / 7 | 8 / 6 | 17 / 14 | 20 / 13 |
 
 Whole blocks, same order of rows, elbow / elevation (Janys / Tom): Watch xplayer 20/14, 8/8;
-Watch+phone personal 11, 7 (Janys); all sensors personal 8/7, 6/6; all sensors xplayer 34/67,
+Watch+phone personal 11, 7 (Janys); all sensors personal 8/7, 6/6; all sensors xplayer 35/68,
 92/122. For comparison the GRU, all sensors, personal reaches 10/9 elbow and 7/7 elevation in
 swings (`E07…/results/summary.md`).
 
@@ -362,7 +362,7 @@ From `experiments/E08_janys_1105/results/summary.md`. Swings and all minutes, de
 | Watch+phone | + half of 11/05 | 16 | 13 | 21 | 12 | 8 |
 | Watch+phone+AirPods | Janys 10/28 | 18 | 15 | 30 | 12 | 8 |
 | Watch+phone+AirPods | Janys + Tom 10/28 | 17 | 14 | 29 | 14 | 8 |
-| Watch+phone+AirPods | Tom 10/28 | 27 | 44 | 30 | 20 | 10 |
+| Watch+phone+AirPods | Tom 10/28 | 27 | 43 | 30 | 20 | 10 |
 | Watch+phone+AirPods | + half of 11/05 | 16 | 13 | 21 | 12 | 8 |
 
 ### 7.3 Cross-session results, tested on 10/28
@@ -372,24 +372,24 @@ From `experiments/E08_janys_1105/results/cross.json` (swings: 1.2 min Tom, 1.6 m
 | Ridge variant | Test | Trained on | Elbow | Elevation | Forearm dir. | Elbow (all) | Elev. (all) |
 |---|---|---|---|---|---|---|---|
 | Watch | Tom 10/28 | Janys 10/28 | 18 | 24 | 29 | 14 | 8 |
-| Watch | Tom 10/28 | Janys 10/28 + 11/05 | 16 | 21 | 29 | 15 | 7 |
+| Watch | Tom 10/28 | Janys 10/28 + 11/05 | 15 | 20 | 29 | 15 | 7 |
 | Watch | Janys 10/28 | Tom 10/28 | 27 | 38 | 43 | 20 | 9 |
-| Watch | Janys 10/28 | Janys 11/05 | 19 | 20 | 24 | 11 | 9 |
+| Watch | Janys 10/28 | Janys 11/05 | 20 | 20 | 24 | 11 | 9 |
 | Watch | Janys 10/28 | Janys 11/05 + Tom 10/28 | 22 | 22 | 24 | 12 | 9 |
 | Watch+phone | Tom 10/28 | Janys 10/28 | 16 | 25 | 27 | 15 | 9 |
-| Watch+phone | Tom 10/28 | Janys 10/28 + 11/05 | 14 | 21 | 24 | 16 | 9 |
+| Watch+phone | Tom 10/28 | Janys 10/28 + 11/05 | 14 | 20 | 24 | 16 | 9 |
 | Watch+phone | Janys 10/28 | Tom 10/28 | 27 | 37 | 37 | 20 | 9 |
-| Watch+phone | Janys 10/28 | Janys 11/05 | 17 | 19 | 26 | 12 | 11 |
+| Watch+phone | Janys 10/28 | Janys 11/05 | 17 | 19 | 27 | 12 | 11 |
 | Watch+phone | Janys 10/28 | Janys 11/05 + Tom 10/28 | 17 | 23 | 27 | 15 | 10 |
 | Watch+phone+AirPods | Tom 10/28 | Janys 10/28 | 18 | 26 | 27 | 18 | 10 |
 | Watch+phone+AirPods | Tom 10/28 | Janys 10/28 + 11/05 | 14 | 22 | 23 | 17 | 8 |
 | Watch+phone+AirPods | Janys 10/28 | Tom 10/28 | 29 | 42 | 38 | 19 | 10 |
-| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 | 17 | 19 | 26 | 12 | 11 |
-| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 + Tom 10/28 | 16 | 23 | 27 | 15 | 10 |
+| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 | 16 | 19 | 26 | 13 | 11 |
+| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 + Tom 10/28 | 16 | 22 | 27 | 15 | 10 |
 
-Summary: ridge stays at 15-19° on the elbow in swings when trained on the same player, on any date;
+Summary: ridge stays at 16-20° on the elbow in swings when trained on the same player, on any date;
 another player's data costs about 10° on the elbow and 15-25° on elevation in swings. Adding a
-second Janys day helps on Tom (elbow 18 → 14-16°). Adding Tom to Janys 11/05 does not help on
+second Janys day helps on Tom (elbow 16-18 → 14-15°). Adding Tom to Janys 11/05 does not help on
 Janys 10/28.
 
 ## 8. Rebuild recipe
@@ -452,9 +452,6 @@ elbow = np.degrees(np.arccos(np.clip((hum * fore).sum(1), -1, 1)))
   mean and std, so in swings it is 3-12° worse than the GRU trained on the same data.
 - **Loss is not angular.** The squared error on 6 raw numbers is minimised, then normalised; a
   short predicted vector can flip direction after normalisation.
-- **Context crosses segment boundaries.** The `context()` docstring says "within the segment",
-  but `seg` is not used (`learned_own.py:138-146`): the moving window runs across the boundary
-  between two concatenated segments of the same session.
 - **Bias is regularised** along with the weights (the identity covers the ones column).
 - **Elbow mismatch.** The prediction's elbow is the angle between two axes; OpenCap's elbow is
   an IK joint angle. They are close but not identical.

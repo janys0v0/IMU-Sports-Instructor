@@ -23,10 +23,9 @@ method is scored against).
 ## Known code issues found while writing these docs
 
 Not yet fixed. The docs describe the code as it is. (Fixed 11/10: `GRU.predict` left dropout on at
-test time; every GRU score was rerun.)
+test time; every GRU score was rerun. `context()` ran its ridge window across segment
+boundaries; every ridge score was rerun, changes under 1°.)
 
-- `context()` in the same file ignores its `seg` argument: the ±0.5 s ridge context window runs
-  across segment boundaries.
 - `wearmocap.py` calls `body_basis` without the per-segment key, so on 11/05 WearMoCap uses the
   phone-screen forward rule, not the thigh rule the other methods use.
 - `qmt` and `vqf` are installed in `.venv` but not pinned in `requirements.txt`; WearMoCap is not
