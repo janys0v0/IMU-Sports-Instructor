@@ -41,6 +41,10 @@ experiments/
 │   ├── run.py
 │   ├── make_video.py                 camera + skeleton next to the IMU meshes
 │   └── results/<session>/
+├── E05_commercial_imu/          our phone / Watch / AirPods vs commercial IMUs (placement, agreement)
+│   ├── README.md
+│   ├── run.py
+│   └── results/<session>/
 ├── E06_side_by_side/            Apple devices vs commercial IMUs, reconstructed side by side (+ OpenCap slot)
 │   ├── README.md
 │   ├── commercial.py                 commercial logs -> orientation streams (Madgwick + magnetometer heading)
@@ -60,6 +64,7 @@ experiments/
     ├── run.py                        trained models: 10/28 -> 11/05
     ├── frame_methods.py, opensense_run.py   E07's other Apple-only methods on 11/05
     ├── evaluate.py, figures.py       scores and figures
+    ├── cross.py, four_methods.py     cross-session tests; four methods side by side
     ├── camera.py, vision2d.swift, video.py   IMG_0021 clip synced and fitted; comparison video
     └── figures/
 ```
