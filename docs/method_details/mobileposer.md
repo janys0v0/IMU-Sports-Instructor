@@ -329,5 +329,5 @@ swings it misses the raised arm, worst for Janys. AirPods add little (`rw_rp_h` 
 | rw_rp | all | 35.3 | 27 | −15 | 0.30 | 15 | 34 | 53 | 32 |
 
 Compared with Janys 10/28 (swings): elbow 33 -> 25, elevation 62 -> 48, forearm inclination
-23 -> 36, forearm direction 40 -> 73. Our GRU trained on Janys 10/28 gets elbow 14, elevation 10,
-forearm direction 22 on the same 11/05 swings.
+23 -> 36, forearm direction 40 -> 73. Our GRU trained on Janys 10/28 gets elbow 14, elevation 11,
+forearm direction 23 on the same 11/05 swings.

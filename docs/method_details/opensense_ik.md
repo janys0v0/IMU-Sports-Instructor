@@ -415,7 +415,7 @@ The chest + Watch + phone rows come from `results/scores.json`, because `summary
 | all (35.8 min) | 27 (24) | 36 (27) | 33 (34) | 54 (56) | 59 (42) | −5° / 0.08 |
 
 Two sensors cannot recover the arm. Elevation r is about 0, and the elbow barely correlates with
-OpenCap. The trained GRU (Watch only) reaches elbow 14° and elevation 10° on the same swings (E08
+OpenCap. The trained GRU (Watch only) reaches elbow 14° and elevation 11° on the same swings (E08
 README).
 
 ### 5.3 Limitations

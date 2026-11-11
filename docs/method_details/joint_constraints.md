@@ -260,7 +260,7 @@ Elbow correlation with OpenCap (whole block): plain 0.24 / 0.73, swing-aware 0.2
 | Plain | all | 32 (30) | −26 | 15 (14) | 28 (24) | 56 (49) | 33 (28) |
 | Swing-aware | all | 32 (31) | −26 | 16 (14) | 28 (24) | 56 (49) | 36 (33) |
 
-For comparison on 11/05 swings: our GRU trained on Janys 10/28 (Watch only) gets elbow 14°, elevation 10°
+For comparison on 11/05 swings: our GRU trained on Janys 10/28 (Watch only) gets elbow 14°, elevation 11°
 (E08 README).
 
 Figures: `experiments/E07_pose_methods/figures/errors_swing.png`, `per_swing_elbow.png`;

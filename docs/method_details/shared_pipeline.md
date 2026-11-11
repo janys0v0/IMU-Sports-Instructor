@@ -295,9 +295,9 @@ Common keys: `t`, `seg`, `hold`, `<dev>_{quat,gyro,acc,grav,valid}`, `<dev>_hold
 
 | Split | Training | Test | Code |
 |---|---|---|---|
-| E07 `xplayer` | other player's `dataset_full` | this player's block | `experiments/E07_pose_methods/learned_own.py:163-166` |
+| E07 `xplayer` | other player's `dataset_full` | this player's block | `experiments/E07_pose_methods/learned_own.py:165-168` |
 | E07 `personal` | + this player's `dataset_full` frames ≥ 10 s from the block | this player's block | `learned_own.py:52-57, 167-173` |
-| E07 all-sensor | other player's block (+ this player's other half of the block, 2 folds in time, 10 s gap) | block | `learned_own.py:227-240` |
+| E07 all-sensor | other player's block (+ this player's other half of the block, 2 folds in time, 10 s gap) | block | `learned_own.py:229-242` |
 | E08 `janys` / `tom` / `both` | 10/28 `dataset_full` of that player / both | 11/05 | `experiments/E08_janys_1105/run.py:27, 45-57` |
 | E08 `both+half` | both 10/28 + the other half of 11/05 (split at the median time, 10 s gap) | each half of 11/05 | `run.py:58-69` |
 

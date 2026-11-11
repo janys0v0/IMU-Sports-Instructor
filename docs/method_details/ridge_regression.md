@@ -119,7 +119,7 @@ where $R_p, R_w$ are the world-from-device rotation matrices of the phone and Wa
 (`learned_own.py:31-32`) takes the first two columns and flattens them row by row. Both
 quaternions live in the same Apple world frame, so the product does not depend on heading.
 
-All-sensor variant (`all_sensor_features`, `learned_own.py:203-224`): the Watch + phone +
+All-sensor variant (`all_sensor_features`, `learned_own.py:205-226`): the Watch + phone +
 AirPods features plus 36 extra columns:
 
 - 6D of $R_{trunk}^\top R_{upper}$, $R_{trunk}^\top R_{watch}$, $R_{upper}^\top R_{watch}$
@@ -138,7 +138,7 @@ No unit conversion beyond gyro/10; the scale differences are removed by standard
 
 ### 3.4 Context stacking
 
-`context(X, seg, half=15)` (`learned_own.py:136-144`) adds, for every feature, its moving mean
+`context(X, seg, half=15)` (`learned_own.py:138-146`) adds, for every feature, its moving mean
 and moving standard deviation over a 31-frame box window ($\pm 15$ frames $= \pm 0.5$ s):
 
 $$m_t = \frac{1}{31}\sum_{j=-15}^{15} x_{t+j}, \qquad s_t = \sqrt{\max\Big(\frac{1}{31}\sum_{j=-15}^{15} x_{t+j}^2 - m_t^2,\ 0\Big)}$$
@@ -150,13 +150,13 @@ training set (one per session) gets its own `context()` call, so windows never m
 
 ### 3.5 Normalisation
 
-Inside `ridge_fit_predict` (`learned_own.py:147-153`), on the training rows that have valid GT
+Inside `ridge_fit_predict` (`learned_own.py:149-155`), on the training rows that have valid GT
 only:
 
 $$\mu = \text{mean}(\tilde X_{tr}), \quad \sigma = \text{std}(\tilde X_{tr}) + 10^{-6}, \quad A = \Big[\frac{\tilde X_{tr}-\mu}{\sigma},\ \mathbf 1\Big]$$
 
 The test rows use the same $\mu, \sigma$ from training. (The `mu`, `sd` computed in
-`run_split`, `learned_own.py:185-186`, are only used by the GRU.)
+`run_split`, `learned_own.py:187-188`, are only used by the GRU.)
 
 ## 4. Targets and outputs
 
@@ -183,7 +183,7 @@ The OpenCap frame nearest each grid time is used (`data.py:161-168`). A frame ha
 
 ### 4.3 From predictions to angles
 
-The ridge output $\hat y$ has no length constraint. `unit_pair()` (`learned_own.py:156-160`)
+The ridge output $\hat y$ has no length constraint. `unit_pair()` (`learned_own.py:158-162`)
 normalises each half:
 $\hat{\mathbf h} = \hat y_{0:3}/\|\hat y_{0:3}\|$, $\hat{\mathbf f} = \hat y_{3:6}/\|\hat y_{3:6}\|$.
 Then:
@@ -224,7 +224,7 @@ $$\mathcal L(W) = \|AW - Y\|_F^2 + \lambda \|W\|_F^2, \qquad \lambda = 10$$
 
 $$W^\star = (A^\top A + \lambda I)^{-1} A^\top Y$$
 
-solved with `np.linalg.solve` (`learned_own.py:151`). The six outputs are independent least
+solved with `np.linalg.solve` (`learned_own.py:153`). The six outputs are independent least
 squares problems sharing $A$. The identity also covers the bias column, so the bias is
 penalised too. The loss is on the raw 6 numbers, not on angles; unit length is imposed only
 afterwards.
@@ -232,7 +232,7 @@ afterwards.
 ### 5.3 Masking of invalid OpenCap frames
 
 Rows with `gt_valid == False` are removed from $A$ and $Y$ before the fit
-(`learned_own.py:189-191`, `run.py:36-39`). Context is computed before masking, so a valid row
+(`learned_own.py:191-193`, `run.py:36-39`). Context is computed before masking, so a valid row
 can still use invalid neighbours as context. All test frames are predicted; scoring masks them
 later.
 
@@ -241,13 +241,13 @@ later.
 | Setting | Value | Code |
 |---|---|---|
 | Grid rate | 30 Hz | `data.py:28` |
-| Context half-width | 15 frames (±0.5 s), box window of 31 | `learned_own.py:136` |
-| Context statistics | mean and std per feature | `learned_own.py:141-143` |
+| Context half-width | 15 frames (±0.5 s), box window of 31 | `learned_own.py:138` |
+| Context statistics | mean and std per feature | `learned_own.py:143-145` |
 | Gyro scale | ÷ 10 | `learned_own.py:38` |
-| Standardisation | training mean, std + 1e-6 | `learned_own.py:148` |
-| Bias | column of ones, penalised | `learned_own.py:150-151` |
-| λ (L2 strength) | 10.0 | `learned_own.py:147` |
-| Solver | `np.linalg.solve` on normal equations | `learned_own.py:151` |
+| Standardisation | training mean, std + 1e-6 | `learned_own.py:150` |
+| Bias | column of ones, penalised | `learned_own.py:152-153` |
+| λ (L2 strength) | 10.0 | `learned_own.py:149` |
+| Solver | `np.linalg.solve` on normal equations | `learned_own.py:153` |
 | Randomness | none (deterministic) | – |
 | Runtime | 0.05-0.3 s per fit on CPU for the Apple variants (timed on 11/10, Janys + Tom 10/28, 46 640 valid rows) | – |
 
@@ -268,17 +268,17 @@ No hyperparameter search is in the code; λ and the context width are fixed.
 (Counts read from the saved `.npz` files on 11/10.) "Block" = the E06 segments where the
 commercial sensors were worn; "full" = every Calibrate segment OpenCap covers.
 
-### 6.2 E07 splits on 10/28 (`run_split`, `learned_own.py:163-200`)
+### 6.2 E07 splits on 10/28 (`run_split`, `learned_own.py:165-202`)
 
 Test set: the test player's **block**. Players: `janys`, `tom` (`data.py:29`).
 
 - **xplayer**: train on the other player's `dataset_full` only.
 - **personal**: also add the test player's own `dataset_full` frames that are more than 10 s
   outside the block's time span (`split_mask`, `learned_own.py:52-56`). Skipped if under 1
-  minute of valid GT remains (`learned_own.py:169-172`). For Tom the full dataset *is* the
+  minute of valid GT remains (`learned_own.py:171-174`). For Tom the full dataset *is* the
   block, so his personal split is skipped (Tom shows "–" in the tables). For Janys it adds
   18.4 min of grid (10.5 min valid GT).
-- **all sensors** (`run_all_sensors`, `learned_own.py:227-263`): commercial sensors exist only in
+- **all sensors** (`run_all_sensors`, `learned_own.py:229-265`): commercial sensors exist only in
   the blocks, so xplayer trains on the other player's block; personal splits the test block in
   two folds at the median time, trains on the other half (minus ±10 s around the median) plus
   the other player's block, and predicts each half with the model that did not see it.
@@ -342,7 +342,7 @@ skipped):
 
 Whole blocks, same order of rows, elbow / elevation (Janys / Tom): Watch xplayer 20/14, 8/8;
 Watch+phone personal 11, 7 (Janys); all sensors personal 8/7, 6/6; all sensors xplayer 34/67,
-92/122. For comparison the GRU, all sensors, personal reaches 10/8 elbow and 8/5 elevation in
+92/122. For comparison the GRU, all sensors, personal reaches 10/9 elbow and 7/7 elevation in
 swings (`E07…/results/summary.md`).
 
 ### 7.2 E08 results, tested on Janys 11/05
@@ -453,7 +453,7 @@ elbow = np.degrees(np.arccos(np.clip((hum * fore).sum(1), -1, 1)))
 - **Loss is not angular.** The squared error on 6 raw numbers is minimised, then normalised; a
   short predicted vector can flip direction after normalisation.
 - **Context crosses segment boundaries.** The `context()` docstring says "within the segment",
-  but `seg` is not used (`learned_own.py:136-144`): the moving window runs across the boundary
+  but `seg` is not used (`learned_own.py:138-146`): the moving window runs across the boundary
   between two concatenated segments of the same session.
 - **Bias is regularised** along with the weights (the identity covers the ones column).
 - **Elbow mismatch.** The prediction's elbow is the angle between two axes; OpenCap's elbow is

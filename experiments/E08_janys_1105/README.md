@@ -69,10 +69,10 @@ for our models, E07's model of that kind, trained with Janys's own 10/28 minutes
 | MobilePoser, Watch+phone | 24 (33) | 48 (63) | 37 (22) | 76 (39) |
 | IMUCoCo, Watch+phone+AirPods | 25 (25) | 32 (22) | 16 (11) | 66 (28) |
 | Ridge, Watch+phone (Janys + Tom 10/28) | 17 (16) | 14 (15) | 14 (8) | 29 (18) |
-| GRU, Watch (Tom 10/28 only) | 24 (21) | 34 (30) | 14 (14) | 35 (26) |
-| GRU, Watch (Janys 10/28) | 14 (10) | 10 (8) | 10 (6) | 22 (13) |
-| GRU, Watch (Janys + Tom 10/28) | 14 (10) | 10 (8) | 9 (6) | 22 (13) |
-| GRU, Watch (+ half of 11/05) | 11 (10) | 8 (8) | 7 (6) | 17 (13) |
+| GRU, Watch (Tom 10/28 only) | 24 (22) | 35 (35) | 15 (12) | 33 (26) |
+| GRU, Watch (Janys 10/28) | 14 (10) | 11 (9) | 10 (7) | 23 (13) |
+| GRU, Watch (Janys + Tom 10/28) | 13 (10) | 10 (9) | 10 (7) | 21 (13) |
+| GRU, Watch (+ half of 11/05) | 12 (10) | 8 (9) | 8 (7) | 17 (13) |
 
 - **Our GRU trained on Janys 10/28 is the best method on Janys 11/05 that uses no 11/05 data.**
   It beats every method that needs no training by 10–20° on elbow and elevation in swings.
@@ -96,22 +96,22 @@ Janys, swings, median error in degrees. Full table: `results/summary.md`.
 
 | Model | Trained on | Elbow | Elevation | Forearm dir. |
 |---|---|---|---|---|
-| GRU, Watch | Janys 10/28, tested on Janys 10/28 (E07) | 10 | 8 | 13 |
-| GRU, Watch | Janys 10/28 → Janys 11/05 | 14 | 10 | 22 |
-| GRU, Watch | Janys + Tom 10/28 → Janys 11/05 | 14 | 10 | 22 |
-| GRU, Watch | Tom 10/28 → Janys 11/05 | 24 | 34 | 35 |
-| GRU, Watch | Janys + Tom 10/28 + half of Janys 11/05 | 11 | 8 | 17 |
+| GRU, Watch | Janys 10/28, tested on Janys 10/28 (E07) | 10 | 9 | 13 |
+| GRU, Watch | Janys 10/28 → Janys 11/05 | 14 | 11 | 23 |
+| GRU, Watch | Janys + Tom 10/28 → Janys 11/05 | 13 | 10 | 21 |
+| GRU, Watch | Tom 10/28 → Janys 11/05 | 24 | 35 | 33 |
+| GRU, Watch | Janys + Tom 10/28 + half of Janys 11/05 | 12 | 8 | 17 |
 | Ridge, Watch+phone | Janys 10/28, tested on Janys 10/28 (E07) | 16 | 15 | 18 |
 | Ridge, Watch+phone | Janys + Tom 10/28 → Janys 11/05 | 17 | 14 | 29 |
 
 - **From Janys 10/28 to Janys 11/05 costs a few degrees, not the model.**
-  - The Watch-only GRU goes from 10° to 14° on the elbow and from 8° to 10° on elevation.
+  - The Watch-only GRU goes from 10° to 14° on the elbow and from 9° to 11° on elevation.
   - Over all minutes, not just swings, it is elbow 9° and elevation 6°.
   - Ridge barely changes on the angles. Forearm direction suffers more: it is the one target that
     depends on how the trunk is oriented relative to the arm.
 - **Training on another player is still the problem.** Trained on Tom 10/28 alone, every model is 23–27° off on the
   elbow and 31–44° on elevation in Janys's swings. That's the same as E07's cross-player result.
-- **Half of Janys 11/05 in training closes most of the gap:** GRU elbow 11°, elevation 8°. That
+- **Half of Janys 11/05 in training closes most of the gap:** GRU elbow 12°, elevation 8°. That
   is back at the Janys 10/28 level.
 - **The phone and AirPods add nothing on Janys 11/05**, as in E07; the Watch carries the arm.
 - **No drift over the 67 min session.** Error per segment stays flat (`figures/error_over_session.png`).
@@ -127,21 +127,21 @@ Every variant: `results/cross.md`; figures `figures/cross_swing.png`, `figures/c
 
 | Tested on | Trained on | GRU elbow | GRU elev. | GRU forearm dir. | Ridge elbow | Ridge elev. |
 |---|---|---|---|---|---|---|
-| Tom 10/28 | Janys 10/28 | 22 | 22 | 25 | 18 | 24 |
-| Tom 10/28 | Janys 10/28 + Janys 11/05 | **14** | **15** | 28 | 16 | 21 |
-| Janys 10/28 | Tom 10/28 | 23 | 39 | 25 | 27 | 38 |
-| Janys 10/28 | Janys 11/05 | **10** | **8** | 19 | 19 | 20 |
-| Janys 10/28 | Janys 11/05 + Tom 10/28 | 11 | 9 | 18 | 22 | 22 |
+| Tom 10/28 | Janys 10/28 | 27 | 26 | 31 | 18 | 24 |
+| Tom 10/28 | Janys 10/28 + Janys 11/05 | **19** | **20** | 27 | 16 | 21 |
+| Janys 10/28 | Tom 10/28 | 25 | 38 | 27 | 27 | 38 |
+| Janys 10/28 | Janys 11/05 | **10** | **9** | 19 | 19 | 20 |
+| Janys 10/28 | Janys 11/05 + Tom 10/28 | 10 | 9 | 19 | 22 | 22 |
 
-- **A second day of Janys helps on a new player.** On Tom, the Watch GRU goes from elbow 22° and
-  elevation 22° to 14° and 15°. Forearm direction does not improve (25° to 28°).
+- **A second day of Janys helps on a new player.** On Tom, the Watch GRU goes from elbow 27° and
+  elevation 26° to 19° and 20°. Forearm direction barely changes (31° to 27°).
 - **Janys's other day is as good as her same-day minutes.** Trained on Janys 11/05 only, the GRU
-  reaches elbow 10° and elevation 8° on Janys 10/28: E07's same-session personal result.
-- **Adding Tom to Janys 11/05 changes nothing on Janys** (11° / 9°). His data neither helps nor
-  hurts once her own day is there.
-- The phone and AirPods still add nothing; with them the GRU is 3-6° worse on the elbow.
-- Caveat: GRU predictions keep dropout on (see `docs/method_details/README.md`), so single
-  numbers can shift slightly between runs.
+  reaches elbow 10° and elevation 9° on Janys 10/28: E07's same-session personal result.
+- **Adding Tom to Janys 11/05 changes nothing on Janys** (10° / 9°).
+- The phone and AirPods add nothing consistent: the GRU elbow is 6° better to 5° worse with them.
+- Caveat: Tom's swing scores are unstable. After fixing the GRU's dropout at test time (11/10) and
+  retraining, they moved by up to 6°; Janys's moved by 1° or less. Read differences under ~5° on
+  Tom as noise.
 
 **Limits:**
 - One test player and date: Janys 11/05.

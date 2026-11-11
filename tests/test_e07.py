@@ -57,3 +57,27 @@ def test_lowpass_angle_handles_wraparound():
     a[::2] = np.radians(-179.0)  # alternating across +-180
     out = np.degrees(lowpass_angle(a))
     assert np.all(np.abs(np.abs(out) - 180) < 2)
+
+
+def test_gru_predict_is_deterministic():
+    from experiments.E07_pose_methods.learned_own import GRU, WIN
+
+    rng = np.random.default_rng(0)
+    n = 2 * WIN
+    X = rng.normal(size=(n, 4)).astype(np.float32)
+    Y = np.tile([0, -1.0, 0, 0, -1.0, 0], (n, 1))
+    net = GRU(4, hidden=8).fit(X, Y, np.ones(n, bool), np.zeros(n, int), epochs=1)
+    a = net.predict(X, np.zeros(n, int))
+    b = net.predict(X, np.zeros(n, int))
+    assert np.array_equal(a, b)  # dropout must be off at test time
+
+
+def test_context_stays_within_segment():
+    from experiments.E07_pose_methods.learned_own import context
+
+    X = np.r_[np.zeros((40, 1)), np.full((40, 1), 100.0)]  # two segments, very different values
+    seg = np.r_[np.zeros(40, int), np.ones(40, int)]
+    c = context(X, seg)
+    # columns: value, ±15-frame mean, std; frames next to the boundary must not see the other segment
+    assert np.allclose(c[:40, 1:], 0)
+    assert np.allclose(c[40:, 1], 100) and np.allclose(c[40:, 2], 0)

@@ -118,7 +118,7 @@ $$R_{pw}(t) = R_p(t)^\top R_w(t), \qquad \text{6D}(R_{pw}) = [R_{00}, R_{01}, R_
 
 Both quaternions are in the same Apple world frame, so $R_{pw}$ does not depend on heading.
 
-All-sensor variant (`all_sensor_features`, `learned_own.py:203-224`) adds 36 columns: 6D of
+All-sensor variant (`all_sensor_features`, `learned_own.py:205-226`) adds 36 columns: 6D of
 $R_{trunk}^\top R_{upper}$, $R_{trunk}^\top R_{watch}$, $R_{upper}^\top R_{watch}$ (heading-corrected
 segment rotations from `align.py`), then gravity, gyro/10 and user acceleration of the upper-arm
 and chest sensors.
@@ -132,8 +132,8 @@ and chest sensors.
 
 ### 3.4 Standardisation
 
-Per feature, over all training frames (valid GT or not) (`learned_own.py:185-186`,
-`learned_own.py:194`, `run.py:32-33`, `run.py:40-42`):
+Per feature, over all training frames (valid GT or not) (`learned_own.py:187-188`,
+`learned_own.py:196`, `run.py:32-33`, `run.py:40-42`):
 
 $$\mu = \text{mean}(X_{tr}), \quad \sigma = \text{std}(X_{tr}) + 10^{-6}, \quad x' = \frac{x - \mu}{\sigma}$$
 
@@ -150,7 +150,7 @@ stacking (unlike ridge): the GRU sees time itself.
 3. Segments shorter than 120 frames give no window.
 
 When several training sets are concatenated, their segment ids are offset by $1000\,i$ (and the
-11/05 half by 5000 in `both+half`) so they stay distinct (`learned_own.py:183`, `run.py:53`,
+11/05 half by 5000 in `both+half`) so they stay distinct (`learned_own.py:185`, `run.py:53`,
 `run.py:67`). Example: Janys 10/28 full gives 1 594 windows, Tom 10/28 full 715.
 
 ## 4. Targets and outputs
@@ -176,7 +176,7 @@ including invalid ones (checked on all five datasets), so masking by multiplicat
 ### 4.3 From predictions to angles
 
 The network already outputs unit vectors; after Hann blending (section 5.4) they are
-renormalised by `unit_pair()` (`learned_own.py:156-160`). Then:
+renormalised by `unit_pair()` (`learned_own.py:158-162`). Then:
 
 | Quantity | Formula | Code |
 |---|---|---|
@@ -247,7 +247,7 @@ $= 576D + 224\,646$ (verified with `torch` on 11/10):
 ### 5.3 Loss
 
 For window $i$, frame $t$, predicted unit vectors $\hat{\mathbf h}, \hat{\mathbf f}$ and GT
-$\mathbf h, \mathbf f$, with $m_{i,t} \in \{0,1\}$ = `gt_valid` (`learned_own.py:105-110`):
+$\mathbf h, \mathbf f$, with $m_{i,t} \in \{0,1\}$ = `gt_valid` (`learned_own.py:106-111`):
 
 $$c^{h}_{i,t} = \hat{\mathbf h}_{i,t}\cdot\mathbf h_{i,t}, \qquad c^{f}_{i,t} = \hat{\mathbf f}_{i,t}\cdot\mathbf f_{i,t}$$
 
@@ -259,7 +259,7 @@ still pass through the network as input but add nothing to the loss.
 
 ### 5.4 Inference: Hann blending
 
-`predict(X, seg)` (`learned_own.py:116-133`):
+`predict(X, seg)` (`learned_own.py:117-135`):
 
 1. Cut the test features into the same 120-frame windows, hop 30.
 2. Run them in batches of 256 with `torch.no_grad()`.
@@ -267,14 +267,14 @@ still pass through the network as input but add nothing to the loss.
    positive weights, near zero at the edges, 1 in the middle):
    $$\hat y_t = \frac{\sum_{\text{windows } k \ni t} w_{t - s_k}\,\hat y^{(k)}_t}{\max\big(\sum_k w_{t-s_k},\ 10^{-9}\big)}$$
 4. Renormalise with `unit_pair()`. Frames covered by no window (segments < 4 s) get
-   $0/0 = $ NaN and are marked invalid (`learned_own.py:200`, `run.py:72`).
+   $0/0 = $ NaN and are marked invalid (`learned_own.py:202`, `run.py:72`).
 
 Each interior frame is covered by 4 windows; the Hann weight trusts the window centre, where the
 bidirectional GRU has context on both sides.
 
 ### 5.5 Training settings
 
-`GRU.fit` (`learned_own.py:93-114`):
+`GRU.fit` (`learned_own.py:93-115`):
 
 | Setting | Value | Code |
 |---|---|---|
@@ -283,11 +283,11 @@ bidirectional GRU has context on both sides.
 | Layers | 2, bidirectional, `batch_first=True` | `learned_own.py:81-83` |
 | Dropout | 0.2 between GRU layers | `learned_own.py:82` |
 | Head | Linear 192 → 6, then L2-normalise each 3-vector | `learned_own.py:84`, `learned_own.py:88-91` |
-| Input noise | Gaussian, σ = 0.02 (standardised units), fresh each batch | `learned_own.py:105` |
+| Input noise | Gaussian, σ = 0.02 (standardised units), fresh each batch | `learned_own.py:106` |
 | Optimiser | AdamW, lr 2e-3, weight decay 1e-3, default betas | `learned_own.py:100` |
 | Learning-rate schedule | none (constant) | – |
 | Epochs | 40 | `learned_own.py:93` |
-| Batch | 64 windows, reshuffled every epoch (`torch.randperm`) | `learned_own.py:102-104` |
+| Batch | 64 windows, reshuffled every epoch (`torch.randperm`) | `learned_own.py:103-105` |
 | Seed | `torch.manual_seed(0)` | `learned_own.py:95` |
 | Validation / early stopping | none; the last epoch is used | – |
 | Device | CPU. Comment: MPS returns NaN for this GRU in torch 2.1 | `learned_own.py:76-78` |
@@ -317,8 +317,8 @@ flowchart TB
 
 | Run | Code | Inputs | Training data | Test |
 |---|---|---|---|---|
-| E07 Apple variants | `run_split`, `learned_own.py:163-200` | 3 variants | xplayer / personal | 10/28 block |
-| E07 all sensors | `run_all_sensors`, `learned_own.py:227-263` | 69 features | other player's block (+ own other half) | 10/28 block |
+| E07 Apple variants | `run_split`, `learned_own.py:165-202` | 3 variants | xplayer / personal | 10/28 block |
+| E07 all sensors | `run_all_sensors`, `learned_own.py:229-265` | 69 features | other player's block (+ own other half) | 10/28 block |
 | E08 11/05 | `run.py:45-75` | 3 variants | `janys`, `both`, `tom`, `both+half` | Janys 11/05 |
 | E08 cross-session | `cross.py:49-65` | 3 variants | 5 splits | 10/28 full |
 
@@ -344,11 +344,11 @@ Test = the test player's **block**.
 - **xplayer**: train on the other player's `dataset_full`.
 - **personal**: add the test player's `dataset_full` frames more than 10 s outside the block
   (`split_mask`, `learned_own.py:52-56`); skipped below 1 min of valid GT
-  (`learned_own.py:169-172`). Tom's full dataset is his block, so only Janys has a personal
+  (`learned_own.py:171-174`). Tom's full dataset is his block, so only Janys has a personal
   result (18.4 min grid, 10.5 min valid GT, 1 092 extra windows).
 - **all sensors**: xplayer = other player's block; personal = two folds at the block's median
   time, train on the other half minus ±10 s around the median plus the other player's block
-  (`learned_own.py:233-261`).
+  (`learned_own.py:235-263`).
 
 ### 7.3 E08 training sets, tested on Janys 11/05 (`run.py:27`)
 
@@ -389,17 +389,17 @@ Swings, median error in degrees, Janys / Tom (`E07…/results/scores.json`; "–
 
 | GRU variant | Split | Elbow | Elevation | Forearm incl. | Forearm dir. | Upper-arm dir. | Elbow r |
 |---|---|---|---|---|---|---|---|
-| Watch | xplayer | 21 / 21 | 30 / 20 | 14 / 15 | 26 / 25 | 43 / 30 | 0.38 / 0.62 |
-| Watch | personal | 10 / – | 8 / – | 6 / – | 13 / – | 14 / – | 0.81 / – |
-| Watch+phone | xplayer | 21 / 25 | 35 / 29 | 14 / 18 | 35 / 32 | 50 / 43 | 0.28 / 0.49 |
-| Watch+phone | personal | 11 / – | 8 / – | 6 / – | 14 / – | 15 / – | 0.81 / – |
-| Watch+phone+AirPods | xplayer | 22 / 27 | 34 / 33 | 16 / 22 | 40 / 33 | 53 / 51 | 0.24 / 0.55 |
-| Watch+phone+AirPods | personal | 11 / – | 8 / – | 7 / – | 15 / – | 16 / – | 0.80 / – |
-| All sensors | xplayer | 23 / 29 | 25 / 59 | 18 / 33 | 48 / 44 | 49 / 75 | 0.03 / 0.39 |
-| All sensors | personal (other half) | 10 / 8 | 8 / 5 | 7 / 5 | 14 / 12 | 16 / 10 | 0.81 / 0.88 |
+| Watch | xplayer | 22 / 26 | 35 / 26 | 12 / 13 | 26 / 24 | 45 / 38 | 0.39 / 0.63 |
+| Watch | personal | 10 / – | 9 / – | 7 / – | 13 / – | 16 / – | 0.79 / – |
+| Watch+phone | xplayer | 21 / 23 | 34 / 26 | 14 / 17 | 35 / 29 | 50 / 40 | 0.30 / 0.57 |
+| Watch+phone | personal | 12 / – | 9 / – | 7 / – | 15 / – | 16 / – | 0.77 / – |
+| Watch+phone+AirPods | xplayer | 22 / 24 | 33 / 35 | 16 / 21 | 37 / 33 | 52 / 47 | 0.34 / 0.60 |
+| Watch+phone+AirPods | personal | 10 / – | 8 / – | 7 / – | 13 / – | 15 / – | 0.81 / – |
+| All sensors | xplayer | 23 / 36 | 25 / 53 | 13 / 27 | 39 / 39 | 41 / 77 | 0.00 / 0.23 |
+| All sensors | personal (other half) | 10 / 9 | 7 / 7 | 7 / 6 | 14 / 12 | 15 / 10 | 0.84 / 0.87 |
 
-Whole blocks, elbow / elevation: Watch xplayer 14/15, 10/8; Watch personal 8, 5 (Janys); all
-sensors personal 6/6, 5/4.
+Whole blocks, elbow / elevation: Watch xplayer 13/18, 10/9; Watch personal 8, 6 (Janys); all
+sensors personal 6/5, 5/4.
 
 ### 8.2 E08, tested on Janys 11/05
 
@@ -407,23 +407,23 @@ sensors personal 6/6, 5/4.
 
 | GRU variant | Trained on | Elbow | Elevation | Forearm dir. | Elbow (all) | Elev. (all) |
 |---|---|---|---|---|---|---|
-| Watch | *E07 personal, tested on Janys 10/28* | 10 | 8 | 13 | 8 | 5 |
-| Watch | Janys 10/28 | 14 | 10 | 22 | 9 | 6 |
-| Watch | Janys + Tom 10/28 | 14 | 10 | 22 | 9 | 7 |
-| Watch | Tom 10/28 | 24 | 34 | 35 | 19 | 11 |
-| Watch | + half of 11/05 | 11 | 8 | 17 | 9 | 6 |
-| Watch+phone | Janys 10/28 | 16 | 11 | 21 | 11 | 6 |
-| Watch+phone | Janys + Tom 10/28 | 14 | 10 | 22 | 12 | 6 |
-| Watch+phone | Tom 10/28 | 24 | 35 | 32 | 18 | 9 |
-| Watch+phone | + half of 11/05 | 11 | 8 | 16 | 8 | 5 |
-| Watch+phone+AirPods | Janys 10/28 | 15 | 11 | 21 | 9 | 6 |
-| Watch+phone+AirPods | Janys + Tom 10/28 | 15 | 10 | 21 | 11 | 6 |
-| Watch+phone+AirPods | Tom 10/28 | 23 | 38 | 34 | 19 | 9 |
-| Watch+phone+AirPods | + half of 11/05 | 12 | 8 | 16 | 9 | 6 |
+| Watch | *E07 personal, tested on Janys 10/28* | 10 | 9 | 13 | 8 | 6 |
+| Watch | Janys 10/28 | 14 | 11 | 23 | 9 | 6 |
+| Watch | Janys + Tom 10/28 | 13 | 10 | 21 | 9 | 7 |
+| Watch | Tom 10/28 | 24 | 35 | 33 | 18 | 12 |
+| Watch | + half of 11/05 | 12 | 8 | 17 | 9 | 6 |
+| Watch+phone | Janys 10/28 | 15 | 11 | 20 | 10 | 6 |
+| Watch+phone | Janys + Tom 10/28 | 15 | 11 | 22 | 12 | 7 |
+| Watch+phone | Tom 10/28 | 26 | 37 | 31 | 19 | 10 |
+| Watch+phone | + half of 11/05 | 12 | 8 | 16 | 8 | 6 |
+| Watch+phone+AirPods | Janys 10/28 | 16 | 12 | 20 | 10 | 7 |
+| Watch+phone+AirPods | Janys + Tom 10/28 | 15 | 10 | 20 | 11 | 7 |
+| Watch+phone+AirPods | Tom 10/28 | 25 | 41 | 33 | 20 | 10 |
+| Watch+phone+AirPods | + half of 11/05 | 11 | 7 | 16 | 8 | 6 |
 
 Extra numbers for the Watch GRU trained on Janys 10/28 (`results/scores.json`): elbow bias
-−6.6° in swings (reads straighter than OpenCap), elbow r 0.66 in swings and 0.81 overall,
-plane-of-elevation error 17° in swings.
+−8.2° in swings (reads straighter than OpenCap), elbow r 0.67 in swings and 0.82 overall,
+plane-of-elevation error 16° in swings.
 
 ### 8.3 Cross-session, tested on 10/28
 
@@ -432,26 +432,27 @@ Figures: `experiments/E08_janys_1105/figures/cross_swing.png`, `cross_all.png`.
 
 | GRU variant | Test | Trained on | Elbow | Elevation | Forearm dir. | Elbow (all) | Elev. (all) |
 |---|---|---|---|---|---|---|---|
-| Watch | Tom 10/28 | Janys 10/28 | 22 | 22 | 25 | 17 | 9 |
-| Watch | Tom 10/28 | Janys 10/28 + 11/05 | 14 | 15 | 28 | 14 | 8 |
-| Watch | Janys 10/28 | Tom 10/28 | 23 | 39 | 25 | 14 | 11 |
-| Watch | Janys 10/28 | Janys 11/05 | 10 | 8 | 19 | 7 | 6 |
-| Watch | Janys 10/28 | Janys 11/05 + Tom 10/28 | 11 | 9 | 18 | 7 | 5 |
-| Watch+phone | Tom 10/28 | Janys 10/28 | 29 | 31 | 30 | 20 | 10 |
-| Watch+phone | Tom 10/28 | Janys 10/28 + 11/05 | 20 | 21 | 28 | 17 | 7 |
-| Watch+phone | Janys 10/28 | Tom 10/28 | 22 | 30 | 37 | 19 | 11 |
-| Watch+phone | Janys 10/28 | Janys 11/05 | 15 | 12 | 23 | 12 | 8 |
-| Watch+phone | Janys 10/28 | Janys 11/05 + Tom 10/28 | 14 | 11 | 28 | 13 | 8 |
-| Watch+phone+AirPods | Tom 10/28 | Janys 10/28 | 31 | 32 | 29 | 19 | 8 |
-| Watch+phone+AirPods | Tom 10/28 | Janys 10/28 + 11/05 | 18 | 20 | 30 | 18 | 7 |
-| Watch+phone+AirPods | Janys 10/28 | Tom 10/28 | 19 | 31 | 42 | 16 | 9 |
-| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 | 13 | 11 | 23 | 12 | 8 |
-| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 + Tom 10/28 | 13 | 15 | 23 | 12 | 9 |
+| Watch | Tom 10/28 | Janys 10/28 | 27 | 26 | 31 | 17 | 9 |
+| Watch | Tom 10/28 | Janys 10/28 + 11/05 | 19 | 20 | 27 | 14 | 7 |
+| Watch | Janys 10/28 | Tom 10/28 | 25 | 38 | 27 | 16 | 11 |
+| Watch | Janys 10/28 | Janys 11/05 | 10 | 9 | 19 | 7 | 6 |
+| Watch | Janys 10/28 | Janys 11/05 + Tom 10/28 | 10 | 9 | 19 | 7 | 6 |
+| Watch+phone | Tom 10/28 | Janys 10/28 | 24 | 28 | 32 | 21 | 8 |
+| Watch+phone | Tom 10/28 | Janys 10/28 + 11/05 | 19 | 23 | 31 | 19 | 8 |
+| Watch+phone | Janys 10/28 | Tom 10/28 | 19 | 26 | 41 | 17 | 10 |
+| Watch+phone | Janys 10/28 | Janys 11/05 | 14 | 10 | 26 | 11 | 8 |
+| Watch+phone | Janys 10/28 | Janys 11/05 + Tom 10/28 | 15 | 14 | 26 | 13 | 8 |
+| Watch+phone+AirPods | Tom 10/28 | Janys 10/28 | 27 | 30 | 30 | 20 | 8 |
+| Watch+phone+AirPods | Tom 10/28 | Janys 10/28 + 11/05 | 22 | 24 | 25 | 16 | 8 |
+| Watch+phone+AirPods | Janys 10/28 | Tom 10/28 | 20 | 32 | 44 | 16 | 10 |
+| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 | 13 | 11 | 23 | 11 | 8 |
+| Watch+phone+AirPods | Janys 10/28 | Janys 11/05 + Tom 10/28 | 14 | 13 | 25 | 12 | 9 |
 
 What the results say: the same player on another day costs a few degrees (elbow 10 → 14°);
-training only on the other player costs about 10° on the elbow and 20-30° on elevation (34-39° in
-Janys's swings when trained on Tom). A second Janys day cuts Tom's swing
-elbow error from 22° to 14°. The phone and AirPods add nothing over the Watch alone.
+training only on the other player costs about 10-15° on the elbow and 20-30° on elevation (35-41°
+in Janys's 11/05 swings when trained on Tom). A second Janys day cuts Tom's swing elbow error from
+27° to 19°. The phone and AirPods add nothing consistent over the Watch alone. Tom's swing scores
+are unstable: retraining after the dropout fix (below) moved them by up to 6°, Janys's by ~1°.
 
 ## 9. Rebuild recipe
 
@@ -506,15 +507,12 @@ elbow = np.degrees(np.arccos(np.clip((hum * fore).sum(1), -1, 1)))
 
 ## 10. Limitations and caveats
 
-- **Dropout stays on at prediction.** `GRU` never calls `self.net.eval()`, and `torch.nn`
-  modules start in training mode, so the 0.2 dropout between GRU layers is active inside
-  `predict()` (`learned_own.py:116-133`). Checked on 11/10: `net.training` is `True`, and two
-  `predict()` calls on the same input give different outputs. The Hann blend over 4 windows
-  averages some of this noise; results are reproducible only because the seed fixes the random
-  stream. Adding `self.net.eval()` before predicting would likely change the numbers a little.
+- **Dropout at prediction (fixed 11/10).** `fit()` now calls `self.net.train()` and `predict()`
+  calls `self.net.eval()`; before that the 0.2 dropout was active at test time. Every GRU score
+  in E07/E08 was rerun; `tests/test_e07.py::test_gru_predict_is_deterministic` guards it.
 - **Two players, two dates.** About 20 min of 10/28 data and 36 min of Janys on 11/05.
   Cross-player error is 10-25° worse than same-player; the all-sensor model (69 inputs) fails
-  across players (Tom elevation 59° in swings).
+  across players (Tom elevation 53° in swings).
 - **Personal and `both+half` splits are within one session**; they are a best case.
 - **No validation set, no early stopping, no tuning.** Hyperparameters are fixed; the model after
   epoch 40 is used.

@@ -22,11 +22,9 @@ method is scored against).
 
 ## Known code issues found while writing these docs
 
-Not yet fixed. The docs describe the code as it is.
+Not yet fixed. The docs describe the code as it is. (Fixed 11/10: `GRU.predict` left dropout on at
+test time; every GRU score was rerun.)
 
-- `GRU.predict` (`experiments/E07_pose_methods/learned_own.py`) never calls `net.eval()`, so dropout
-  (0.2) stays on at test time and predictions are slightly random. Every GRU score in E07/E08
-  includes this noise.
 - `context()` in the same file ignores its `seg` argument: the ±0.5 s ridge context window runs
   across segment boundaries.
 - `wearmocap.py` calls `body_basis` without the per-segment key, so on 11/05 WearMoCap uses the

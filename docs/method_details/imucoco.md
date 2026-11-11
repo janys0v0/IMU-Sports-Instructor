@@ -337,5 +337,5 @@ commercial sensors: elbow 30, elevation 24, forearm direction 47.
 
 Compared with Janys 10/28 (swings): elbow 25 -> 25, elevation 22 -> 32, forearm inclination
 11 -> 16, forearm direction 28 -> 66. Still the best published model on forearm inclination on
-11/05; our GRU trained on Janys 10/28 gets elbow 14, elevation 10, forearm inclination 10, forearm
-direction 22 on the same swings.
+11/05; our GRU trained on Janys 10/28 gets elbow 14, elevation 11, forearm inclination 10, forearm
+direction 23 on the same swings.

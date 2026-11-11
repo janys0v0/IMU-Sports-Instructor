@@ -39,7 +39,7 @@ Survey and links: the research notes in the report.
 | WearMoCap, Watch | 27 | 20 | 12 | 35 |
 | MobilePoser, Watch+phone+AirPods | 27 | 39 | 22 | 40 |
 | IMUCoCo, Watch+phone+AirPods | 30 | 26 | 12 | 33 |
-| Ours GRU, Watch, other player only | 21 | 25 | 15 | **26** |
+| Ours GRU, Watch, other player only | 24 | 30 | 13 | **25** |
 | Ours GRU, all sensors, + own half of the block | **9** | **7** | **6** | **13** |
 
 - **Shoulder elevation and the elbow need a sensor on the upper arm, or the player's own data.**
@@ -60,7 +60,7 @@ Survey and links: the research notes in the report.
   commercial upper-arm and chest sensors to IMUCoCo did not help (placement on the mesh is not a
   calibration).
 - **Our trained models, other player only,** beat the published ones on direction (GRU forearm
-  26°) but not on the elbow (21°); with all sensors they fail across players (elevation 56°):
+  25°) but not on the elbow (24°); with all sensors they fail across players (elevation 56°):
   20 minutes from two people cannot teach a 9-sensor model to generalise.
 - **With the player's own data the error halves** (all-sensor GRU: elbow 9°, elevation 7°,
   forearm 13° in swings). Caveat: training and test are minutes apart in the same session; this

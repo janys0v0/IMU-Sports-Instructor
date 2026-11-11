@@ -98,6 +98,7 @@ class GRU:
         ys = torch.tensor(np.stack([Y[s : s + WIN] for s in st])).to(self.dev)
         ms = torch.tensor(np.stack([M[s : s + WIN] for s in st])).float().to(self.dev)
         opt = torch.optim.AdamW(self.net.parameters(), lr=lr, weight_decay=1e-3)
+        self.net.train()
         for _ in range(epochs):
             perm = torch.randperm(len(xs))
             for b in range(0, len(xs), 64):
@@ -118,6 +119,7 @@ class GRU:
         out, cnt = np.zeros((len(X), 6)), np.zeros(len(X))
         st = windows(len(X), seg)
         w = np.hanning(WIN + 2)[1:-1]
+        self.net.eval()  # dropout off at test time
         with torch.no_grad():
             for b in range(0, len(st), 256):
                 ss = st[b : b + 256]
@@ -137,11 +139,13 @@ def context(X, seg, half=15):
     """Per-frame features plus their mean and std over ±half frames (within the segment)."""
     from scipy.ndimage import uniform_filter1d
 
-    parts = [X]
-    m = uniform_filter1d(X, 2 * half + 1, axis=0, mode="nearest")
-    sd = np.sqrt(np.maximum(uniform_filter1d(X**2, 2 * half + 1, axis=0, mode="nearest") - m**2, 0))
-    parts += [m, sd]
-    return np.concatenate(parts, 1)
+    m, m2 = np.empty_like(X), np.empty_like(X)
+    for k in np.unique(seg):
+        i = np.nonzero(seg == k)[0]
+        m[i] = uniform_filter1d(X[i], 2 * half + 1, axis=0, mode="nearest")
+        m2[i] = uniform_filter1d(X[i] ** 2, 2 * half + 1, axis=0, mode="nearest")
+    sd = np.sqrt(np.maximum(m2 - m**2, 0))
+    return np.concatenate([X, m, sd], 1)
 
 
 def ridge_fit_predict(Xtr, Ytr, Xte, lam=10.0):

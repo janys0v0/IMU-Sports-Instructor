@@ -308,7 +308,7 @@ Checked which published models could run on head + one wrist + thigh data:
 - Best without training: chest + upper arm + Watch geometry with qmt's heading correction and a
   fixed 18° hanging-elbow angle (swings: elbow 11°, elevation 16°). Published models (WearMoCap,
   MobilePoser, IMUCoCo) and Watch-only methods: elevation 20-40° off in swings. Our GRU trained on
-  the other player: forearm direction 26° (best cross-player); with the player's own minutes
+  the other player: forearm direction 25° (best cross-player); with the player's own minutes
   (same session) the all-sensor GRU reaches elbow 9°, elevation 7°.
 - Found: commercial magnetometers unusable near the court (VQF 6-axis drifts least, 15-20°/min
   heading); body forward from the pocket phone's screen was ~110° off for Tom; MPS returns NaN
@@ -323,9 +323,9 @@ Checked which published models could run on head + one wrist + thigh data:
   body rotations with OpenSim and aligned to the Watch per recording (unambiguous peaks, no drift).
   Test set: 35.8 min, 278 swings, session `20261105-124805-P01`.
 - E07's GRU and ridge, unchanged, trained on 10/28. Swings, Janys:
-  - Watch-only GRU: elbow 14°, elevation 10° on Janys 11/05 (vs 10° / 8° on Janys 10/28).
-  - Trained on Tom only: 24° / 34°.
-  - With half of 11/05 added to training: 11° / 8°.
+  - Watch-only GRU: elbow 14°, elevation 11° on Janys 11/05 (vs 10° / 9° on Janys 10/28).
+  - Trained on Tom only: 24° / 35°.
+  - With half of 11/05 added to training: 12° / 8°.
   - Phone and AirPods add nothing.
 - Five segments where all models jump together look like OpenCap errors (two are documented
   wrong-person segments). Details: [`experiments/E08_janys_1105/`](experiments/E08_janys_1105/README.md).
@@ -335,7 +335,10 @@ Checked which published models could run on head + one wrist + thigh data:
   10–20°. Most get worse than on 10/28: the 11/05 ground truth is noisier (Watch vs OpenCap
   forearm tilt in ground 7° vs 4°), and the trunk leaned slightly more.
 - Cross-session (`cross.py`), Watch GRU, swings, tested on whole 10/28 sessions:
-  - Tom 10/28: trained on Janys 10/28, elbow 22° / elevation 22°; adding Janys 11/05, 14° / 15°.
-  - Janys 10/28: trained on Tom, 23° / 39°; on Janys 11/05, 10° / 8°; Janys 11/05 + Tom, 11° / 9°.
+  - Tom 10/28: trained on Janys 10/28, elbow 27° / elevation 26°; adding Janys 11/05, 19° / 20°.
+  - Janys 10/28: trained on Tom, 25° / 38°; on Janys 11/05, 10° / 9°; Janys 11/05 + Tom, 10° / 9°.
   - Another day of the same player is as good as same-session minutes; more days of one player
     also help on a new one.
+- Fixed: `GRU.predict` left dropout on at test time. Every E07/E08 GRU retrained and rescored
+  (numbers above are the fixed ones). Janys's scores moved by about 1°; cross-player swing scores
+  moved by up to 6° (E07 Watch GRU, other player: elbow 21° -> 24°, elevation 25° -> 30°).

@@ -365,4 +365,4 @@ variant is worse on direction (the thigh-based yaw hurts).
 Compared with Janys 10/28 (swings): elbow 28 -> 35, elevation 23 -> 26, forearm inclination
 13 -> 23, forearm direction 38 -> 58. E08's README attributes part of the drop to noisier 11/05
 ground truth and more trunk lean. Our GRU trained on Janys 10/28 beats it on every metric
-(swings: elbow 14, elevation 10, forearm direction 22).
+(swings: elbow 14, elevation 11, forearm direction 23).
