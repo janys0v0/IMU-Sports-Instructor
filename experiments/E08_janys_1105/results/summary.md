@@ -30,5 +30,5 @@ Janys on 11/05, median error vs OpenCap in degrees: swings (±0.5 s) and all Ope
 | Ridge, Watch+phone+AirPods | *tested on Janys 10/28 (E07)* | 15 | 14 | 17 | 10 | 7 |
 | Ridge, Watch+phone+AirPods | Janys 10/28 | 18 | 15 | 30 | 12 | 8 |
 | Ridge, Watch+phone+AirPods | Janys + Tom 10/28 | 17 | 14 | 29 | 14 | 8 |
-| Ridge, Watch+phone+AirPods | Tom 10/28 | 27 | 44 | 30 | 20 | 10 |
+| Ridge, Watch+phone+AirPods | Tom 10/28 | 27 | 43 | 30 | 20 | 10 |
 | Ridge, Watch+phone+AirPods | Janys + Tom 10/28 + half of Janys 11/05 | 16 | 13 | 21 | 12 | 8 |

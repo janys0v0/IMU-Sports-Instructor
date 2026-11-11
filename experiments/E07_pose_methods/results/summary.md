@@ -20,14 +20,14 @@ Median absolute error vs OpenCap in degrees: mean of the two players, (Janys / T
 | Published model | MobilePoser, Watch+phone | **28** (33 / 23) | **40** (63 / 16) | **24** (22 / 25) | **45** (39 / 51) | **57** (74 / 40) |
 | Published model | IMUCoCo, Watch+phone+AirPods | **30** (25 / 35) | **26** (22 / 30) | **12** (11 / 13) | **33** (28 / 38) | **51** (41 / 60) |
 | Published model | IMUCoCo, + upper arm + chest | **30** (25 / 36) | **24** (22 / 26) | **15** (14 / 16) | **47** (31 / 63) | **63** (49 / 77) |
-| Ours (trained) | Ridge, Watch (other player) | **22** (26 / 18) | **30** (37 / 24) | **13** (15 / 11) | **36** (43 / 29) | **45** (53 / 36) |
+| Ours (trained) | Ridge, Watch (other player) | **22** (26 / 18) | **30** (36 / 24) | **13** (15 / 11) | **36** (43 / 29) | **45** (53 / 36) |
 | Ours (trained) | GRU, Watch (other player) | **24** (22 / 26) | **30** (35 / 26) | **13** (12 / 13) | **25** (26 / 24) | **42** (45 / 38) |
 | Ours (trained) | GRU, Watch+phone (other player) | **22** (21 / 23) | **30** (34 / 26) | **15** (14 / 17) | **32** (35 / 29) | **45** (50 / 40) |
 | Ours (trained) | GRU, Watch+phone (+own minutes) | **12** (12 / –) | **9** (9 / –) | **7** (7 / –) | **15** (15 / –) | **16** (16 / –) |
 | Ours (trained) | Ridge, Watch+phone (+own minutes) | **16** (16 / –) | **15** (15 / –) | **8** (8 / –) | **18** (18 / –) | **24** (24 / –) |
 | Ours (trained) | GRU, Watch (+own minutes) | **10** (10 / –) | **9** (9 / –) | **7** (7 / –) | **13** (13 / –) | **16** (16 / –) |
-| Ours (trained) | Ridge, all sensors (other player) | **25** (21 / 29) | **56** (33 / 79) | **24** (24 / 24) | **54** (43 / 66) | **74** (46 / 102) |
-| Ours (trained) | Ridge, all sensors (+own half) | **11** (12 / 9) | **9** (10 / 7) | **7** (8 / 6) | **16** (17 / 14) | **16** (20 / 13) |
+| Ours (trained) | Ridge, all sensors (other player) | **25** (21 / 29) | **56** (33 / 79) | **24** (23 / 24) | **54** (43 / 66) | **74** (46 / 102) |
+| Ours (trained) | Ridge, all sensors (+own half) | **11** (13 / 9) | **9** (10 / 7) | **7** (8 / 6) | **16** (17 / 14) | **16** (20 / 13) |
 | Ours (trained) | GRU, all sensors (+own half) | **9** (10 / 9) | **7** (7 / 7) | **6** (7 / 6) | **13** (14 / 12) | **13** (15 / 10) |
 
 ## Whole play blocks
@@ -54,6 +54,6 @@ Median absolute error vs OpenCap in degrees: mean of the two players, (Janys / T
 | Ours (trained) | GRU, Watch+phone (+own minutes) | **7** (7 / –) | **5** (5 / –) | **5** (5 / –) | **10** (10 / –) | **10** (10 / –) |
 | Ours (trained) | Ridge, Watch+phone (+own minutes) | **11** (11 / –) | **7** (7 / –) | **7** (7 / –) | **15** (15 / –) | **12** (12 / –) |
 | Ours (trained) | GRU, Watch (+own minutes) | **8** (8 / –) | **6** (6 / –) | **6** (6 / –) | **11** (11 / –) | **10** (10 / –) |
-| Ours (trained) | Ridge, all sensors (other player) | **51** (34 / 67) | **107** (92 / 122) | **28** (21 / 35) | **64** (40 / 88) | **116** (96 / 137) |
+| Ours (trained) | Ridge, all sensors (other player) | **51** (35 / 68) | **107** (92 / 122) | **28** (20 / 35) | **64** (40 / 88) | **116** (96 / 137) |
 | Ours (trained) | Ridge, all sensors (+own half) | **8** (8 / 7) | **6** (6 / 6) | **6** (6 / 6) | **14** (14 / 13) | **12** (12 / 11) |
 | Ours (trained) | GRU, all sensors (+own half) | **6** (6 / 5) | **5** (5 / 4) | **5** (5 / 5) | **10** (10 / 10) | **8** (9 / 7) |

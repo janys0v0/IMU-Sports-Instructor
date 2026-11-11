@@ -1,6 +1,7 @@
 """E07: arm-pose method comparison — the shared geometry and the model-free methods."""
 
 import numpy as np
+import pytest
 from scipy.spatial.transform import Rotation
 
 
@@ -60,6 +61,7 @@ def test_lowpass_angle_handles_wraparound():
 
 
 def test_gru_predict_is_deterministic():
+    pytest.importorskip("torch")  # CI installs numpy and scipy only
     from experiments.E07_pose_methods.learned_own import GRU, WIN
 
     rng = np.random.default_rng(0)

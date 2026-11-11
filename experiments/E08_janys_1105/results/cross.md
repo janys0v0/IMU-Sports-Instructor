@@ -18,17 +18,17 @@ Cross-session tests on 10/28, median error vs OpenCap in degrees: swings (±0.5 
 | GRU, Watch+phone+AirPods | Janys 10/28 | Janys 11/05 | 13 | 11 | 23 | 11 | 8 |
 | GRU, Watch+phone+AirPods | Janys 10/28 | Janys 11/05 + Tom 10/28 | 14 | 13 | 25 | 12 | 9 |
 | Ridge, Watch | Tom 10/28 | Janys 10/28 | 18 | 24 | 29 | 14 | 8 |
-| Ridge, Watch | Tom 10/28 | Janys 10/28 + Janys 11/05 | 16 | 21 | 29 | 15 | 7 |
+| Ridge, Watch | Tom 10/28 | Janys 10/28 + Janys 11/05 | 15 | 20 | 29 | 15 | 7 |
 | Ridge, Watch | Janys 10/28 | Tom 10/28 | 27 | 38 | 43 | 20 | 9 |
-| Ridge, Watch | Janys 10/28 | Janys 11/05 | 19 | 20 | 24 | 11 | 9 |
+| Ridge, Watch | Janys 10/28 | Janys 11/05 | 20 | 20 | 24 | 11 | 9 |
 | Ridge, Watch | Janys 10/28 | Janys 11/05 + Tom 10/28 | 22 | 22 | 24 | 12 | 9 |
 | Ridge, Watch+phone | Tom 10/28 | Janys 10/28 | 16 | 25 | 27 | 15 | 9 |
-| Ridge, Watch+phone | Tom 10/28 | Janys 10/28 + Janys 11/05 | 14 | 21 | 24 | 16 | 9 |
+| Ridge, Watch+phone | Tom 10/28 | Janys 10/28 + Janys 11/05 | 14 | 20 | 24 | 16 | 9 |
 | Ridge, Watch+phone | Janys 10/28 | Tom 10/28 | 27 | 37 | 37 | 20 | 9 |
-| Ridge, Watch+phone | Janys 10/28 | Janys 11/05 | 17 | 19 | 26 | 12 | 11 |
+| Ridge, Watch+phone | Janys 10/28 | Janys 11/05 | 17 | 19 | 27 | 12 | 11 |
 | Ridge, Watch+phone | Janys 10/28 | Janys 11/05 + Tom 10/28 | 17 | 23 | 27 | 15 | 10 |
 | Ridge, Watch+phone+AirPods | Tom 10/28 | Janys 10/28 | 18 | 26 | 27 | 18 | 10 |
 | Ridge, Watch+phone+AirPods | Tom 10/28 | Janys 10/28 + Janys 11/05 | 14 | 22 | 23 | 17 | 8 |
 | Ridge, Watch+phone+AirPods | Janys 10/28 | Tom 10/28 | 29 | 42 | 38 | 19 | 10 |
-| Ridge, Watch+phone+AirPods | Janys 10/28 | Janys 11/05 | 17 | 19 | 26 | 12 | 11 |
-| Ridge, Watch+phone+AirPods | Janys 10/28 | Janys 11/05 + Tom 10/28 | 16 | 23 | 27 | 15 | 10 |
+| Ridge, Watch+phone+AirPods | Janys 10/28 | Janys 11/05 | 16 | 19 | 26 | 13 | 11 |
+| Ridge, Watch+phone+AirPods | Janys 10/28 | Janys 11/05 + Tom 10/28 | 16 | 22 | 27 | 15 | 10 |

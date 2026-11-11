@@ -9,7 +9,7 @@ on:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest (26.04) has no Python 3.9
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -23,7 +23,7 @@ jobs:
 
   pr-format:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest (26.04) has no Python 3.9
     steps:
       - uses: actions/checkout@v4
       # Branch, title and body come in through env vars, never inline in the script.
@@ -43,7 +43,7 @@ jobs:
       - run: tools/run_tests.sh --swift-only
 
   python-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest (26.04) has no Python 3.9
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
