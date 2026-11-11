@@ -10,7 +10,7 @@ commercial chest and upper-arm sensors were not worn on 11/05).
 
 Each method is called exactly as in E07; only the dataset (11/05) and the output folder change.
 
-    .venv/bin/python -m experiments.E08_janys_1105.frame_methods [geometric constraint wearmocap published opensense]
+    .venv/bin/python -m experiments.E08_janys_1105.frame_methods [geometric constraint wearmocap published opensense opensense_save]
 """
 
 import os
@@ -139,24 +139,28 @@ def opensense(d):
     np.savez_compressed(OUT / "janys" / "aligned.npz", **a)
     runner = Path(__file__).resolve().parent / "opensense_run.py"
     subprocess.run([str(OPENSIM_PY), str(runner)], check=True)
-    z = np.load(OUT / "janys" / "opensense" / "ik_opensense_watch_phone.npz", allow_pickle=True)
-    names = list(z["coord_names"])
+    subprocess.run([str(OPENSIM_PY), str(runner), "--arm-only"], check=True)
+    opensense_save(d)
+
+
+def opensense_save(d):
+    """Save the OpenSense IK results already in results/janys/opensense as methods."""
     unit = lambda v: v / np.linalg.norm(v, axis=1, keepdims=True)  # noqa: E731
-    hum = unit(np.einsum("nji,nj->ni", z["R_torso"], -z["R_humerus"][:, :, 1]))
-    fore = unit(np.einsum("nji,nj->ni", z["R_torso"], -z["R_radius"][:, :, 1]))
-    valid = z["ok"] & np.isfinite(hum).all(1) & np.isfinite(fore).all(1)
-    save(
-        "opensense_watch_phone",
-        hum,
-        fore,
-        elbow=z["coords"][:, names.index("elbow_flex_r")],
-        valid=valid,
-    )
+    for name in ("opensense_watch_phone", "opensense_arm_watch"):  # whole body; right arm only
+        path = OUT / "janys" / "opensense" / f"ik_{name}.npz"
+        if not path.exists():
+            continue
+        z = np.load(path, allow_pickle=True)
+        names = list(z["coord_names"])
+        hum = unit(np.einsum("nji,nj->ni", z["R_torso"], -z["R_humerus"][:, :, 1]))
+        fore = unit(np.einsum("nji,nj->ni", z["R_torso"], -z["R_radius"][:, :, 1]))
+        valid = z["ok"] & np.isfinite(hum).all(1) & np.isfinite(fore).all(1)
+        save(name, hum, fore, elbow=z["coords"][:, names.index("elbow_flex_r")], valid=valid)
 
 
 def main():
     steps = {"geometric": geometric, "constraint": constraint, "wearmocap": wearmocap,
-             "published": published, "opensense": opensense}  # fmt: skip
+             "published": published, "opensense": opensense, "opensense_save": opensense_save}  # fmt: skip
     pick = [a for a in sys.argv[1:] if a in steps] or list(steps)
     d = dataset()
     for s in pick:

@@ -24,6 +24,12 @@ LINEUP = {
     "qmt_trunk_upper_watch_rest18": ("  same, hanging elbow = 18 deg (elbow only)", "Geometric"),
     "opensense_trunk_upper_watch_phone": ("OpenSense IK, chest+upper arm+Watch+phone", "OpenSense"),
     "opensense_watch_phone": ("OpenSense IK, Watch+phone", "OpenSense"),
+    "opensense_arm_trunk_upper_watch": (
+        "OpenSense IK, right arm only, chest+upper arm+Watch",
+        "OpenSense",
+    ),
+    "opensense_arm_upper_watch": ("OpenSense IK, right arm only, upper arm+Watch", "OpenSense"),
+    "opensense_arm_watch": ("OpenSense IK, right arm only, Watch", "OpenSense"),
     "constraint_watch_static_trunk": ("Joint limits + effort, Watch only", "Constraint"),
     "constraint_watch_swing": ("Joint limits, swing-aware, Watch only", "Constraint"),
     "wearmocap_watch": ("WearMoCap (pretrained), Watch", "Published model"),

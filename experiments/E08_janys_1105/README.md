@@ -64,6 +64,7 @@ for our models, E07's model of that kind, trained with Janys's own 10/28 minutes
 | Watch orientation, trunk fixed | – | – | 24 (15) | 64 (45) |
 | Watch orientation, AirPods as trunk | – | – | 26 (15) | 69 (47) |
 | OpenSense IK, Watch+phone | 29 (30) | 40 (54) | 32 (34) | 63 (69) |
+| OpenSense IK, right arm only, Watch | 30 (32) | 36 (30) | 23 (16) | 86 (45) |
 | Joint limits + effort, Watch only | 36 (44) | 49 (58) | 24 (15) | 64 (45) |
 | Joint limits, swing-aware, Watch only | 35 (43) | 43 (49) | 24 (15) | 64 (45) |
 | WearMoCap (pretrained), Watch | 35 (31) | 26 (26) | 23 (13) | 56 (40) |

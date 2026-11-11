@@ -195,6 +195,7 @@ LINEUP = {
     "watch_static_trunk": ("Watch orientation, trunk fixed", "Geometric", "watch_static_trunk"),
     "watch_airpods_trunk": ("Watch orientation, AirPods as trunk", "Geometric", "watch_airpods_trunk"),
     "opensense_watch_phone": ("OpenSense IK, Watch+phone", "OpenSense", "opensense_watch_phone"),
+    "opensense_arm_watch": ("OpenSense IK, right arm only, Watch", "OpenSense", "opensense_arm_watch"),
     "constraint_watch_static_trunk": ("Joint limits + effort, Watch only", "Constraint", "constraint_watch_static_trunk"),
     "constraint_watch_swing": ("Joint limits, swing-aware, Watch only", "Constraint", "constraint_watch_swing"),
     "wearmocap_watch": ("WearMoCap (pretrained), Watch", "Published model", "wearmocap_watch"),

@@ -298,6 +298,16 @@ time	torso_imu	humerus_r_imu	radius_r_imu	femur_r_imu
 | `opensense_trunk_upper_watch_phone` | torso, humerus_r, radius_r, femur_r | 12 | 14 | E07 |
 | `opensense_trunk_watch_phone` | torso, radius_r, femur_r | 9 | 14 | E07 |
 | `opensense_watch_phone` | radius_r, femur_r | 6 | 14 | E07, E08 |
+| `opensense_arm_upper_watch` | humerus_r, radius_r (right arm only) | 6 | 5 | E07 |
+| `opensense_arm_trunk_upper_watch` | humerus_r, radius_r, relative to the chest IMU (right arm only) | 6 | 5 | E07 |
+| `opensense_arm_watch` | radius_r (right arm only) | 3 | 5 | E07, E08 |
+| `opensense_arm_trunk_watch` | radius_r, relative to the chest IMU (right arm only) | 3 | 5 | E07 |
+
+**Right arm only** (`opensense_ik.py --arm-only`, added 11/11): the pelvis rotations, right hip and
+lumbar are locked as well (`LOCK_ARM_ONLY`), so the torso stays in the hold pose and only the
+shoulder (3), elbow and pronation are solved. "Trunk" variants feed the arm IMUs as
+$R_{\text{chest}}^{\top} R$ (ground = the moving trunk); the others use the hold frame as before,
+so the trunk is assumed not to turn after the hold.
 
 When observed DOF are fewer than free DOF, the problem is underdetermined. The unobserved part (for
 example lumbar and shoulder with Watch + phone) stays wherever the warm-started tracking leaves it.
@@ -418,7 +428,29 @@ Two sensors cannot recover the arm. Elevation r is about 0, and the elbow barely
 OpenCap. The trained GRU (Watch only) reaches elbow 14° and elevation 11° on the same swings (E08
 README).
 
-### 5.3 Limitations
+### 5.3 Right arm only vs whole body (11/11)
+
+Swings, elbow / elevation / forearm inclination / forearm direction / upper-arm direction (deg).
+
+| Variant | Janys 10/28 | Tom 10/28 | Janys 11/05 |
+|---|---|---|---|
+| Whole body, chest + upper arm + Watch + phone | 24 / 18 / 23 / 73 / 76 | 26 / 15 / 23 / 59 / 47 | – |
+| Arm only, upper arm + Watch | 23 / 17 / 22 / 53 / 61 | 25 / 10 / 24 / 38 / 24 | – |
+| Arm only, upper arm + Watch, relative to chest | 22 / 19 / 23 / 73 / 76 | 24 / 13 / 22 / 56 / 42 | – |
+| Whole body, Watch + phone | 30 / 54 / 34 / 69 / 79 | 15 / 20 / 25 / 58 / 33 | 29 / 40 / 32 / 63 / 85 |
+| Arm only, Watch | 32 / 30 / 16 / 45 / 82 | 17 / 20 / 16 / 31 / 39 | 30 / 36 / 23 / 86 / 90 |
+
+- With the upper-arm IMU, the arm-only fit in the hold frame is the best OpenSense result: Tom's
+  elevation 10° in swings (7° over the block), forearm direction 38° vs 59°. Adding the chest IMU
+  brings back the whole-body numbers: its heading drift moves the trunk under the arm.
+- Watch only on 10/28: locking the body roughly halves elevation and forearm-inclination errors
+  for Janys and cuts forearm direction by ~25° for both players. On 11/05 inclination improves
+  (32 → 23°) but forearm direction gets worse (63 → 86°): with the trunk fixed at the hold, every
+  body turn after the hold shows up as arm heading. The phone on the thigh was carrying that.
+- The elbow does not change (~20–30°): it is set by the straight-elbow calibration, not by the
+  free trunk joints.
+
+### 5.4 Limitations
 
 1. **One model for everyone.** It is Janys's 10/28 scaled model (1.63 m, 50 kg), used for Tom on 10/28
    and for Janys on 11/05 (`opensense.py:14-15`, E08 README limits). Orientation-only IK depends little

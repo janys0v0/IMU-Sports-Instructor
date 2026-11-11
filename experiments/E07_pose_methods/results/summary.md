@@ -13,6 +13,9 @@ Median error vs OpenCap in degrees (positions in cm, shoulder-anchored in the tr
 | Geometric |   same, hanging elbow = 18 deg (elbow only) | **12** (16 / 8) | **17** (21 / 12) | **17** (21 / 14) | **52** (59 / 45) | **64** (81 / 46) | **27** (32 / 21) | **45** (51 / 38) |
 | OpenSense | OpenSense IK, chest+upper arm+Watch+phone | **25** (24 / 26) | **16** (18 / 15) | **23** (23 / 23) | **66** (73 / 59) | **62** (76 / 47) | **26** (31 / 22) | **47** (54 / 41) |
 | OpenSense | OpenSense IK, Watch+phone | **23** (30 / 15) | **37** (54 / 20) | **30** (34 / 25) | **64** (69 / 58) | **56** (79 / 33) | **24** (31 / 16) | **41** (52 / 30) |
+| OpenSense | OpenSense IK, right arm only, chest+upper arm+Watch | **23** (22 / 24) | **16** (19 / 13) | **22** (23 / 22) | **65** (73 / 56) | **59** (76 / 42) | **25** (31 / 20) | **46** (54 / 38) |
+| OpenSense | OpenSense IK, right arm only, upper arm+Watch | **24** (23 / 25) | **14** (17 / 10) | **23** (22 / 24) | **46** (53 / 38) | **43** (61 / 24) | **18** (25 / 11) | **32** (40 / 23) |
+| OpenSense | OpenSense IK, right arm only, Watch | **25** (32 / 17) | **25** (30 / 20) | **16** (16 / 16) | **38** (45 / 31) | **60** (82 / 39) | **25** (33 / 18) | **35** (44 / 25) |
 | Constraint | Joint limits + effort, Watch only | **30** (44 / 16) | **41** (58 / 25) | **15** (15 / 14) | **37** (45 / 29) | **63** (87 / 39) | **26** (34 / 18) | **34** (44 / 24) |
 | Constraint | Joint limits, swing-aware, Watch only | **30** (43 / 17) | **35** (49 / 20) | **15** (15 / 14) | **37** (45 / 29) | **63** (85 / 40) | **26** (34 / 19) | **33** (41 / 25) |
 | Published model | WearMoCap (pretrained), Watch | **29** (31 / 26) | **21** (26 / 17) | **12** (13 / 11) | **36** (40 / 31) | **34** (43 / 26) | **15** (18 / 12) | **24** (29 / 19) |
@@ -41,6 +44,9 @@ Median error vs OpenCap in degrees (positions in cm, shoulder-anchored in the tr
 | Geometric |   same, hanging elbow = 18 deg (elbow only) | **7** (7 / 7) | **10** (10 / 10) | **15** (19 / 11) | **56** (65 / 46) | **30** (32 / 27) | **13** (14 / 13) | **34** (37 / 32) |
 | OpenSense | OpenSense IK, chest+upper arm+Watch+phone | **21** (20 / 22) | **12** (11 / 12) | **17** (19 / 15) | **65** (76 / 54) | **33** (35 / 31) | **15** (15 / 14) | **37** (40 / 33) |
 | OpenSense | OpenSense IK, Watch+phone | **23** (24 / 21) | **30** (27 / 33) | **26** (34 / 17) | **47** (56 / 37) | **41** (42 / 41) | **18** (18 / 19) | **28** (33 / 23) |
+| OpenSense | OpenSense IK, right arm only, chest+upper arm+Watch | **21** (19 / 22) | **11** (10 / 12) | **17** (19 / 15) | **64** (75 / 52) | **31** (33 / 29) | **14** (14 / 14) | **36** (39 / 32) |
+| OpenSense | OpenSense IK, right arm only, upper arm+Watch | **20** (20 / 21) | **7** (8 / 7) | **21** (24 / 17) | **44** (56 / 33) | **21** (22 / 20) | **9** (10 / 9) | **24** (28 / 20) |
+| OpenSense | OpenSense IK, right arm only, Watch | **29** (35 / 22) | **27** (24 / 29) | **19** (23 / 15) | **41** (50 / 32) | **48** (52 / 44) | **21** (22 / 21) | **30** (35 / 26) |
 | Constraint | Joint limits + effort, Watch only | **24** (30 / 18) | **12** (14 / 10) | **19** (24 / 14) | **39** (49 / 29) | **26** (28 / 24) | **12** (12 / 11) | **25** (29 / 21) |
 | Constraint | Joint limits, swing-aware, Watch only | **24** (31 / 18) | **12** (14 / 10) | **19** (24 / 14) | **39** (49 / 29) | **29** (33 / 26) | **13** (14 / 12) | **26** (30 / 21) |
 | Published model | WearMoCap (pretrained), Watch | **17** (20 / 15) | **23** (25 / 21) | **11** (14 / 9) | **31** (30 / 33) | **32** (34 / 30) | **14** (15 / 14) | **16** (15 / 17) |

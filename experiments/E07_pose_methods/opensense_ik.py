@@ -41,6 +41,18 @@ VARIANTS = {
     "opensense_trunk_watch_phone": ["torso_imu", "radius_r_imu", "femur_r_imu"],
     "opensense_watch_phone": ["radius_r_imu", "femur_r_imu"],
 }
+# Right arm only: pelvis, right hip and lumbar locked too, so the torso stays in the hold pose and
+# only the shoulder (3), elbow and pronation are solved (5 DOF). "trunk" variants feed the arm
+# sensors relative to the chest sensor (R_trunk^T R), i.e. ground = the moving trunk frame.
+ARM_VARIANTS = {
+    "opensense_arm_watch": (["radius_r_imu"], False),
+    "opensense_arm_upper_watch": (["humerus_r_imu", "radius_r_imu"], False),
+    "opensense_arm_trunk_watch": (["radius_r_imu"], True),
+    "opensense_arm_trunk_upper_watch": (["humerus_r_imu", "radius_r_imu"], True),
+}
+LOCK_ARM_ONLY = ["pelvis_tilt", "pelvis_list", "pelvis_rotation", "hip_flexion_r",
+                 "hip_adduction_r", "hip_rotation_r", "lumbar_extension", "lumbar_bending",
+                 "lumbar_rotation"]  # fmt: skip
 # Calibration pose = the Calibrate hold: standing, arms hanging, palms facing the thighs.
 # Model default (all 0) is the anatomical pose (palms forward); neutral forearm is pro_sup = 90 deg.
 CAL_POSE_DEG = {"pro_sup_r": 90.0, "pro_sup_l": 90.0}
@@ -122,12 +134,12 @@ def write_sto(path, t, quats, labels):
     return table
 
 
-def run_ik(model_path, table, labels, t):
+def run_ik(model_path, table, labels, t, extra_lock=()):
     model = osim.Model(str(model_path))
     s = model.initSystem()
     cs = model.getCoordinateSet()
     set_pose(model, s, CAL_POSE_DEG)
-    for n in LOCK:
+    for n in [*LOCK, *extra_lock]:
         cs.get(n).setLocked(s, True)
 
     sub = osim.TimeSeriesTableQuaternion(table)
@@ -210,9 +222,22 @@ def main(player):
             quats[name] = np.c_[q[:, 3], q[:, :3]]
         labels = list(IMUS)
         table = write_sto(out / f"orient_seg{k}.sto", t, quats, labels)
-        for var, used in VARIANTS.items():
+        runs = [(var, used, (), table) for var, used in VARIANTS.items()]
+        if ARM_VARIANTS:
+            rel = {}  # arm sensors relative to the chest sensor (identity at the hold)
+            for name, (key, _) in IMUS.items():
+                if key in a.files and "trunk_R" in a.files:
+                    R = np.einsum("nji,njk->nik", a["trunk_R"][idx], a[key][idx])
+                    q = Rotation.from_matrix(R).as_quat()
+                    rel[name] = np.c_[q[:, 3], q[:, :3]]
+            table_rel = (write_sto(out / f"orient_rel_seg{k}.sto", t, rel, list(rel))
+                         if rel else None)  # fmt: skip
+            for var, (used, trunk_rel) in ARM_VARIANTS.items():
+                if all(u in quats for u in used) and (not trunk_rel or table_rel is not None):
+                    runs.append((var, used, LOCK_ARM_ONLY, table_rel if trunk_rel else table))
+        for var, used, lock, tab in runs:
             print(f"{player} seg {k} {var}: {len(idx)} frames")
-            names, coords, Rs, ok = run_ik(model_path, table, used, t)
+            names, coords, Rs, ok = run_ik(model_path, tab, used, t, lock)
             r = results.setdefault(
                 var,
                 {
@@ -239,5 +264,7 @@ def main(player):
         print(var, "ok frames", r["ok"].mean())
 
 
+if __name__ == "__main__" and "--arm-only" in sys.argv:
+    VARIANTS = {}  # noqa: F811 - only the right-arm-only variants
 if __name__ == "__main__":
     main(sys.argv[1])

@@ -3,6 +3,7 @@ methods against OpenCap.
 
     .venv/bin/python -m experiments.E07_pose_methods.opensense            # IK + save
     .venv/bin/python -m experiments.E07_pose_methods.opensense --save     # save only (IK done)
+    .venv/bin/python -m experiments.E07_pose_methods.opensense --arm-only # right-arm-only IK + save
 
 OpenSim 4.6 (osx-arm64, conda channel opensim-org) lives in its own env, outside .venv:
     curl -Ls https://micro.mamba.pm/api/micromamba/osx-arm64/latest | tar -xvj -C ~/micromamba-bin bin/micromamba
@@ -26,6 +27,9 @@ Method:
   weights 1, accuracy 1e-6, tracked frame to frame from the hold pose; a failed frame is invalid
   and the next is re-assembled.
 - Variants: all four IMUs; no upper-arm IMU; Apple only (Watch on radius_r, phone on femur_r).
+  Right arm only (`opensense_ik.py --arm-only`): pelvis, hip and lumbar locked as well, so only the
+  shoulder, elbow and pronation are solved; Watch alone or with the upper-arm IMU, either in the hold
+  frame or relative to the chest IMU.
 Outputs: hum / fore = torso^T (-y) of humerus_r / radius_r, elbow = elbow_flex_r, plus all
 coordinates (degrees) as coords / coord_names.
 """
@@ -45,6 +49,10 @@ VARIANTS = [
     "opensense_trunk_upper_watch_phone",
     "opensense_trunk_watch_phone",
     "opensense_watch_phone",
+    "opensense_arm_watch",  # right arm only (5 DOF); torso held at the hold pose
+    "opensense_arm_upper_watch",
+    "opensense_arm_trunk_watch",  # arm sensors relative to the chest sensor
+    "opensense_arm_trunk_upper_watch",
 ]
 ARM = ["arm_flex_r", "arm_add_r", "arm_rot_r", "elbow_flex_r", "pro_sup_r"]
 
@@ -57,6 +65,8 @@ def save_player(p):
     d = load(p)
     ikn = list(d["ik_names"])
     for var in VARIANTS:
+        if not (OUT / p / "opensense" / f"ik_{var}.npz").exists():
+            continue
         z = np.load(OUT / p / "opensense" / f"ik_{var}.npz", allow_pickle=True)
         names = list(z["coord_names"])
         Rt, Rh, Rr = z["R_torso"], z["R_humerus"], z["R_radius"]
@@ -92,7 +102,8 @@ def save_player(p):
 
 def main():
     if "--save" not in sys.argv:
-        procs = [subprocess.Popen([str(OPENSIM_PY), str(IK_SCRIPT), p]) for p in PLAYERS]
+        extra = ["--arm-only"] if "--arm-only" in sys.argv else []
+        procs = [subprocess.Popen([str(OPENSIM_PY), str(IK_SCRIPT), p, *extra]) for p in PLAYERS]
         if any(pr.wait() for pr in procs):
             raise SystemExit("OpenSense IK failed")
     for p in PLAYERS:

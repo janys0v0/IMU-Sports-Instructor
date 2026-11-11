@@ -385,3 +385,14 @@ Checked which published models could run on head + one wrist + thigh data:
 - Cross-session, retrained (Watch GRU, swings): Tom trained on Janys 10/28 26° / 24° (elbow /
   elevation), + Janys 11/05 18° / 19°; Janys 10/28 trained on Tom 26° / 38°, on Janys 11/05
   10° / 9°. Figures now say Player A (Janys) and Player B (Tom) (`colors.anonymize`).
+
+### OpenSense IK on the right arm only (E07, E08)
+
+- Locked the pelvis, right hip and lumbar too, so only the shoulder, elbow and pronation are solved
+  (5 DOF); torso held at the hold pose (`opensense_ik.py --arm-only`).
+- Upper arm + Watch, hold frame: best OpenSense result (Tom swings elevation 10°, forearm direction
+  38° vs 59° whole body; Janys 17° / 53° vs 18° / 73°). Relative to the chest IMU it falls back to
+  the whole-body numbers (chest heading drift).
+- Watch only: 10/28 forearm direction 45° / 31° (was 69° / 58°), Janys elevation 30° (was 54°);
+  11/05 inclination 23° (was 32°) but forearm direction 86° (was 63°): the fixed trunk misses
+  body turns the thigh phone was tracking. The elbow stays ~20–30° either way.

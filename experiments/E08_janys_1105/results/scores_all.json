@@ -543,6 +543,38 @@
    "elbow_r": 0.171
   }
  },
+ "opensense_arm_watch": {
+  "all": {
+   "minutes": 35.77,
+   "forearm_dir_deg": 75.405,
+   "forearm_incl_mae": 25.246,
+   "forearm_incl_r": 0.735,
+   "upper_arm_dir_deg": 67.814,
+   "elevation_mae": 41.134,
+   "elevation_r": 0.035,
+   "plane_mae": 87.004,
+   "elbow_pos_cm": 27.193,
+   "wrist_pos_cm": 41.313,
+   "elbow_mae": 27.531,
+   "elbow_bias": -1.982,
+   "elbow_r": 0.036
+  },
+  "swing": {
+   "minutes": 4.37,
+   "forearm_dir_deg": 86.323,
+   "forearm_incl_mae": 23.428,
+   "forearm_incl_r": 0.651,
+   "upper_arm_dir_deg": 90.215,
+   "elevation_mae": 35.783,
+   "elevation_r": 0.044,
+   "plane_mae": 97.255,
+   "elbow_pos_cm": 34.534,
+   "wrist_pos_cm": 53.062,
+   "elbow_mae": 29.57,
+   "elbow_bias": 19.082,
+   "elbow_r": 0.17
+  }
+ },
  "opensense_watch_phone": {
   "all": {
    "minutes": 35.77,
