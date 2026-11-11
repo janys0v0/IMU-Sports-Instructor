@@ -5,7 +5,8 @@ Python code that receives, loads, calibrates and analyses MotionStreamer recordi
 
 ```
 iPhone app ──UDP──▶ live/receiver.py ──▶ data/recordings/<session>/mac_stream.jsonl
-             └────▶ live/live_viewer.py ──▶ live mesh window
+             ├────▶ live/live_viewer.py ──▶ live mesh window
+             └────▶ live/opensim_live.py ──▶ opensim_ik_server.py (OpenSim env) ──▶ live OpenSim model
 data/recordings ──▶ preprocessing/ (load · resample · calibrate) ──▶ pose/ (MobilePoser) ──▶ analysis/
 ```
 
@@ -18,6 +19,7 @@ data/recordings ──▶ preprocessing/ (load · resample · calibrate) ──�
 | | `render_session.py` | Mesh video of a whole session (started by the receiver after each session) |
 | `live/` | `receiver.py` | Log every UDP packet, check stream coverage, write `summary.json` |
 | | `live_viewer.py` | Real-time viewer: receives UDP, calibrates on Calibrate, runs the model at 30 Hz |
+| | `opensim_live.py` | Real-time OpenSim view: same UDP input; on Calibrate, Watch → right forearm and phone → right thigh; one OpenSense IK solve per frame (~5 ms) in `opensim_ik_server.py` (OpenSim env); prints elbow, shoulder elevation and forearm twist, saves `opensim_live.jsonl` |
 | | `send_recording.py` | Replay a saved recording over UDP (test without devices) |
 | | `fake_phone.py` | Send synthetic packets (test the receiver without devices) |
 | `ingest/` | `ingest_field.py` | Check a field session (checksums, gaps + causes, clock fit, high-rate) and merge it into `stream.jsonl` |
@@ -40,6 +42,7 @@ PY=.venv/bin/python
 | Task | Command |
 |---|---|
 | Live demo (enter the printed IP in the app, then Start → Calibrate) | `$PY -m pipeline.live.live_viewer --screen leg` |
+| Live OpenSim model (needs `~/micromamba-envs/opensim`, or set `OPENSIM_PYTHON`) | `$PY -m pipeline.live.opensim_live --screen leg` |
 | Record without the viewer | `$PY -m pipeline.live.receiver` |
 | Test without devices (viewer running) | `$PY -m pipeline.live.send_recording data/recordings/20261001-162235-P01` |
 | Mesh video from a recording (`phase2/replay_lp_h.mp4`) | `$PY -m pipeline.pose.replay data/recordings/<session> --head --single --screen leg --render --no-tran` |
