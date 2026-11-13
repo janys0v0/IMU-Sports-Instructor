@@ -1,0 +1,97 @@
+{
+  "player": "janys",
+  "frames": 599,
+  "swing_frames": 150,
+  "player_found": 0.983,
+  "median_torso_px": 82.1,
+  "all_joints_median_px": 13.9,
+  "all_joints_pck_0.2_torso": 0.597,
+  "r_elbow_angle_err_deg": 9.0,
+  "r_elbow_angle_err_swing_deg": 37.8,
+  "joints": {
+    "RShoulder": {
+      "median_px": 6.9,
+      "p90_px": 16.3,
+      "pck_0.2_torso": 0.915,
+      "swing_median_px": 10.3,
+      "missing": 0.017
+    },
+    "LShoulder": {
+      "median_px": 6.3,
+      "p90_px": 15.4,
+      "pck_0.2_torso": 0.92,
+      "swing_median_px": 8.6,
+      "missing": 0.017
+    },
+    "RElbow": {
+      "median_px": 9.8,
+      "p90_px": 33.6,
+      "pck_0.2_torso": 0.713,
+      "swing_median_px": 26.6,
+      "missing": 0.017
+    },
+    "LElbow": {
+      "median_px": 15.3,
+      "p90_px": 28.7,
+      "pck_0.2_torso": 0.549,
+      "swing_median_px": 16.6,
+      "missing": 0.042
+    },
+    "RWrist": {
+      "median_px": 13.9,
+      "p90_px": 40.1,
+      "pck_0.2_torso": 0.601,
+      "swing_median_px": 26.9,
+      "missing": 0.017
+    },
+    "LWrist": {
+      "median_px": 13.2,
+      "p90_px": 35.8,
+      "pck_0.2_torso": 0.616,
+      "swing_median_px": 18.1,
+      "missing": 0.053
+    },
+    "RHip": {
+      "median_px": 9.5,
+      "p90_px": 15.0,
+      "pck_0.2_torso": 0.942,
+      "swing_median_px": 9.8,
+      "missing": 0.017
+    },
+    "LHip": {
+      "median_px": 9.6,
+      "p90_px": 15.5,
+      "pck_0.2_torso": 0.949,
+      "swing_median_px": 11.2,
+      "missing": 0.017
+    },
+    "RKnee": {
+      "median_px": 19.3,
+      "p90_px": 27.7,
+      "pck_0.2_torso": 0.261,
+      "swing_median_px": 16.7,
+      "missing": 0.017
+    },
+    "LKnee": {
+      "median_px": 18.2,
+      "p90_px": 28.8,
+      "pck_0.2_torso": 0.367,
+      "swing_median_px": 21.3,
+      "missing": 0.017
+    },
+    "RAnkle": {
+      "median_px": 23.5,
+      "p90_px": 30.3,
+      "pck_0.2_torso": 0.115,
+      "swing_median_px": 23.2,
+      "missing": 0.017
+    },
+    "LAnkle": {
+      "median_px": 20.4,
+      "p90_px": 30.4,
+      "pck_0.2_torso": 0.209,
+      "swing_median_px": 21.8,
+      "missing": 0.017
+    }
+  }
+}

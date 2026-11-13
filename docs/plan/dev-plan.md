@@ -11,10 +11,10 @@ when its gate passes on two consecutive runs; then the next stage starts.
 | | |
 |---|---|
 | **Current stage** | 9 — Endurance + device tests (stages 0-8 done; stage 6's gate waits for device test T6) |
-| **Next action** | Device round: stage 0b check (= T6) first, runbook in [`test-plan.md`](test-plan.md) §4; L1-L3 done. Stage 11 (E04) done for one session; Watch hand-off fixed. E05-E08 (commercial IMUs, arm-pose methods vs OpenCap) done and merged 11/10. Next: a cleaner filmed recording (E04 checklist) |
+| **Next action** | Device round: stage 0b check (= T6) first, runbook in [`test-plan.md`](test-plan.md) §4; L1-L3 done. Stage 11 (E04) done for one session; Watch hand-off fixed. E05-E08 (commercial IMUs, arm-pose methods vs OpenCap) done and merged 11/10. E09 (Roboflow YOLO pose vs OpenCap) first run 11/13. Next: a cleaner filmed recording (E04 checklist) |
 | **Blocked on** | Devices: stage 0b check (= T6) closes stage 6's gate and the keep-alive decision · People: V9 listen-through |
 | **Open decision** | iPhone keep-alive method, decided after stage 0b ([`decisions.md`](decisions.md#open)) |
-| **Last updated** | 2026-11-10 |
+| **Last updated** | 2026-11-13 |
 
 ## Overview
 

@@ -16,6 +16,7 @@ method and full results.
 | E04 | How closely do IMU joint angles match a single-camera video? | [`experiments/E04_video_validation/`](experiments/E04_video_validation/README.md) | First run 2026-10-19 |
 | E07 | Which method gives the best arm angles during swings (geometry, OpenSense, constraints, published and own models)? | [`experiments/E07_pose_methods/`](experiments/E07_pose_methods/README.md) | Done 2026-11-05 |
 | E08 | Do arm models trained on Janys + Tom 10/28 work on Janys 11/05? | [`experiments/E08_janys_1105/`](experiments/E08_janys_1105/README.md) | Done 2026-11-10 |
+| E09 | How close is Roboflow's YOLO pose (one camera) to OpenCap? | [`experiments/E09_roboflow_pose/`](experiments/E09_roboflow_pose/README.md) | First run 2026-11-13 |
 
 ## Reference recordings
 
@@ -385,3 +386,13 @@ Checked which published models could run on head + one wrist + thigh data:
 - Cross-session, retrained (Watch GRU, swings): Tom trained on Janys 10/28 26° / 24° (elbow /
   elevation), + Janys 11/05 18° / 19°; Janys 10/28 trained on Tom 26° / 38°, on Janys 11/05
   10° / 9°. Figures now say Player A (Janys) and Player B (Tom) (`colors.anonymize`).
+
+### 2026-11-13 · E09 Roboflow YOLO pose vs OpenCap (Janys 10/28, phone1, 20 s)
+
+- Command: `ROBOFLOW_API_KEY=... python -m experiments.E09_roboflow_pose.run janys --start 35
+  --seconds 20`, then `evaluate` and `video`. 600 frames, 0 errors; player found in 98 %.
+- Shoulders 6–7 px, hips 9–10 px median (camera fit 7 px); elbows 10–15, wrists 13–14,
+  knees/ankles 18–24 px; all joints 14 px, PCK@0.2 torso 60 %. Right elbow angle 9° (38° in
+  swings).
+- On the preview Roboflow often fits the visible limbs better than projected OpenCap, so limb
+  errors are bounded by the reference; hand labels are the next step.

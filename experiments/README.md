@@ -59,7 +59,7 @@ experiments/
 │   ├── evaluate.py, figures.py, video.py                                     scores, report figures, videos
 │   ├── colors.py                     one color per method, shared by figures, videos and the report
 │   └── figures/                      report PNGs (results/ holds data, not committed)
-└── E08_janys_1105/                 arm models trained on Janys + Tom 10/28, tested on Janys 11/05
+├── E08_janys_1105/                 arm models trained on Janys + Tom 10/28, tested on Janys 11/05
     ├── opencap_gt.py, align.py, data.py   11/05 OpenCap -> body rotations, clock, test set
     ├── run.py                        trained models: 10/28 -> 11/05
     ├── frame_methods.py, opensense_run.py   E07's other Apple-only methods on 11/05
@@ -67,6 +67,11 @@ experiments/
     ├── cross.py, four_methods.py     cross-session tests; four methods side by side
     ├── camera.py, vision2d.swift, video.py   IMG_0021 clip synced and fitted; comparison video
     └── figures/
+└── E09_roboflow_pose/              Roboflow YOLO pose (one camera) vs OpenCap projected into phone1
+    ├── common.py                     clip window, workflow URL, joint map
+    ├── run.py                        frames -> hosted workflow -> predictions.jsonl
+    ├── evaluate.py, video.py         pixel / PCK / elbow-angle scores; side-by-side preview
+    └── results/<player>/             metrics.json, summary.md (predictions and video not committed)
 ```
 
 ## Conventions
