@@ -1,0 +1,230 @@
+{
+  "all": {
+    "constraint_watch_swing": {
+      "elbow_px": 15.8,
+      "wrist_px": 30.3,
+      "upper_dir_deg": 20.4,
+      "fore_dir_deg": 14.3,
+      "elbow_angle_deg": 20.3,
+      "elbow3d_deg": 31.6,
+      "fore3d_deg": 49.2,
+      "frames": 599
+    },
+    "imucoco_rw_rp_h": {
+      "elbow_px": 12.0,
+      "wrist_px": 19.0,
+      "upper_dir_deg": 15.2,
+      "fore_dir_deg": 14.4,
+      "elbow_angle_deg": 11.5,
+      "elbow3d_deg": 16.1,
+      "fore3d_deg": 33.4,
+      "frames": 599
+    },
+    "mobileposer_rw_rp_h": {
+      "elbow_px": 13.2,
+      "wrist_px": 24.1,
+      "upper_dir_deg": 16.2,
+      "fore_dir_deg": 28.4,
+      "elbow_angle_deg": 15.9,
+      "elbow3d_deg": 21.2,
+      "fore3d_deg": 35.7,
+      "frames": 599
+    },
+    "opencap_model": {
+      "elbow_px": 3.8,
+      "wrist_px": 8.0,
+      "upper_dir_deg": 4.3,
+      "fore_dir_deg": 10.6,
+      "elbow_angle_deg": 8.8,
+      "elbow3d_deg": 0.0,
+      "fore3d_deg": 0.0,
+      "frames": 599
+    },
+    "opensense_trunk_upper_watch_phone": {
+      "elbow_px": 19.2,
+      "wrist_px": 45.2,
+      "upper_dir_deg": 23.2,
+      "fore_dir_deg": 57.9,
+      "elbow_angle_deg": 32.2,
+      "elbow3d_deg": 19.3,
+      "fore3d_deg": 78.6,
+      "frames": 599
+    },
+    "own_gru_allsensors_personal": {
+      "elbow_px": 6.7,
+      "wrist_px": 12.4,
+      "upper_dir_deg": 8.1,
+      "fore_dir_deg": 14.1,
+      "elbow_angle_deg": 11.8,
+      "elbow3d_deg": 5.9,
+      "fore3d_deg": 7.9,
+      "frames": 599
+    },
+    "own_gru_watch_xplayer": {
+      "elbow_px": 8.0,
+      "wrist_px": 11.7,
+      "upper_dir_deg": 10.1,
+      "fore_dir_deg": 12.9,
+      "elbow_angle_deg": 14.9,
+      "elbow3d_deg": 15.7,
+      "fore3d_deg": 21.0,
+      "frames": 599
+    },
+    "qmt_trunk_upper_watch_rest18": {
+      "elbow_px": 18.9,
+      "wrist_px": 41.3,
+      "upper_dir_deg": 23.1,
+      "fore_dir_deg": 41.9,
+      "elbow_angle_deg": 27.8,
+      "elbow3d_deg": 6.5,
+      "fore3d_deg": 70.9,
+      "frames": 599
+    },
+    "roboflow": {
+      "elbow_px": 9.8,
+      "wrist_px": 13.9,
+      "upper_dir_deg": 6.8,
+      "fore_dir_deg": 10.4,
+      "elbow_angle_deg": 9.0,
+      "elbow3d_deg": null,
+      "fore3d_deg": null,
+      "frames": 589
+    },
+    "roboflow_anchored": {
+      "elbow_px": 8.7,
+      "wrist_px": 14.2,
+      "upper_dir_deg": 6.8,
+      "fore_dir_deg": 10.4,
+      "elbow_angle_deg": 9.0,
+      "elbow3d_deg": null,
+      "fore3d_deg": null,
+      "frames": 589
+    },
+    "wearmocap_watch": {
+      "elbow_px": 15.9,
+      "wrist_px": 17.2,
+      "upper_dir_deg": 20.4,
+      "fore_dir_deg": 10.7,
+      "elbow_angle_deg": 24.9,
+      "elbow3d_deg": 22.1,
+      "fore3d_deg": 33.2,
+      "frames": 599
+    }
+  },
+  "swings": {
+    "constraint_watch_swing": {
+      "elbow_px": 41.7,
+      "wrist_px": 51.7,
+      "upper_dir_deg": 69.6,
+      "fore_dir_deg": 17.0,
+      "elbow_angle_deg": 62.3,
+      "elbow3d_deg": 39.5,
+      "fore3d_deg": 32.6,
+      "frames": 150
+    },
+    "imucoco_rw_rp_h": {
+      "elbow_px": 20.9,
+      "wrist_px": 25.8,
+      "upper_dir_deg": 28.9,
+      "fore_dir_deg": 14.5,
+      "elbow_angle_deg": 18.2,
+      "elbow3d_deg": 18.1,
+      "fore3d_deg": 28.3,
+      "frames": 150
+    },
+    "mobileposer_rw_rp_h": {
+      "elbow_px": 38.5,
+      "wrist_px": 56.6,
+      "upper_dir_deg": 70.0,
+      "fore_dir_deg": 41.0,
+      "elbow_angle_deg": 40.7,
+      "elbow3d_deg": 34.7,
+      "fore3d_deg": 37.3,
+      "frames": 150
+    },
+    "opencap_model": {
+      "elbow_px": 6.8,
+      "wrist_px": 9.4,
+      "upper_dir_deg": 9.2,
+      "fore_dir_deg": 9.7,
+      "elbow_angle_deg": 12.9,
+      "elbow3d_deg": 0.0,
+      "fore3d_deg": 0.0,
+      "frames": 150
+    },
+    "opensense_trunk_upper_watch_phone": {
+      "elbow_px": 38.9,
+      "wrist_px": 73.8,
+      "upper_dir_deg": 68.8,
+      "fore_dir_deg": 80.9,
+      "elbow_angle_deg": 15.3,
+      "elbow3d_deg": 30.5,
+      "fore3d_deg": 73.7,
+      "frames": 150
+    },
+    "own_gru_allsensors_personal": {
+      "elbow_px": 11.6,
+      "wrist_px": 18.5,
+      "upper_dir_deg": 17.1,
+      "fore_dir_deg": 11.9,
+      "elbow_angle_deg": 18.0,
+      "elbow3d_deg": 9.9,
+      "fore3d_deg": 13.8,
+      "frames": 150
+    },
+    "own_gru_watch_xplayer": {
+      "elbow_px": 27.7,
+      "wrist_px": 30.4,
+      "upper_dir_deg": 48.2,
+      "fore_dir_deg": 19.9,
+      "elbow_angle_deg": 47.1,
+      "elbow3d_deg": 27.8,
+      "fore3d_deg": 25.6,
+      "frames": 150
+    },
+    "qmt_trunk_upper_watch_rest18": {
+      "elbow_px": 41.7,
+      "wrist_px": 71.2,
+      "upper_dir_deg": 78.6,
+      "fore_dir_deg": 64.0,
+      "elbow_angle_deg": 19.5,
+      "elbow3d_deg": 13.9,
+      "fore3d_deg": 61.9,
+      "frames": 150
+    },
+    "roboflow": {
+      "elbow_px": 26.6,
+      "wrist_px": 26.9,
+      "upper_dir_deg": 29.6,
+      "fore_dir_deg": 25.2,
+      "elbow_angle_deg": 37.8,
+      "elbow3d_deg": null,
+      "fore3d_deg": null,
+      "frames": 149
+    },
+    "roboflow_anchored": {
+      "elbow_px": 17.3,
+      "wrist_px": 24.1,
+      "upper_dir_deg": 29.6,
+      "fore_dir_deg": 25.2,
+      "elbow_angle_deg": 37.8,
+      "elbow3d_deg": null,
+      "fore3d_deg": null,
+      "frames": 149
+    },
+    "wearmocap_watch": {
+      "elbow_px": 20.6,
+      "wrist_px": 37.6,
+      "upper_dir_deg": 32.9,
+      "fore_dir_deg": 17.5,
+      "elbow_angle_deg": 26.5,
+      "elbow3d_deg": 30.8,
+      "fore3d_deg": 45.2,
+      "frames": 150
+    }
+  },
+  "segment_m": {
+    "up": 0.248,
+    "fore": 0.221
+  }
+}

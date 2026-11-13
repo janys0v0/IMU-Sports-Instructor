@@ -71,6 +71,7 @@ experiments/
     ├── common.py                     clip window, workflow URL, joint map
     ├── run.py                        frames -> hosted workflow -> predictions.jsonl
     ├── evaluate.py, video.py         pixel / PCK / elbow-angle scores; side-by-side preview
+    ├── compare_imu.py                right arm vs E07's IMU methods in the same pixels
     └── results/<player>/             metrics.json, summary.md (predictions and video not committed)
 ```
 

@@ -44,3 +44,20 @@ def test_frame_errors_pixel_distance_and_elbow_angle():
     assert np.isnan(e["LKnee"])
     straight = 180 - np.degrees(np.arctan2(3, 14))  # angle at the predicted elbow
     assert np.isclose(e["elbow_err"], abs(straight - 90.0))
+
+
+def test_imu_arm_and_arm_scores():
+    from experiments.E09_roboflow_pose.compare_imu import arm_scores, imu_arm
+
+    Rt = np.eye(3)
+    sh, el, wr = imu_arm(
+        np.zeros(3), Rt, np.array([0.0, -1.0, 0.0]), np.array([1.0, 0.0, 0.0]), 0.3, 0.25
+    )
+    assert np.allclose(el, [0, -0.3, 0]) and np.allclose(wr, [0.25, -0.3, 0])
+    g = (np.array([0.0, 0.0]), np.array([0.0, 10.0]), np.array([10.0, 10.0]))
+    same = arm_scores(*g, *g)
+    assert all(np.isclose(v, 0.0) for v in same.values())
+    # forearm pointing straight on instead of turned 90°: wrist 10*sqrt(2) px off, 90° direction error
+    s = arm_scores(g[0], g[1], np.array([0.0, 20.0]), *g)
+    assert np.isclose(s["wrist_px"], np.hypot(10, 10)) and np.isclose(s["fore_dir_deg"], 90.0)
+    assert np.isclose(s["elbow_angle_deg"], 90.0) and np.isclose(s["upper_dir_deg"], 0.0)

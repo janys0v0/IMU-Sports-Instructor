@@ -396,3 +396,7 @@ Checked which published models could run on head + one wrist + thigh data:
   swings).
 - On the preview Roboflow often fits the visible limbs better than projected OpenCap, so limb
   errors are bounded by the reference; hand labels are the next step.
+- Against E07's IMU methods (`compare_imu`, right arm put into phone1 pixels with OpenCap's
+  shoulder and trunk): whole window Roboflow elbow / wrist 9 / 14 px, same as the best IMU models
+  (GRU personal 7 / 12). Swings: Roboflow 17 / 24 px shoulder-anchored vs GRU personal 12 / 18,
+  IMUCoCo 21 / 26, WearMoCap 21 / 38, model-free 39–42 / 52–74 px.
