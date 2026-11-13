@@ -61,3 +61,25 @@ def test_imu_arm_and_arm_scores():
     s = arm_scores(g[0], g[1], np.array([0.0, 20.0]), *g)
     assert np.isclose(s["wrist_px"], np.hypot(10, 10)) and np.isclose(s["fore_dir_deg"], 90.0)
     assert np.isclose(s["elbow_angle_deg"], 90.0) and np.isclose(s["upper_dir_deg"], 0.0)
+
+
+def test_ray_sphere_and_camera_rays():
+    from experiments.E09_roboflow_pose.lift3d import camera_center_and_rays, ray_sphere
+
+    P = np.array([[1.0, 0, 0, 0], [0, 1.0, 0, 0], [0, 0, 1.0, 5.0]])  # camera at z = -5 looking +z
+    C, d = camera_center_and_rays(P, np.array([[0.0, 0.0]]))
+    assert np.allclose(C, [0, 0, -5]) and np.allclose(d[0], [0, 0, 1])
+    two = ray_sphere(C, d[0], np.zeros(3), 1.0)  # through the centre: front and back of the sphere
+    assert np.allclose(two[0], [0, 0, -1]) and np.allclose(two[1], [0, 0, 1])
+    one = ray_sphere(C, np.array([0.0, 0.6, 0.8]), np.array([0.0, 0.0, 0.0]), 0.1)  # misses
+    assert len(one) == 1 and np.isclose(np.linalg.norm(one[0] - C), 4.0)  # nearest point on the ray
+
+
+def test_viterbi_follows_the_smooth_branch():
+    from experiments.E09_roboflow_pose.lift3d import viterbi
+
+    a, b = np.zeros(3), np.array([0.0, 0.0, 1.0])
+    # two branches per frame, swapped in order at frame 2; the smooth path stays near `a`
+    cands = [[(a, a), (b, b)], [(a, a), (b, b)], [(b, b), (a, a)], []]
+    unary = [[0.0, 0.1], [0.0, 0.0], [0.0, 0.0], []]
+    assert viterbi(cands, unary) == [0, 0, 1, None]

@@ -17,13 +17,15 @@ OpenCap's 3D video keypoints projected into phone1 with E06's fitted camera (med
    knees, ankles) in pixels, as PCK at 0.2 × torso length, and the right elbow's image-plane
    angle.
 3. `video.py` draws both skeletons on a crop that follows the player.
-4. `compare_imu.py` scores Roboflow's right arm next to E07's IMU methods (below).
+4. `compare_imu.py` scores Roboflow's right arm next to E07's IMU methods in pixels;
+   `lift3d.py` lifts it to 3D and scores everything with E08's metrics (below).
 
 ```bash
 ROBOFLOW_API_KEY=... .venv/bin/python -m experiments.E09_roboflow_pose.run janys --start 35 --seconds 20
 .venv/bin/python -m experiments.E09_roboflow_pose.evaluate janys
 .venv/bin/python -m experiments.E09_roboflow_pose.video janys
 .venv/bin/python -m experiments.E09_roboflow_pose.compare_imu janys
+.venv/bin/python -m experiments.E09_roboflow_pose.lift3d janys
 ```
 
 ## Results ([`results/janys/summary.md`](results/janys/summary.md))
@@ -86,10 +88,50 @@ the best IMU methods are about the same (GRU personal 7 / 12 px, GRU Watch other
   right needs hand labels.
 - Roboflow is 2D: no 3D elbow flexion or shoulder elevation, which E07's methods give.
 
+## In 3D, with E08's metrics ([`results/janys/lift3d.md`](results/janys/lift3d.md))
+
+The pixel scores above favour the IMU methods (depth errors don't show) and can't be compared with
+E07/E08. `lift3d.py` lifts Roboflow's right arm to 3D and scores every method with E07's `score`,
+the function E08 uses: elbow flexion, shoulder elevation, forearm inclination, segment direction,
+elbow and wrist position.
+
+**Lifting:** each keypoint pixel and phone1's camera give a ray. The elbow is where its ray meets a
+sphere of upper-arm length around the shoulder, the wrist likewise around the elbow. Same help as
+the IMU arms: OpenCap's shoulder, torso and segment lengths. A ray meets a sphere twice (segment
+toward or away from the camera; 99 % of frames), so a smooth 3D path picks one;
+"best pick" chooses with OpenCap, an upper bound. Lifting OpenCap's own pixels checks the method.
+
+Right arm, swings, medians against OpenCap:
+
+| Method | Elbow ° | Elev. ° | Forearm incl. ° | Upper-arm dir. ° | Forearm dir. ° | Elbow cm | Wrist cm |
+|---|---|---|---|---|---|---|---|
+| OpenCap's own 3D keypoints (floor) | 8 | 7 | 6 | 10 | 14 | 4 | 7 |
+| OpenCap's pixels lifted, smooth path / best pick | 19 / 11 | 11 / 8 | 8 / 6 | 23 / 13 | 27 / 15 | 10 / 6 | 17 / 9 |
+| **Roboflow lifted, smooth path / best pick** | 38 / 30 | 30 / 26 | 16 / 16 | 56 / 37 | 76 / 39 | 23 / 16 | 32 / 20 |
+| Ours GRU, all sensors, + own half of the block | 10 | 9 | 9 | 17 | 14 | 7 | 10 |
+| IMUCoCo, Watch+phone+AirPods | 18 | 25 | 11 | 41 | 28 | 17 | 22 |
+| Ours GRU, Watch, other player only | 28 | 39 | 12 | 47 | 26 | 20 | 22 |
+| WearMoCap, Watch | 31 | 24 | 16 | 42 | 45 | 18 | 31 |
+| Geometric, qmt heading, rest 18° | 14 | 24 | 23 | 92 | 62 | 36 | 57 |
+| OpenSense IK, 4 sensors | 30 | 18 | 21 | 88 | 74 | 34 | 58 |
+
+- **In 3D, one camera loses to the better IMU methods in swings.** Even with a perfect front/back
+  pick, Roboflow's lifted arm (wrist 20 cm, forearm 39°) is behind the personal GRU (10 cm, 14°),
+  IMUCoCo (22 cm, 28°) and the Watch GRU (22 cm, 26°). It still beats the model-free IMU methods
+  on direction, whose heading drifts.
+- **Why:** depth from one side-on camera. Lifting OpenCap's perfect pixels gets close to the floor
+  (wrist 9 cm) only with the right pick; the smooth path alone loses ~10°, and 5–10 px of pixel
+  noise doubles the direction errors (checked by adding noise). Roboflow's arm keypoints are
+  17–27 px off in swings.
+- **Between swings** (whole window, `lift3d.md`) Roboflow lifted is mid-pack: elbow 15°, wrist
+  15 cm (Watch GRU 16° / 11 cm, personal GRU 6° / 5 cm).
+- These are one 20 s window of one player; the IMU numbers differ from E07's two-player blocks.
+
 **Limits:** one player, 20 s, one camera far from the player (torso 82 px); image-plane angles
 only; the reference is OpenCap reprojected through a camera fitted from feet and head, not
 hand labels.
 
-**Next:** hand-label 30–50 swing frames to grade Roboflow, OpenCap and the IMU arms on the same
+**Next:** fuse Roboflow's 2D arm with the IMUs (camera fixes heading, IMUs fix front/back);
+hand-label 30–50 swing frames to grade Roboflow, OpenCap and the IMU arms on the same
 images; or project into one
 of OpenCap's own calibrated cameras instead of phone1.

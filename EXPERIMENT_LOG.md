@@ -400,3 +400,8 @@ Checked which published models could run on head + one wrist + thigh data:
   shoulder and trunk): whole window Roboflow elbow / wrist 9 / 14 px, same as the best IMU models
   (GRU personal 7 / 12). Swings: Roboflow 17 / 24 px shoulder-anchored vs GRU personal 12 / 18,
   IMUCoCo 21 / 26, WearMoCap 21 / 38, model-free 39–42 / 52–74 px.
+- In 3D with E08's metrics (`lift3d`, Roboflow lifted by ray-sphere on the fitted camera with
+  OpenCap's shoulder, torso and lengths), swings: Roboflow wrist 32 cm, forearm 76° (best
+  front/back pick 20 cm, 39°) vs personal GRU 10 cm / 14°, IMUCoCo 22 / 28, Watch GRU 22 / 26.
+  Lifting OpenCap's own pixels reaches 9 cm only with the right pick; one camera's depth is the
+  limit.

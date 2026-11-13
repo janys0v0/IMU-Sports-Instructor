@@ -72,6 +72,7 @@ experiments/
     ├── run.py                        frames -> hosted workflow -> predictions.jsonl
     ├── evaluate.py, video.py         pixel / PCK / elbow-angle scores; side-by-side preview
     ├── compare_imu.py                right arm vs E07's IMU methods in the same pixels
+    ├── lift3d.py                     Roboflow's arm lifted to 3D; E08's metrics for every method
     └── results/<player>/             metrics.json, summary.md (predictions and video not committed)
 ```
 
